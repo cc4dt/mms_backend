@@ -19,6 +19,17 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('username')->nullable();
+            $table->integer('Positions')->default('0');
+            $table->integer('DepartmentNo')->default('0');
+            $table->integer('Extension')->default('0');
+            $table->integer('HideCost')->default('-1');
+            $table->string('WorkPhone')->nullable();
+            $table->integer('level')->default('0');
+            $table->string('DeviceToken')->nullable();
+            $table->integer('CompanyID')->default('1'); 
+            $table->string('create_by')->nullable();
+            $table->string('update_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
