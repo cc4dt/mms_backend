@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class CreateUsersTable extends Migration
 {
     /**
-     * Run the migrations.
      *
      * @return void
      */
@@ -19,17 +18,17 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('username')->nullable();
-            $table->integer('Positions')->default('0');
-            $table->integer('DepartmentNo')->default('0');
-            $table->integer('Extension')->default('0');
-            $table->integer('HideCost')->default('-1');
-            $table->string('WorkPhone')->nullable();
-            $table->integer('level')->default('0');
-            $table->string('DeviceToken')->nullable();
-            $table->integer('CompanyID')->default('1'); 
-            $table->string('create_by')->nullable();
-            $table->string('update_by')->nullable();
+            $table->string('username')->unique()->nullable();
+            $table->string('device_token')->nullable();
+            $table->integer('positions')->default('0');
+            $table->integer('department_no')->default('0');
+            $table->integer('extension')->default('0');
+            $table->integer('hide_cost')->default('-1');
+            $table->string('work_phone')->nullable();
+            $table->integer('level_id');
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('created_by_id')->constrained("users")->onDelete('cascade')->nullable();
+            $table->foreignId('updated_by_id')->constrained("users")->onDelete('cascade')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

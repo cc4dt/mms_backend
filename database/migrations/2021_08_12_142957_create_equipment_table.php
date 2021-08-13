@@ -4,28 +4,30 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWorkStatusTable extends Migration
+class CreateEquipmentTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up()
     {
-        Schema::create('workstatus', function (Blueprint $table) {
+        Schema::create('equipment', function (Blueprint $table) {
             $table->id();
-            $table->string('WorkStatus')->nullable();
-            $table->string('WorkStatus_ar')->nullable();
+            $table->string('name_en');
+            $table->string('name_ar');
             $table->timestamps();
-            $table->string('create_by')->nullable();
-            $table->string('update_by')->nullable();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down()
     {
-        Schema::dropIfExists('workstatus');
+        Schema::dropIfExists('equipment');
     }
 }

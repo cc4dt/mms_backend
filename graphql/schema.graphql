@@ -1,0 +1,134 @@
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    me: User @auth
+
+    users: [User!]! @paginate(defaultCount: 10) # @all
+    user(id: ID! @eq): User @find
+    usersById(ids: [ID]!): [User]! @field(resolver: "UserQuery@usersById")
+    teamleaders: [User]! @field(resolver: "UserQuery@teamleaders")
+
+    tickets: [Ticket!]! @paginate(defaultCount: 10)
+    ticket(id: ID! @eq): Ticket @find
+
+    states: [State]! @paginate(defaultCount: 10)
+    equipments: [Equipment]! @paginate(defaultCount: 10)
+
+    ticketStatus: [ConstField]! @field(resolver: "MasterQuery@ticketStatus")
+    ticketTypes: [ConstField]! @field(resolver: "MasterQuery@ticketTypes")
+    ticketTrades: [ConstField]! @field(resolver: "MasterQuery@ticketTrades")
+    ticketPriorities: [ConstField]!
+        @field(resolver: "MasterQuery@ticketPriorities")
+    userLevels: [ConstField]! @field(resolver: "MasterQuery@userLevels")
+}
+
+type Mutation {
+    login(email: String!, password: String!, tokenName: String!): Login
+        @field(resolver: "AuthMutator@login")
+
+    openTicket(input: OpenTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@open")
+
+    assignTicket(id: ID!, input: AssignTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@assign")
+}
+
+input OpenTicketInput {
+    station_id: ID!
+    breakdown_id: ID!
+    open_description: String!
+}
+
+input AssignTicketInput {
+    teamleader_id: ID!
+    type: String!
+    trade: String!
+    priority: String!
+    work_description: String!
+}
+
+type Login {
+    uid: ID
+    tokenType: String
+    token: String
+    tokenName: String
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    level: ConstField!
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type ConstField {
+    key: String
+    value: String
+}
+
+type Ticket {
+    id: ID!
+    number: String!
+    station: Station!
+    breakdown: Breakdown!
+    open_description: String!
+    type: ConstField
+    trade: ConstField
+    priority: ConstField
+    work_description: String
+    status: ConstField!
+    teamleader: User
+    created_by: User
+    updated_by: User
+    created_at: DateTime
+    updated_at: DateTime
+}
+
+type State {
+    id: ID!
+    name: String!
+    stations: [Station]!
+}
+
+type Station {
+    id: ID!
+    name: String!
+    state: State!
+}
+
+type Equipment {
+    id: ID!
+    name: String!
+    breakdowns: [Breakdown]!
+}
+
+type Breakdown {
+    id: ID!
+    name: String!
+    equipment: Equipment!
+}
+
+# type UserPaginator {
+#   paginatorInfo: PaginatorInfo!
+#   data: [User!]!
+# }
+
+# type PaginatorInfo {
+#   count: Int!
+#   currentPage: Int!
+#   firstItem: Int
+#   hasMorePages: Boolean!
+#   lastItem: Int
+#   lastPage: Int!
+#   perPage: Int!
+#   total: Int!
+# }

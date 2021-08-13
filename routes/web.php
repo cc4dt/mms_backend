@@ -21,11 +21,10 @@ Route::get('/login', function () {
 });
 
 Auth::routes();
-Route::resource('Client','ClientController');
+Route::resource('Client', 'ClientController');
 Route::get('/home', 'HomeController@index')->name('Home');
 Route::get('home', 'HomeController@index')->name('Home');
 //Route::get('/Clients', 'ClientController@index')->name('Client');
 Route::get('/Supervisors', 'SupervisorController@index')->name('Supervisor');
 Route::get('/Teamleaders', 'TeamleaderController@index')->name('Teamleader');
 Route::get('/Admins', 'AdminController@index')->name('Admin');
-

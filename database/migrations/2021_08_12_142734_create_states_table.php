@@ -4,28 +4,30 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCompanyTable extends Migration
+class CreateStatesTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up()
     {
-        Schema::create('company', function (Blueprint $table) {
+        Schema::create('states', function (Blueprint $table) {
             $table->id();
-            $table->string('CompanyName')->nullable();
-            $table->string('CompanyName_ar')->nullable();
+            $table->string('name_en');
+            $table->string('name_ar');
             $table->timestamps();
-            $table->string('create_by')->nullable();
-            $table->string('update_by')->nullable();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down()
     {
-        Schema::dropIfExists('company');
+        Schema::dropIfExists('states');
     }
 }
