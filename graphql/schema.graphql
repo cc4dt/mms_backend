@@ -10,21 +10,21 @@ type Query {
 
     users: [User!]! @paginate(defaultCount: 10) # @all
     user(id: ID! @eq): User @find
-    usersById(ids: [ID]!): [User]! @field(resolver: "UserQuery@usersById")
-    teamleaders: [User]! @field(resolver: "UserQuery@teamleaders")
+    usersById(ids: [ID!]!): [User!]! @field(resolver: "UserQuery@usersById")
+    teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
     tickets: [Ticket!]! @paginate(defaultCount: 10)
     ticket(id: ID! @eq): Ticket @find
 
-    states: [State]! @paginate(defaultCount: 10)
-    equipments: [Equipment]! @paginate(defaultCount: 10)
+    states: [State!]! @paginate(defaultCount: 10)
+    equipments: [Equipment!]! @paginate(defaultCount: 10)
 
-    ticketStatus: [ConstField]! @field(resolver: "MasterQuery@ticketStatus")
-    ticketTypes: [ConstField]! @field(resolver: "MasterQuery@ticketTypes")
-    ticketTrades: [ConstField]! @field(resolver: "MasterQuery@ticketTrades")
-    ticketPriorities: [ConstField]!
+    ticketStatus: [ConstField!]! @field(resolver: "MasterQuery@ticketStatus")
+    ticketTypes: [ConstField!]! @field(resolver: "MasterQuery@ticketTypes")
+    ticketTrades: [ConstField!]! @field(resolver: "MasterQuery@ticketTrades")
+    ticketPriorities: [ConstField!]!
         @field(resolver: "MasterQuery@ticketPriorities")
-    userLevels: [ConstField]! @field(resolver: "MasterQuery@userLevels")
+    userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
 }
 
 type Mutation {
@@ -96,7 +96,7 @@ type Ticket {
 type State {
     id: ID!
     name: String!
-    stations: [Station]!
+    stations: [Station!]!
 }
 
 type Station {
@@ -108,7 +108,7 @@ type Station {
 type Equipment {
     id: ID!
     name: String!
-    breakdowns: [Breakdown]!
+    breakdowns: [Breakdown!]!
 }
 
 type Breakdown {

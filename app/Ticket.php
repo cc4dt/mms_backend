@@ -178,10 +178,11 @@ class Ticket extends Model
 
     public function getTypeAttribute()
     {
-        return (object) [
-            "key" => self::TYPES[$this->attributes['type_id']],
-            "value" => self::TYPES[app()->getLocale()][$this->attributes['type_id']],
-        ];
+        if ($this->attributes['type_id'])
+            return (object) [
+                "key" => self::TYPES[$this->attributes['type_id']],
+                "value" => self::TYPES[app()->getLocale()][$this->attributes['type_id']],
+            ];
     }
 
     public function setTypeAttribute($value)
@@ -194,10 +195,11 @@ class Ticket extends Model
 
     public function getStatusAttribute()
     {
-        return (object) [
-            "key" => self::STATUS[$this->attributes['status_id']],
-            "value" => self::STATUS[app()->getLocale()][$this->attributes['status_id']],
-        ];
+        if ($this->attributes['status_id'])
+            return (object) [
+                "key" => self::STATUS[$this->attributes['status_id']],
+                "value" => self::STATUS[app()->getLocale()][$this->attributes['status_id']],
+            ];
     }
 
     public function setStatusAttribute($value)
@@ -210,10 +212,11 @@ class Ticket extends Model
 
     public function getTradeAttribute()
     {
-        return (object) [
-            "key" => self::TRADE[$this->attributes['trade_id']],
-            "value" => self::TRADE[app()->getLocale()][$this->attributes['trade_id']],
-        ];
+        if ($this->attributes['trade_id'])
+            return (object) [
+                "key" => self::TRADE[$this->attributes['trade_id']],
+                "value" => self::TRADE[app()->getLocale()][$this->attributes['trade_id']],
+            ];
     }
 
     public function setTradeAttribute($value)
@@ -227,10 +230,11 @@ class Ticket extends Model
 
     public function getPriorityAttribute()
     {
-        return (object) [
-            "key" => self::PRIORITY[$this->attributes['priority_id']],
-            "value" => self::PRIORITY[app()->getLocale()][$this->attributes['priority_id']],
-        ];
+        if ($this->attributes['priority_id'])
+            return (object) [
+                "key" => self::PRIORITY[$this->attributes['priority_id']],
+                "value" => self::PRIORITY[app()->getLocale()][$this->attributes['priority_id']],
+            ];
     }
 
     public function setPriorityAttribute($value)

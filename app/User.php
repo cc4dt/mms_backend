@@ -110,10 +110,11 @@ class User extends Authenticatable
 
     public function getLevelAttribute()
     {
-        return (object) [
-            "key" => self::LEVELS[$this->attributes['level_id']],
-            "value" => self::LEVELS[app()->getLocale()][$this->attributes['level_id']],
-        ];
+        if ($this->attributes['level_id'])
+            return (object) [
+                "key" => self::LEVELS[$this->attributes['level_id']],
+                "value" => self::LEVELS[app()->getLocale()][$this->attributes['level_id']],
+            ];
     }
 
     public function setLevelAttribute($value)
