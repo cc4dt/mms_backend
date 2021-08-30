@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Queries;
 
+use Illuminate\Support\Facades\Auth;
 use App\User;
 
 class UserQuery

@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Collection;
+use App\User;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,8 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('auth/login');
 });
+
 Route::get('/login', function () {
     return view('auth/login');
+});
+
+Route::get('/test', function () {
+    $user = User::find(3);
+    print_r($user->notifications->first()->data);
+    var_dump($user->notifications->first()->data);
+    return $user->notifications->first()->data;
 });
 
 Auth::routes();

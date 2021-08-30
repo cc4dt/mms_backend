@@ -27,8 +27,8 @@ class CreateUsersTable extends Migration
             $table->string('work_phone')->nullable();
             $table->integer('level_id');
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->foreignId('created_by_id')->constrained("users")->onDelete('cascade')->nullable();
-            $table->foreignId('updated_by_id')->constrained("users")->onDelete('cascade')->nullable();
+            $table->foreignId('created_by_id')->nullable()->constrained("users")->onDelete('cascade');
+            $table->foreignId('updated_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });

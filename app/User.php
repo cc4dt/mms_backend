@@ -52,21 +52,6 @@ class User extends Authenticatable
 
 
     public const LEVELS = [
-        "en" => [
-            1 => 'Admin',
-            2 => 'Supervisor',
-            3 => 'Teamleader',
-            4 => 'Dealer',
-            5 => 'Client',
-        ],
-        "ar" => [
-            1 => 'مدير',
-            2 => 'مالك',
-            3 => 'قائد الفريق',
-            4 => 'خدمات العملاء',
-            5 => 'عميل',
-
-        ],
         1 => 'admin',
         2 => 'supervisor',
         3 => 'teamleader',
@@ -77,10 +62,10 @@ class User extends Authenticatable
     static public function constList($list)
     {
         $items = array();
-        foreach ($list[app()->getLocale()] as $key => $value) {
+        foreach ($list as $key => $value) {
             $items[] = (object) [
-                "key" => $list[$key],
-                "value" => $value
+                "key" => $value,
+                "value" => __('constants.'.$value)
             ];
         }
         return $items;
@@ -94,6 +79,12 @@ class User extends Authenticatable
     static public function teamleaders()
     {
         $levelID = array_search('teamleader', self::LEVELS);
+        return User::where('level_id', $levelID)->get();
+    }
+
+    static public function supervisors()
+    {
+        $levelID = array_search('supervisor', self::LEVELS);
         return User::where('level_id', $levelID)->get();
     }
 
@@ -113,7 +104,7 @@ class User extends Authenticatable
         if ($this->attributes['level_id'])
             return (object) [
                 "key" => self::LEVELS[$this->attributes['level_id']],
-                "value" => self::LEVELS[app()->getLocale()][$this->attributes['level_id']],
+                "value" => __('constants.'.self::LEVELS[$this->attributes['level_id']]),
             ];
     }
 
@@ -123,5 +114,24 @@ class User extends Authenticatable
         if ($levelID) {
             $this->attributes['level_id'] = $levelID;
         }
+    }
+    
+    public function fcmTokens(): HasMany
+    {
+        return $this->hasMany('App\FcmToken');
+    }
+    
+    public function getDeviceTokens()
+    {
+        $tokens = [];
+        foreach ($this->fcmTokens as $value) {
+            $tokens[] = $value->token;
+        }
+        return $tokens;
+    }
+
+    public function routeNotificationForFcm()
+    {
+        return $this->getDeviceTokens();
     }
 }

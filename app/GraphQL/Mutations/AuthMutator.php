@@ -2,12 +2,14 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\User;
-
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Support\Facades\Auth;
+
+use App\User;
+use App\FcmToken;
 
 class AuthMutator
 {
@@ -32,16 +34,47 @@ class AuthMutator
      */
     public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $user = User::where('email', $args["email"])->first();
+        $input = (object) $args['input'];
+        $user = User::where('email',$input->email)->first();
 
-        // if (!$user || !Hash::check($args["password"], $user->password)) {
-        //     throw ValidationException::withMessages([
-        //         'email' => ['The provided credentials are incorrect.'],
-        //     ]);
-        // }
+        if (!$user || !Hash::check($input->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
 
-        $token = $user->createToken($args["tokenName"])->plainTextToken;
+        $fcmToken = FcmToken::where('token', $input->fcmToken)->first();
+        if($fcmToken) {
+            $fcmToken->update([
+                "device_name" => $input->deviceName,
+                "device_type" => 1,// $input->deviceType,
+                "user_id" => $user->id,
+            ]);
+        } else {
+            FcmToken::create([
+                "token" => $input->fcmToken,
+                "device_name" => $input->deviceName,
+                "device_type" => 1,// $input->deviceType,
+                "user_id" => $user->id,
+            ]);
+        }
 
-        return (object) ["uid" => $user->id, "tokenType" => "Bearer", "token" => $token, "tokenName" => $args["tokenName"]];
+        $token = $user->createToken($input->deviceName)->plainTextToken;
+
+        return (object) ["uid" => $user->id, "tokenType" => "Bearer", "token" => $token, "deviceName" => $input->deviceName];
     }
+    
+    public function changePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        if($args['confirm_password'] == $args["new_password"]) {
+            $user = User::find(Auth::id());
+            if(Hash::check($args["old_password"], $user->password)) {
+                if($user->update(["password" => Hash::make($args['new_password'])])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
 }

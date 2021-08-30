@@ -17,19 +17,19 @@ class CreateTicketsTable extends Migration
             $table->id();
             $table->string('number');
             //Fill By Client
-            $table->foreignId('station_id')->constrained()->onDelete('cascade')->nullable();
-            $table->foreignId('breakdown_id')->constrained()->onDelete('cascade')->nullable();
+            $table->foreignId('station_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('breakdown_id')->nullable()->constrained()->onDelete('cascade');
             $table->text('open_description')->nullable();
             //Fill By Supervisor
-            $table->foreignId('teamleader_id')->constrained("users")->onDelete('cascade')->nullable();
+            $table->foreignId('teamleader_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->integer("type_id")->nullable();
             $table->integer('trade_id')->nullable();
             $table->integer('priority_id')->nullable();
             $table->text('work_description')->nullable();
 
             $table->integer('status_id')->constrained("ticket_status")->nullable();
-            $table->foreignId('created_by_id')->constrained("users")->onDelete('cascade')->nullable();
-            $table->foreignId('updated_by_id')->constrained("users")->onDelete('cascade')->nullable();
+            $table->foreignId('created_by_id')->nullable()->constrained("users")->onDelete('cascade');
+            $table->foreignId('updated_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->timestamps();
 
             // $table->foreign('created_by')

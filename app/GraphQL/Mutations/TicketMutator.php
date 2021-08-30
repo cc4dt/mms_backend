@@ -3,8 +3,6 @@
 namespace App\GraphQL\Mutations;
 
 use App\Ticket;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class TicketMutator
 {
@@ -27,27 +25,12 @@ class TicketMutator
      */
     public function open($_, array $args)
     {
-        $input = $args['input'];
-        $input['number'] = Carbon::now()->timestamp;
-        $input['status'] = 'open';
-        $input['created_by_id'] = Auth::id();
-        $input['updated_by_id'] = Auth::id();
-
-        return Ticket::create($input);
+        return Ticket::open($args['input']);
     }
 
     public function assign($_, array $args)
     {
         $ticket = Ticket::find($args['id']);
-
-        $input = $args['input'];
-        $input['updated_by_id'] = Auth::id();
-        $input['status'] = 'waiting_for_access';
-
-        if ($ticket->update($input)) {
-            return $ticket;
-        } else {
-            return null;
-        }
+        return $ticket->assign($args['input']);
     }
 }

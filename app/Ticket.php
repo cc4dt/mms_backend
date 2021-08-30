@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+use App\Notifications\TicketAssigned;
+use App\Notifications\TicketOpened;
 
 class Ticket extends Model
 {
@@ -30,36 +36,11 @@ class Ticket extends Model
         'type',
         'trade',
         'priority',
-        'teamleader',
-        'created_by',
-        'updated_by',
     ];
 
 
     public const STATUS = [
-        "en" => [
-            1 => 'Open',
-            2 => 'Closed',
-            3 => 'Cancelled',
-            4 => 'Waiting for Spare Parts',
-            5 => 'Waiting for Approval',
-            6 => 'Waiting for Access',
-            7 => 'Transfer To Job',
-            8 => 'Pending',
-            9 => 'Needs Approval From Client',
-        ],
-        "ar" => [
-            1 => 'مفتوح',
-            2 => 'مغلق',
-            3 => 'ملغي',
-            4 => 'بانتظار قطع غيار',
-            5 => 'بانتظار موافقة الادارة',
-            6 => 'بانتظار الوصول',
-            7 => 'تم التحويل الى مهمة',
-            8 => 'معلقة',
-            9 => 'بانتظار موافقة العميل'
-        ],
-        1 => 'open',
+        1 => 'opened',
         2 => 'closed',
         3 => 'cancelled',
         4 => 'waiting_for_spare_parts',
@@ -71,18 +52,6 @@ class Ticket extends Model
     ];
 
     public const TYPES = [
-        "en" => [
-            1 => 'Corrective',
-            2 => 'Breakdown',
-            3 => 'Job',
-            4 => 'Accident',
-        ],
-        "ar" => [
-            1 => 'تصحيحي',
-            2 => 'عطل',
-            3 => 'عمل',
-            4 => 'حادث',
-        ],
         1 => 'corrective',
         2 => 'breakdown',
         3 => 'job',
@@ -90,41 +59,39 @@ class Ticket extends Model
     ];
 
     public const TRADE = [
-        "en" => [
-            1 => 'Mechanical',
-            2 => 'Electrical',
-        ],
-        "ar" => [
-            1 => 'ميكانيكي',
-            2 => 'كهربائي',
-        ],
         1 => 'mechanical',
         2 => 'electrical',
     ];
 
     public const PRIORITY = [
-        "en" => [
-            1 => 'Normal',
-            2 => 'Urgent',
-            3 => 'Emergency',
-        ],
-        "ar" => [
-            1 => 'عادي',
-            2 => 'عاجل',
-            3 => 'طارئ',
-        ],
         1 => 'normal',
         2 => 'urgent',
         3 => 'emergency',
     ];
 
+    static public function statusReported()
+    {
+        $items = array();
+        foreach (Ticket::STATUS as $key => $value) {
+            $count = Ticket::where("status_id", $key)->count();
+            $percentage = number_format((float) ($count / Ticket::all()->count() * 100), 1, '.', '');
+            $items[] = (object) [
+                "key" => Ticket::STATUS[$key],
+                "name" => __('constants.'.$value),
+                "count" => $count,
+                "percentage" => $percentage
+            ];
+        }
+        return $items;
+    }
+
     static public function constList($list)
     {
         $items = array();
-        foreach ($list[app()->getLocale()] as $key => $value) {
+        foreach ($list as $key => $value) {
             $items[] = (object) [
-                "key" => $list[$key],
-                "value" => $value
+                "key" => $value,
+                "value" => __('constants.'.$value)
             ];
         }
         return $items;
@@ -181,7 +148,7 @@ class Ticket extends Model
         if ($this->attributes['type_id'])
             return (object) [
                 "key" => self::TYPES[$this->attributes['type_id']],
-                "value" => self::TYPES[app()->getLocale()][$this->attributes['type_id']],
+                "value" => __('constants.'.self::TYPES[$this->attributes['type_id']]),
             ];
     }
 
@@ -198,7 +165,7 @@ class Ticket extends Model
         if ($this->attributes['status_id'])
             return (object) [
                 "key" => self::STATUS[$this->attributes['status_id']],
-                "value" => self::STATUS[app()->getLocale()][$this->attributes['status_id']],
+                "value" => __('constants.'.self::STATUS[$this->attributes['status_id']]),
             ];
     }
 
@@ -215,7 +182,7 @@ class Ticket extends Model
         if ($this->attributes['trade_id'])
             return (object) [
                 "key" => self::TRADE[$this->attributes['trade_id']],
-                "value" => self::TRADE[app()->getLocale()][$this->attributes['trade_id']],
+                "value" => __('constants.'.self::TRADE[$this->attributes['trade_id']]),
             ];
     }
 
@@ -233,7 +200,7 @@ class Ticket extends Model
         if ($this->attributes['priority_id'])
             return (object) [
                 "key" => self::PRIORITY[$this->attributes['priority_id']],
-                "value" => self::PRIORITY[app()->getLocale()][$this->attributes['priority_id']],
+                "value" => __('constants.'.self::PRIORITY[$this->attributes['priority_id']]),
             ];
     }
 
@@ -244,4 +211,32 @@ class Ticket extends Model
             $this->attributes['priority_id'] = $priorityID;
         }
     }
+    
+    static public function open($input)
+    {
+        $input['number'] = Carbon::now()->timestamp;
+        $input['status'] = 'opened';
+        $input['created_by_id'] = Auth::id();
+        $input['updated_by_id'] = Auth::id();
+        // Auth::user()->notify(new TicketOpened);
+        $ticket = Ticket::create($input);
+        Notification::send(User::supervisors(), new TicketOpened($ticket));
+        return $ticket;
+    }
+    
+
+    public function assign($input)
+    {
+        $input['updated_by_id'] = Auth::id();
+        $input['status'] = 'waiting_for_access';
+
+        if ($this->update($input)) {
+            $this->teamleader->notify(new TicketAssigned($this));
+            // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
+            return $this;
+        } else {
+            return null;
+        }
+    }
+
 }

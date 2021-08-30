@@ -2,15 +2,32 @@
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
-scalar DateTime
-    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+""
+scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
 
 type Query {
-    me: User @auth
+    me: User! @auth
 
     users: [User!]! @paginate(defaultCount: 10) # @all
     user(id: ID! @eq): User @find
     usersById(ids: [ID!]!): [User!]! @field(resolver: "UserQuery@usersById")
+
+    userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
+    ticketStatus: [ConstField!]! @field(resolver: "MasterQuery@ticketStatus")
+    ticketTypes: [ConstField!]! @field(resolver: "MasterQuery@ticketTypes")
+    ticketTrades: [ConstField!]! @field(resolver: "MasterQuery@ticketTrades")
+    ticketPriorities: [ConstField!]!
+        @field(resolver: "MasterQuery@ticketPriorities")
+    dashboard: Dashboard! @field(resolver: "DashQuery")
+}
+
+type Subscription {
+  newTicketOpened(author: ID): Ticket!
+}
+
+extend type Query @guard {
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
     tickets: [Ticket!]! @paginate(defaultCount: 10)
@@ -18,18 +35,53 @@ type Query {
 
     states: [State!]! @paginate(defaultCount: 10)
     equipments: [Equipment!]! @paginate(defaultCount: 10)
+}
 
-    ticketStatus: [ConstField!]! @field(resolver: "MasterQuery@ticketStatus")
-    ticketTypes: [ConstField!]! @field(resolver: "MasterQuery@ticketTypes")
-    ticketTrades: [ConstField!]! @field(resolver: "MasterQuery@ticketTrades")
-    ticketPriorities: [ConstField!]!
-        @field(resolver: "MasterQuery@ticketPriorities")
-    userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
+type SLA implements CountPercentage {
+    key: String!
+    name: String!
+    count: Int!
+    percentage: Float!
+}
+
+type StatusReported implements CountPercentage {
+    key: String!
+    name: String!
+    count: Int!
+    percentage: Float!
+}
+
+type TopReported {
+    id: ID!
+    name: String!
+    topCount: Int!
+}
+
+type TopReportedStation {
+    id: ID!
+    name: String!
+    topCount: Int!
+
+}
+
+type Dashboard {
+    topReported: [TopReported!]!
+    topReportedStation: [TopReportedStation!]!
+    sla: [SLA!]!
+    statusReported: [StatusReported!]!
 }
 
 type Mutation {
-    login(email: String!, password: String!, tokenName: String!): Login
+    login(input: LoginInput!): Login
         @field(resolver: "AuthMutator@login")
+        
+    changePassword(old_password: String!, new_password: String!, confirm_password: String!): Boolean!
+        @guard
+        @field(resolver: "AuthMutator@changePassword")
+        
+    notificationsAsRead: Boolean!
+        @guard
+        @field(resolver: "NotificationsMutator@asRead")
 
     openTicket(input: OpenTicketInput!): Ticket
         @guard
@@ -38,6 +90,14 @@ type Mutation {
     assignTicket(id: ID!, input: AssignTicketInput!): Ticket
         @guard
         @field(resolver: "TicketMutator@assign")
+}
+
+input LoginInput {
+    email: String!
+    password: String!
+    fcmToken: String!
+    deviceName: String! 
+    deviceType: String!
 }
 
 input OpenTicketInput {
@@ -58,7 +118,7 @@ type Login {
     uid: ID
     tokenType: String
     token: String
-    tokenName: String
+    deviceName: String
 }
 
 type User {
@@ -66,10 +126,16 @@ type User {
     name: String!
     email: String!
     level: ConstField!
+    notifications: [Notification!]!
     created_at: DateTime
     updated_at: DateTime
 }
-
+type Notification {
+    id: ID!
+    type: String!
+    data: JSON
+    read_at: DateTime
+}
 type ConstField {
     key: String
     value: String
