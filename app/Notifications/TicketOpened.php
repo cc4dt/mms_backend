@@ -19,7 +19,7 @@ class TicketOpened extends Notification
 {
     use Queueable;
 
-    public Ticket $ticket;
+    public $ticket;
     /**
      * Create a new notification instance.
      *
