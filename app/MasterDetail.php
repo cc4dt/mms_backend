@@ -9,7 +9,7 @@ class MasterDetail extends Model
 {
     public function equipment(): BelongsTo
     {
-        return $this->belongsTo('App\Equipment');
+        return $this->belongsTo('App\MasterEquipment');
     }
     
 

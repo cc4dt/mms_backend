@@ -14,7 +14,6 @@ class Breakdown extends Model
         'topCount',
     ];
 
-
     public function equipment(): BelongsTo
     {
         return $this->belongsTo('App\Equipment');

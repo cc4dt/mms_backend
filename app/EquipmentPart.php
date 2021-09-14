@@ -13,7 +13,7 @@ class EquipmentPart extends Model
         'name',
     ];
 
-    public function subParts(): HasMany
+    public function sub_parts(): HasMany
     {   
         return $this->hasMany('App\EquipmentSubPart');
     }

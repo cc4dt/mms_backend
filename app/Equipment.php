@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Equipment extends Model
 {
@@ -20,6 +21,11 @@ class Equipment extends Model
     public function breakdowns(): HasMany
     {
         return $this->hasMany('App\Breakdown');
+    }
+
+    public function attributes(): BelongsToMany
+    {
+        return $this->belongsToMany('App\Attribute');
     }
 
     public function getNameAttribute($value)

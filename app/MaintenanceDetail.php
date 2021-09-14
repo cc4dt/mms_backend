@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MaintenanceDetail extends Model
 {
-    public function equipmentSubPart(): BelongsTo
+    public function equipment_sub_part(): BelongsTo
     {
         return $this->belongsTo('App\EquipmentSubPart');
     }

@@ -8,7 +8,7 @@ scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date
 scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
 
 type Query {
-    me: User! @auth
+    me: User @auth
 
     users: [User!]! @paginate(defaultCount: 10) # @all
     user(id: ID! @eq): User @find
@@ -22,11 +22,10 @@ type Query {
         @field(resolver: "MasterQuery@ticketPriorities")
 }
 
-type Subscription {
-  newTicketOpened(author: ID): Ticket!
-}
-
 extend type Query @guard {
+    masterEquipment: [MasterEquipment!] @all
+    
+    equipmentParts: [EquipmentPart!] @all
     dashboard: Dashboard! @field(resolver: "DashQuery")
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
@@ -34,17 +33,17 @@ extend type Query @guard {
     ticket(id: ID! @eq): Ticket @find
 
     states: [State!]! @paginate(defaultCount: 10)
-    equipments: [Equipment!]! @paginate(defaultCount: 10)
+    equipment: [Equipment!]! @paginate(defaultCount: 10)
 }
 
-type SLA implements CountPercentage {
+type SLA {
     key: String!
     name: String!
     count: Int!
     percentage: Float!
 }
 
-type StatusReported implements CountPercentage {
+type StatusReported {
     key: String!
     name: String!
     count: Int!
@@ -69,56 +68,6 @@ type Dashboard {
     topReportedStation: [TopReportedStation!]!
     sla: [SLA!]!
     statusReported: [StatusReported!]!
-}
-
-type Mutation {
-    login(input: LoginInput!): Login
-        @field(resolver: "AuthMutator@login")
-        
-    changePassword(old_password: String!, new_password: String!, confirm_password: String!): Boolean!
-        @guard
-        @field(resolver: "AuthMutator@changePassword")
-        
-    notificationsAsRead: Boolean!
-        @guard
-        @field(resolver: "NotificationsMutator@asRead")
-
-    openTicket(input: OpenTicketInput!): Ticket
-        @guard
-        @field(resolver: "TicketMutator@open")
-
-    assignTicket(id: ID!, input: AssignTicketInput!): Ticket
-        @guard
-        @field(resolver: "TicketMutator@assign")
-}
-
-input LoginInput {
-    email: String!
-    password: String!
-    fcmToken: String!
-    deviceName: String! 
-    deviceType: String!
-}
-
-input OpenTicketInput {
-    station_id: ID!
-    breakdown_id: ID!
-    open_description: String!
-}
-
-input AssignTicketInput {
-    teamleader_id: ID!
-    type: String!
-    trade: String!
-    priority: String!
-    work_description: String!
-}
-
-type Login {
-    uid: ID
-    tokenType: String
-    token: String
-    deviceName: String
 }
 
 type User {
@@ -155,10 +104,58 @@ type Ticket {
     work_description: String
     status: ConstField!
     teamleader: User
+    maintenance_processes: [MaintenanceProcess!]
     created_by: User
     updated_by: User
     created_at: DateTime
     updated_at: DateTime
+}
+
+type MaintenanceProcess {
+    id: ID!
+    equipment: MasterEquipment
+    equipment_part: EquipmentPart!
+    details: [MaintenanceDetail!]
+}
+
+type MasterEquipment {
+    id: ID!
+    equipment: Equipment!
+    station: Station!
+    serial: String
+    details: [MasterDetail!]
+}
+
+type MasterDetail {
+    id: ID!
+    attribute: Attribute!
+    value: String!
+}
+
+type EquipmentPart {
+    id: ID!
+    name: String!
+    equipment: Equipment!
+    sub_parts: [EquipmentSubPart!]
+    attributes: [Attribute!]
+}
+
+type Attribute {
+    id: ID!
+    name: String!
+    type: ConstField!
+}
+
+type EquipmentSubPart {
+    id: ID!
+    name: String!
+}
+
+type MaintenanceDetail {
+    id: ID!
+    equipment_sub_part: EquipmentSubPart
+    attribute: Attribute!
+    value: String!
 }
 
 type State {
@@ -177,6 +174,7 @@ type Equipment {
     id: ID!
     name: String!
     breakdowns: [Breakdown!]!
+    attributes: [Attribute!]
 }
 
 type Breakdown {
@@ -184,3 +182,79 @@ type Breakdown {
     name: String!
     equipment: Equipment!
 }
+
+#########################################################
+
+
+type Mutation {
+    login(input: LoginInput!): Login
+        @field(resolver: "AuthMutator@login")
+        
+    changePassword(old_password: String!, new_password: String!, confirm_password: String!): Boolean!
+        @guard
+        @field(resolver: "AuthMutator@changePassword")
+        
+    notificationsAsRead: Boolean!
+        @guard
+        @field(resolver: "NotificationsMutator@asRead")
+
+    openTicket(input: OpenTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@open")
+
+    assignTicket(id: ID!, input: AssignTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@assign")
+
+    closeTicket(id: ID!, input: CloseTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@close")
+}
+
+input LoginInput {
+    email: String!
+    password: String!
+    fcmToken: String!
+    deviceName: String! 
+    deviceType: String!
+}
+
+input OpenTicketInput {
+    station_id: ID!
+    breakdown_id: ID!
+    open_description: String!
+}
+
+input AssignTicketInput {
+    teamleader_id: ID!
+    type: String!
+    trade: String!
+    priority: String!
+    work_description: String!
+}
+
+input CloseTicketInput {
+    equipment_id: ID!
+    equipment_part_id: ID!
+    status: String!
+    details: [DetailTicketInput!]
+}
+
+input DetailTicketInput {
+    equipment_sub_part_id: ID!
+    attribute_id: ID!
+    value: String!
+}
+
+type Login {
+    uid: ID
+    tokenType: String
+    token: String
+    deviceName: String
+}
+
+#################################################
+
+# type Subscription {
+#   newTicketOpened(author: ID): Ticket!
+# }
