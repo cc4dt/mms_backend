@@ -20,8 +20,8 @@ class CreateCustomerTable extends Migration
             $table->string('human_format')->nullable();
             $table->integer('workscope')->default('0');
             $table->string('total_price')->default('0.00');
-            $table->string('No')->nullable();
-            $table->integer('JobID')->default('0');
+            $table->string('no')->nullable();
+            $table->integer('job_id')->default('0');
             $table->timestamps();
         });
     }

@@ -20,7 +20,6 @@ type Query {
     ticketTrades: [ConstField!]! @field(resolver: "MasterQuery@ticketTrades")
     ticketPriorities: [ConstField!]!
         @field(resolver: "MasterQuery@ticketPriorities")
-    dashboard: Dashboard! @field(resolver: "DashQuery")
 }
 
 type Subscription {
@@ -28,6 +27,7 @@ type Subscription {
 }
 
 extend type Query @guard {
+    dashboard: Dashboard! @field(resolver: "DashQuery")
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
     tickets: [Ticket!]! @paginate(defaultCount: 10)
@@ -126,16 +126,18 @@ type User {
     name: String!
     email: String!
     level: ConstField!
-    notifications: [Notification!]!
+    notifications: [Notification!]!  @morphMany(type: PAGINATOR)
     created_at: DateTime
     updated_at: DateTime
 }
+
 type Notification {
     id: ID!
     type: String!
     data: JSON
     read_at: DateTime
 }
+
 type ConstField {
     key: String
     value: String
@@ -182,19 +184,3 @@ type Breakdown {
     name: String!
     equipment: Equipment!
 }
-
-# type UserPaginator {
-#   paginatorInfo: PaginatorInfo!
-#   data: [User!]!
-# }
-
-# type PaginatorInfo {
-#   count: Int!
-#   currentPage: Int!
-#   firstItem: Int
-#   hasMorePages: Boolean!
-#   lastItem: Int
-#   lastPage: Int!
-#   perPage: Int!
-#   total: Int!
-# }

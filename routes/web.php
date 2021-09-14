@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Collection;
 use App\User;
+use App\Ticket;
+use App\EquipmentPart;
+use App\MaintenanceProcess;
+use App\MasterEquipment;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,6 +27,24 @@ Route::get('/login', function () {
 });
 
 Route::get('/test', function () {
+    // Ticket::first()->close([
+    //     "equipment_id" => 1,
+    //     "equipment_part_id" => 1,
+    //     "details" => [
+    //         [
+    //             "equipment_sub_part_id" => 1,
+    //             "attribute_id" => 1,
+    //             "value" => "true",
+    //         ]
+    //     ]
+    // ]);
+    // print_r(Ticket::first());
+    // print_r(EquipmentPart::first());
+    // print_r(EquipmentPart::first()->subParts);
+    // print_r(MasterEquipment::first());
+    // print_r(MasterEquipment::first()->details);
+    // print_r(Ticket::first()->maintenance_processes);
+    // print_r(Ticket::first()->maintenance_processes[0]->details);
     $user = User::find(3);
     print_r($user->notifications->first()->data);
     var_dump($user->notifications->first()->data);

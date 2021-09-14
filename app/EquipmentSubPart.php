@@ -3,25 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Equipment extends Model
+class EquipmentSubPart extends Model
 {
 
     protected $appends = [
         'name',
     ];
-
-    public function parts(): HasMany
-    {   
-        return $this->hasMany('App\EquipmentPart');
-    }
-
-    public function breakdowns(): HasMany
-    {
-        return $this->hasMany('App\Breakdown');
-    }
-
+    
     public function getNameAttribute($value)
     {
         return $this->{'name_' . app()->getlocale()};

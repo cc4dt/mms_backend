@@ -32,6 +32,8 @@ class Ticket extends Model
     ];
 
     protected $appends = [
+        'state',
+        'equipment',
         'status',
         'type',
         'trade',
@@ -137,10 +139,26 @@ class Ticket extends Model
         return $this->belongsTo('App\Station');
     }
 
-
     public function breakdown(): BelongsTo
     {
         return $this->belongsTo('App\Breakdown');
+    }
+
+    public function maintenance_processes(): HasMany
+    {
+        return $this->hasMany('App\MaintenanceProcess');
+    }
+
+    public function getStateAttribute()
+    {
+        if ($this->station)
+            return $this->station->state;
+    }
+
+    public function getEquipmentAttribute()
+    {
+        if ($this->breakdown)
+            return $this->breakdown->equipment;
     }
 
     public function getTypeAttribute()
@@ -218,12 +236,12 @@ class Ticket extends Model
         $input['status'] = 'opened';
         $input['created_by_id'] = Auth::id();
         $input['updated_by_id'] = Auth::id();
-        // Auth::user()->notify(new TicketOpened);
         $ticket = Ticket::create($input);
-        Notification::send(User::supervisors(), new TicketOpened($ticket));
-        return $ticket;
-    }
-    
+        if($ticket) {
+            Notification::send(User::supervisors(), new TicketOpened($ticket));
+            return $ticket;
+        }
+    }    
 
     public function assign($input)
     {
@@ -234,8 +252,28 @@ class Ticket extends Model
             $this->teamleader->notify(new TicketAssigned($this));
             // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
             return $this;
-        } else {
-            return null;
+        }
+    }
+
+    public function close($input)
+    {
+        $this->updated_by_id = Auth::id();
+        $this->status ='closed';
+        $this->save();
+        $process = new MaintenanceProcess();
+        $process->ticket_id = $this->id;
+        $process->equipment_id = $input['equipment_id'];
+        $process->equipment_part_id = $input['equipment_part_id'];
+        if ($process->save()) {
+            foreach ($input['details'] as $item) {
+                $detail = new MaintenanceDetail();
+                $detail->maintenance_process_id = $process->id;
+                $detail->equipment_sub_part_id = $item['equipment_sub_part_id'];
+                $detail->attribute_id = $item['attribute_id'];
+                $detail->value = $item['value'];
+                $detail->save();
+            }
+            return $this;
         }
     }
 
