@@ -42,7 +42,7 @@
 </head>
 <body class="hold-transition login-page">
 
-  <div class="col-md-4">
+  <div class="col-md-3">
 <div class="card card-info">
   <div class="card-header">
     <a href="/home"><b>Login </b></a>

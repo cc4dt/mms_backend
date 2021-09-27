@@ -18,10 +18,21 @@ class Attribute extends Model
         3 => 'bool',
     ];
 
+    static public function constList($list)
+    {
+        $items = array();
+        foreach ($list as $key => $value) {
+            $items[] = (object) [
+                "key" => $value,
+                "value" => __('constants.'.$value)
+            ];
+        }
+        return $items;
+    }
 
     static public function types()
     {
-        return Ticket::constList(Ticket::TYPES);
+        return Attribute::constList(Attribute::TYPES);
     }
 
     public function getNameAttribute($value)

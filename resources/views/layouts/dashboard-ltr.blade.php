@@ -171,7 +171,7 @@ var modal=$(this)
 </script>
 
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini sidebar-collapse">
 
 <div class="wrapper">
   <!-- Navbar -->
@@ -181,7 +181,7 @@ var modal=$(this)
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>      </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="{{'jj'}}" class="nav-link">Home</a>      </li>
+        <a href="" class="nav-link">Home</a>      </li>
       <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>      </li>
     </ul>
@@ -207,7 +207,7 @@ var modal=$(this)
       <li class="nav-item dropdown">
 
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fa fa-users"></i>
+          <i class="fa fa-user"></i>
           <span class="badge badge-danger navbar-badge"></span>        </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <a href="#" class="dropdown-item">
@@ -248,75 +248,115 @@ var modal=$(this)
 
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="fa fa-comments"></i>
-          <span class="badge badge-danger navbar-badge">3</span>        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <a href="#" class="dropdown-item">
+          <span class="badge badge-danger navbar-badge">
+          @if(Auth::user()->level_id==1)@endif
+          @if(Auth::user()->level_id==2) {{ \App\Ticket::count() }} @endif
+          @if(Auth::user()->level_id==3) {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }} @endif
+          @if(Auth::user()->level_id==4) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+          @if(Auth::user()->level_id==5) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+        </span>        </a>
+         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+         
+             
+        @for($i=1;$i<=9;$i++)  
+              <a href="#" class="dropdown-item">
             <!-- Message Start -->
             <div class="media">
-              <img src="{{ asset('dist/img/user1-128x128.jpg')}}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-              <div class="media-body">
+                <div class="media-body">
                 <h3 class="dropdown-item-title">
-                  Brad Diesel
-                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>                </h3>
-                <p class="text-sm">Call me whenever you can...</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
+                <span class="float-right text-sm text-muted">
+
+          @if(Auth::user()->level_id==1)
+          
+          @endif
+          @if(Auth::user()->level_id==2) 
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }} : Tickets 
+           @endif
+          @if(Auth::user()->level_id==3) 
+          {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} : Tickets 
+          @endif
+          @if(Auth::user()->level_id==4) 
+          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} : Tickets 
+          @endif
+          @if(Auth::user()->level_id==5) 
+          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} : Tickets 
+          @endif
+                  
+            </span>                </h3>
+                <p class="text-sm">{{ \App\TicketStatus::find($i)->name }}</p>
+            </div>
             </div>
             <!-- Message End -->
           </a>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="{{ asset('dist/img/user8-128x128.jpg')}}" alt="User Avatar" class="img-size-50 img-circle mr-3">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  John Pierce
-                  <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>                </h3>
-                <p class="text-sm">I got your message bro</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="{{ asset('dist/img/user3-128x128.jpg')}}" alt="User Avatar" class="img-size-50 img-circle mr-3">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  Nora Silvester
-                  <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>                </h3>
-                <p class="text-sm">The subject goes here</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>        </div>
+          
+          @endfor
+
+
+
+
+
+        
+          <a href="#" class="dropdown-item dropdown-footer">See All</a>        </div>
       </li>
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="fa fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>        </a>
+          <span class="badge badge-warning navbar-badge">
+           
+          @if(Auth::user()->level_id==1)
+          
+          @endif
+          @if(Auth::user()->level_id==2) 
+          {{ \App\Ticket::count() }}
+           @endif
+          @if(Auth::user()->level_id==3) 
+          {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+          @endif
+          @if(Auth::user()->level_id==4) 
+          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          @endif
+          @if(Auth::user()->level_id==5) 
+          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          @endif
+          
+          </span>        </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">15 Notifications</span>
+          <span class="dropdown-item dropdown-header">
+            
+         
+
+          @if(Auth::user()->level_id==1)
+          
+          @endif
+          @if(Auth::user()->level_id==2) 
+          {{ \App\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} New Tickets
+           @endif
+          @if(Auth::user()->level_id==3) 
+          {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} New Tickets
+          @endif
+          @if(Auth::user()->level_id==4) 
+          {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }} New Tickets
+          @endif
+          @if(Auth::user()->level_id==5) 
+          {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }} New Tickets
+          @endif
+        
+        </span>
           <div class="dropdown-divider"></div>
+        
+          @if(isset($shownew))
+ @foreach($shownew as $data)
+
+
           <a href="#" class="dropdown-item">
-            <i class="fas fa-envelope mr-2"></i> 4 new messages
-            <span class="float-right text-muted text-sm">3 mins</span>          </a>
+            <i class="fas fa-file mr-2"></i>  {{$data->station_en ?? ''}}
+            <span class="float-right text-muted text-sm">{{ $show->breakdown_en ?? '' }}</span>          </a>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> 8 friend requests
-            <span class="float-right text-muted text-sm">12 hours</span>          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> 3 new reports
-            <span class="float-right text-muted text-sm">2 days</span>          </a>
-          <div class="dropdown-divider"></div>
+          @endforeach
+ @endif
+
           <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>        </div>
       </li>
       <li class="nav-item">
@@ -329,7 +369,7 @@ var modal=$(this)
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="home" class="brand-link">
+    <a href="" class="brand-link">
       <img src="{{ asset('dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
       <span class="brand-text font-weight-light"><font color="black">.</font></span>
@@ -453,7 +493,7 @@ var modal=$(this)
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ route('Client.index') }}" class="nav-link">
+                <a href="" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Breakdowns</p>
                 </a>
@@ -462,7 +502,8 @@ var modal=$(this)
             </ul>
           </li>
 
-          
+            @if(Auth::user()->level_id==2) 
+
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-table"></i>
@@ -474,28 +515,21 @@ var modal=$(this)
             <ul class="nav nav-treeview">
              
 <li class="nav-item">
-                <a href="{{ route('Client.index') }}" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Tickets Archive</p>
-                </a>
-              </li>
+                <a href="
 
-              <li class="nav-item">
-                <a href="{{ route('Client.index') }}" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Tickets Reports</p>
-                </a>
-              </li>
-              
 
-              
-              <li class="nav-item">
-                <a href="{{ route('Client.index') }}" class="nav-link">
+     
+          @if(Auth::user()->level_id==2) {{ route('Report.index') }} @endif
+             
+        
+
+
+" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Items Reports</p>
+                  <p>Breakdown Tickets</p>
                 </a>
               </li>
-              
+              @endif
             </ul>
           </li>
           

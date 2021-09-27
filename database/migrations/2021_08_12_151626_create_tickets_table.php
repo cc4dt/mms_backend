@@ -17,17 +17,24 @@ class CreateTicketsTable extends Migration
             $table->id();
             $table->string('number');
             //Fill By Client
-            $table->foreignId('station_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('breakdown_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('state_id')->constrained()->onDelete('cascade');
+            $table->foreignId('station_id')->constrained()->onDelete('cascade');
+            $table->foreignId('equipment_id')->constrained()->onDelete('cascade');
+            $table->foreignId('breakdown_id')->constrained()->onDelete('cascade');
             $table->text('open_description')->nullable();
             //Fill By Supervisor
             $table->foreignId('teamleader_id')->nullable()->constrained("users")->onDelete('cascade');
-            $table->integer("type_id")->nullable();
-            $table->integer('trade_id')->nullable();
-            $table->integer('priority_id')->nullable();
+            // $table->integer("type_id")->nullable();
+            $table->foreignId('type_id')->nullable()->constrained("ticket_types")->onDelete('cascade');
+            // $table->integer('trade_id')->nullable();
+            $table->foreignId('trade_id')->nullable()->constrained("ticket_trades")->onDelete('cascade');
+            // $table->integer('priority_id')->nullable();
+            $table->foreignId('priority_id')->nullable()->constrained("ticket_priorities")->onDelete('cascade');
             $table->text('work_description')->nullable();
 
-            $table->integer('status_id')->constrained("ticket_status")->nullable();
+            // $table->integer('status_id')->constrained("ticket_status");
+            $table->foreignId('status_id')->constrained("ticket_statuses")->onDelete('cascade');
+
             $table->foreignId('created_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->foreignId('updated_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->timestamps();

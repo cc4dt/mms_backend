@@ -13,9 +13,9 @@ class Equipment extends Model
         'name',
     ];
 
-    public function parts(): HasMany
+    public function parts(): BelongsToMany
     {   
-        return $this->hasMany('App\EquipmentPart');
+        return $this->belongsToMany('App\Part');
     }
 
     public function breakdowns(): HasMany

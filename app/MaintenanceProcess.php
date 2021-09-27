@@ -15,7 +15,7 @@ class MaintenanceProcess extends Model
 
     public function equipment_part(): BelongsTo
     {
-        return $this->belongsTo('App\EquipmentPart');
+        return $this->belongsTo('App\Part');
     }
 
     public function details(): HasMany

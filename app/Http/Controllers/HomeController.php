@@ -1,10 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Routing\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-//use Auth;
+use Redirect;
+use Validator;
+use Mail;
+use DB;
+use App\Breakdown;
+use App\Equipment;
+use App\Station;
+use App\Company;
+use App\Ticket;
+use App\State;
+use App\User;
+
 class HomeController extends Controller
 {
     /**
@@ -25,27 +36,163 @@ class HomeController extends Controller
     public function index()
     {
 
-         // echo Auth::user()->level;
+       //   echo Auth::user()->level_id;
 
        // return view('Admin');
 
       
+         if(Auth::user()->level_id==1)
+        {
+            return redirect()->action('AdminController@index');
+        }
+
+       
+         if(Auth::user()->level_id==2)
+        {
+            $arr['showdata'] = DB::table( 'tickets' )
+            ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+            ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+            ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+            ->select( 'tickets.*', 
+                'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+                'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+                'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+                      ->orderBy( 'tickets.id','DESC')
+            ->get();
+        $arr2['statedata'] = State::all();
+        $arr3['equipmentdata'] = Equipment::all();
       
-        if(Auth::user()->level==1)
-        {
-            return view('Admin');
+        $arr4['shownew'] = DB::table( 'tickets' )
+        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+        ->select( 'tickets.*', 
+            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+        ->where('tickets.status_id',1)
+        ->orderBy( 'tickets.id','DESC')
+        ->limit(10)
+        ->get();
+        $arr7['showteamleader'] = DB::table( 'users' )
+        ->select( 'users.*')
+        ->where('users.level_id',3)
+        ->orderBy( 'users.name')
+        ->get();
+    
+    
+           return view('Dashboard')->with($arr)->with($arr2)->with($arr3)->with($arr4)->with($arr7);
+    
+            
+          
+
+          
         }
-         if(Auth::user()->level==2)
+         if(Auth::user()->level_id==3)
         {
-            return view('Supervisor');
+                 
+            $arr['showdata'] = DB::table( 'tickets' )
+        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+        ->select( 'tickets.*', 
+            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+        ->where('tickets.teamleader_id',Auth::user()->id)
+        ->orderBy( 'tickets.id','DESC')
+        ->get();
+    $arr2['statedata'] = State::all();
+    $arr3['equipmentdata'] = Equipment::all();
+  
+    $arr4['shownew'] = DB::table( 'tickets' )
+    ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+    ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+    ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+    ->select( 'tickets.*', 
+        'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+        'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+        'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+    ->where('tickets.status_id',6)
+    ->where('tickets.teamleader_id',Auth::user()->id)
+    ->orderBy( 'tickets.id','DESC')
+    ->limit(10)
+    ->get();
+    $arr7['showteamleader'] = DB::table( 'users' )
+    ->select( 'users.*')
+    ->where('users.level_id',3)
+    ->orderBy( 'users.name')
+    ->get();
+  
+       return view('Dashboard')->with($arr)->with($arr2)->with($arr3)->with($arr4)->with($arr7);
+
         }
-         if(Auth::user()->level==3)
-        {
-            return view('Teamleader');
+         if(Auth::user()->level_id==4)
+        { 
+          //  return redirect()->action('DealerController@index');
+      
+        $arr['showdata'] = DB::table( 'tickets' )
+        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+        ->select( 'tickets.*', 
+            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+        ->where('tickets.created_by_id',Auth::user()->id)
+        ->orderBy( 'tickets.id','DESC')
+        ->get();
+       $arr2['statedata'] = State::all();
+       $arr3['equipmentdata'] = Equipment::all();
+       $arr4['shownew'] = DB::table( 'tickets' )
+       ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+       ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+       ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+       ->select( 'tickets.*', 
+           'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+           'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+           'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+       ->where('tickets.status_id',1)
+       ->where('tickets.created_by_id',Auth::user()->id)
+       ->orderBy( 'tickets.id','DESC')
+       ->limit(10)
+       ->get();
+       return view('Dashboard')->with($arr)->with($arr2)->with($arr3)->with($arr4);
+    
+
         }
-         if(Auth::user()->level==5)
+         if(Auth::user()->level_id==5)
         {
-            return view('Client');
+           
+           // return redirect()->action('ClientController@index');
+           $arr['showdata'] = DB::table( 'tickets' )
+           ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+           ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+           ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+           ->select( 'tickets.*', 
+               'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+               'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+               'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+           ->where('tickets.created_by_id',Auth::user()->id)
+           ->orderBy( 'tickets.id','DESC')
+           ->get();
+          $arr2['statedata'] = State::all();
+          $arr3['equipmentdata'] = Equipment::all();
+          $arr4['shownew'] = DB::table( 'tickets' )
+          ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+          ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+          ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+          ->select( 'tickets.*', 
+              'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+              'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+              'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+          ->where('tickets.status_id',1)
+          ->where('tickets.created_by_id',Auth::user()->id)
+          ->orderBy( 'tickets.id','DESC')
+          ->limit(10)
+          ->get();
+
+          return view('Dashboard')->with($arr)->with($arr2)->with($arr3)->with($arr4);
         }
        
     }

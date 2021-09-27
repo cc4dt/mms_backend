@@ -61,7 +61,12 @@ class AuthMutator
 
         $token = $user->createToken($input->deviceName)->plainTextToken;
 
-        return (object) ["uid" => $user->id, "tokenType" => "Bearer", "token" => $token, "deviceName" => $input->deviceName];
+        return (object) [
+            "tokenType" => "Bearer", 
+            "token" => $token, 
+            "deviceName" => $input->deviceName,
+            "me" => $user
+        ];
     }
     
     public function changePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)

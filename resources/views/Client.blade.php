@@ -52,7 +52,7 @@
 
 <table>
 <tr>
-<td> <button type="button" class="btn   btn-primary  " data-toggle="modal" data-target="#modal-save000">
+<td> <button type="button" class="btn   btn-primary  " data-toggle="modal" data-target="#modal-save">
               Add New
             </button></td>
 
@@ -67,111 +67,115 @@
                 <thead>
                     <tr>
                         <th>Ticket No</th>
+                        <th>Status </th>
+                        <th>State</th>
                         <th>Station</th>
                         <th>Equipment</th>
                         <th>Breakdown</th>
-                         <th>Recieved Time</th>
-                          <th>SLA</th>
-                        <th>Time Of Closed By Contractor </th>
-                        <th>Status </th>
-                        <th  width="20%">Operations</th>
+                        <th>Recieved Time</th>
+                        <th>Description</th>
+                        <th>Operations</th>
                     </tr>
                 </thead>
                 <tbody>
-@if(isset($showdata))
+                    @if(isset($showdata))
                     @foreach($showdata as $show)
                     <tr>
-                        <th> {{ $show->ticketno ?? '' }}</th>
-                        <th>{{ $show->name ?? '' }}</th>
-                        <th>{{ $show->blockName ?? '' }}</th>
-                        <th>{{ $show->location ?? '' }}</th>
-                         <th>{{ $show->wellName ?? '' }}</th>
-                          <th>{{ $show->rig ?? '' }}</th>
-                         <th>{{ $show->run ?? '' }}#{{ $show->run2 ?? '' }}{{ $show->run3 ?? '' }}</th>
+                        <th>{{ $show->number ?? '' }}</th>
                         <th>
-                            
-                            {{$show->status_name ?? ''}}
-                           
-                           
 
-                        </th>
+                   
+                           
+                          
+                           @if($show->status_id==1)
+                           {{ 'opened' }}
+                             @endif
+                              @if($show->status_id==2)
+                           {{ 'closed' }}
+                             @endif
+                              @if($show->status_id==3)
+                           {{ 'cancelled' }}
+                             @endif
+                              @if($show->status_id==4)
+                           {{ 'waiting_for_spare_parts' }}
+                             @endif
+                              @if($show->status_id==5)
+                           {{ 'waiting_for_approval' }}
+                             @endif
+                              @if($show->status_id==6)
+                           {{ 'waiting_for_access' }}
+                             @endif
+                               @if($show->status_id==7)
+                           {{ 'transfer_to_job' }}
+                             @endif
+
+                            @if($show->status_id==8)
+                           {{ 'pending' }}
+                             @endif
+                           @if($show->status_id==9)
+                           {{ 'needs_approval_from_Client' }}
+                             @endif
+
+
+  
+                            </th>
+                        <th>Khartoum </th>
+                        <th>{{ $show->station_en ?? '' }}</th>
+                        <th>{{ $show->equipment_en ?? '' }}</th> 
+                        <th>{{ $show->breakdown_en ?? '' }}</th>      
+                        <th>{{ $show->created_at ?? '' }}</th>
+                        <th>{{ $show->open_description ?? '' }}</th>
+                        
 
                         
                       
-          <td > 
-          <table width="100%" border="0">
-          <tr>                 
-<td width="15%"> 
+          <th > 
+        
 
-     @if($show->status!=3 and $show->status!=5)    
+     @if($show->status_id==1)    
  <a href="{{asset(route('Client.edit',$show->id))}}"> <li class="fa fa-edit" ></li>
                            </a>
                            @endif
-</td>
-<td width="15%">
-
-   @if($show->status!=3 and $show->status!=5)    
-   <a href="{{asset('getdet/'. $show->id .'/'. $show->clientid)}}" style="text-decoration: none;" >
-                            <li  class="fa fa-sitemap" 
-                           
-
-                             style="color: rgb(186,95,90);">
-                              </li>
-                          </a>
-@endif
-</td>
-<td width="15%">
-  
-
-                           
-       
+      
+       {{" - "}}
 
                             <a href="{{asset(route('Client.show',$show->id))}}"> <li class="fa fa-eye" data-backdrop="static"
    data-keyboard="false" data-toggle="modal" data-target="#"  style="color: rgb(0,0,0);"></li>
                            </a>
 
-</td>
 
-<td width="15%">                      
-        @if($show->status==3 )    
 
-       <a href="{{ asset('Archive/'.$show->id)}}"> <li class="fa fa-folder-open" data-backdrop="static"
-   data-keyboard="false" data-toggle="modal" data-target="#"  style="color: rgb(251,100,0);"></li>
-                           </a>
-
-        @endif</td>
-<td width="15%">
   
- @if($show->status==1 or $show->status==4)
+ @if($show->status_id==1)
+
+ {{" - "}}
                               <a href="#"> <li class="fa fa-trash" style="color: rgb(255,0,0);" 
                              data-id="{{ $show->id ?? '' }}"
-                             data-name="{{ $show->ticketno ?? '' }}"
-                              data-toggle="modal" 
+                             data-name="{{ $show->number ?? '' }}"
+                             data-toggle="modal" 
                              data-target="#modal-delete2">
                                 </li>
                             </a>
                             @endif
  
 
-</td>
 
-<td width="25%">
-   @if($show->status!=3 and $show->status!=5 and Auth::user()->UserNo==1)    
+   @if($show->status_id==9)   
+
+   {{" - "}} 
     <a href="#"> <button  class="btn-success" 
                              data-id="{{ $show->id ?? '' }}"
-                             data-name="{{ $show->ticketno ?? '' }}"
+                             data-name="{{ $show->number ?? '' }}"
                               data-toggle="modal" 
                              data-target="#modal-action">
-                             Action
+                             Approval
                                </button>
                             </a>
 @endif
 
-</td>
-  </tr>
-</table>
+
        
- </td>
+ </th>
                         
                     </tr>
                     @endforeach
@@ -185,9 +189,10 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                         <th></th>
                         <th></th>
                         <th></th>
-                        <th></th>
+                        
                     </tr>
                 </tfoot>
             </table>
@@ -268,13 +273,14 @@
         <div class="modal-dialog modal-lg">
               <form method="POST" action="{{route('Client.store')}}">
                 @csrf
-                <input type="hidden" name="create_by" value="{{ Auth::user()->UserName ?? '' }}">
-                <input type="hidden" name="status" value="1">
+                <input type="hidden" name="created_by_id" value="{{ Auth::user()->id ?? '' }}">
+                <input type="hidden" name="created_at" value="<?php echo date('Y-m-d h:i:s') ?>">
+                <input type="hidden" name="status_id" value="1">
           <div class="modal-content">
             <div class="modal-header">
 
 
-              <h4 class="modal-title" style="border-color: #007bff">Create Service Ticket</h4>
+              <h4 class="modal-title" style="border-color: #007bff">Create Tickets</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -285,43 +291,6 @@
 <!-- ====================######################################========================== -->
 
 
- <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                            
-
-
-
-                            <div class="col-md-4">
-                                
-                                 <label >{{ __('Ticket Type') }}</label>
-<select id="Ticket_Type" name="Ticket_Type" class="select2bs4 form-control @error('Ticket_Type') is-invalid @enderror" style="width: 100%; height: 30;" data-vldtr="required" >
-    <option value="">-Select Once-</option>
-    @if(isset($tickettypedata))
- @foreach($tickettypedata as $data)
-<option value="{{$data->name ?? ''}}">{{$data->name ?? ''}}</option>
- @endforeach
-@endif
-</select>
-                           
-
-                                @error('Ticket_Type')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-
-<!-- ============================================== -->
-
-<!-- ============================================== -->
-
-                                <input id="datepicker3" data-vldtr="required" type="hidden" 
-                                    name="ticketdate" value="<?php echo date('yy-m-d'); ?>" >
-
-
-<!-- ============================================== -->                         
-                        </div>
 
 
 
@@ -330,20 +299,20 @@
 
   
 <!-- ============================================== -->                         
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 
-                                 <label >{{ __('Clients') }}</label>
-<select id="Clients" name="Clients" class="select2bs4 form-control @error('Clients') is-invalid @enderror" style="width: 100%; height: 30;" data-vldtr="required" >
-    <option value="">-Select Once-</option>
-     @if(isset($clientsdata))
- @foreach($clientsdata as $data)
-<option value="{{$data->id ?? ''}}">{{$data->name ?? ''}}</option>
+                                 <label >{{ __('State') }}</label>
+<select id="state_id" name="state_id" class="select2bs4 form-control @error('state_id') is-invalid @enderror" style="width: 100%; height: 30;" data-vldtr="required" >
+    <option value="">-Select-</option>
+     @if(isset($statedata))
+ @foreach($statedata as $data)
+<option value="{{$data->id ?? ''}}">{{$data->name_en ?? ''}}</option>
  @endforeach
  @endif
 </select>
                            
 
-                                @error('Clients')
+                                @error('state_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -352,15 +321,15 @@
 
 <!-- ============================================== -->
 
-                              <div class="col-md-4">
-                                 <label >{{ __('Field') }}</label>
+                              <div class="col-md-3">
+                                 <label >{{ __('Stations') }}</label>
 
-                              <select id="block" name="block" value="{{ old('block') }}" class="select2bs4 form-control @error('block') is-invalid @enderror" data-vldtr="required">
+                              <select id="station_id" name="station_id" value="{{ old('station_id') }}" class="select2bs4 form-control @error('station_id') is-invalid @enderror" data-vldtr="required">
     <option value="">-Select Once-</option>
     
 </select>
 
-                                @error('block')
+                                @error('station_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -369,305 +338,52 @@
 
 
 <!-- ============================================== -->
-                                <div class="col-md-4">
-                                 <label >{{ __('Location') }}</label>
+                                <div class="col-md-3">
+                                 <label >{{ __('Equipments') }}</label>
 
-                                <select id="location" name="location" class="select2bs4 form-control @error('location') is-invalid @enderror" data-vldtr="required">
+                                <select id="equipment_id" name="equipment_id" class="select2bs4 form-control @error('equipment_id') is-invalid @enderror" data-vldtr="required">
 <option value="">-Select Once-</option>
-
+  @if(isset($equipmentdata))
+ @foreach($equipmentdata as $data)
+<option value="{{$data->id ?? ''}}">{{$data->name_en ?? ''}}</option>
+ @endforeach
+ @endif
 </select>
 
-                                @error('location')
+                                @error('equipment_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                                 @enderror
                                </div>
 
-                         
-<!-- ============================================== -->
-                        </div>
+                          <div class="col-md-3">
+                                 <label >{{ __('Breakdowns') }}</label>
 
-<!-- ======================###########################################33======================== -->
-   <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                                 <div class="col-md-4">
-                                 <label >{{ __('Well') }}</label>
-
-                                <select id="well" name="well" class="select2bs4 form-control @error('well') is-invalid @enderror" data-vldtr="required">
+                                <select id="breakdown_id" name="breakdown_id" class="select2bs4 form-control @error('breakdown_id') is-invalid @enderror" data-vldtr="required">
     <option value="">-Select Once-</option>
  
 </select>
 
-                                @error('well')
+                                @error('breakdown_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                                 @enderror
                                </div>
-
-
-<!-- ============================================== -->
-
-                               <div class="col-md-4">
-                                 <label >{{ __('Rig') }}</label>
-
-                                <select id="RIG" name="RIG" class="select2bs4 form-control @error('RIG') is-invalid @enderror" data-vldtr="required">
-    <option value="">-Select Once-</option>
-    @if(isset($rigdata))
-@foreach($rigdata as $data)
-<option value="{{$data->name ?? ''}}">{{$data->name ?? ''}}</option>
- @endforeach
- @endif
-</select>
-
-                                @error('RIG')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-<!-- ============================================== -->
-                                <div class="col-md-2">
-                                 <label >{{ __('Run') }}</label>
-
-                                <select id="RUN" name="RUN" class="select2bs4 form-control @error('RUN') is-invalid @enderror" data-vldtr="required">
-    <option value="">-Select-</option>
-  <option value="N/A">N/A</option>
-    @if(isset($categorydata))
-@foreach($categorydata as $data)
-<option value="{{$data->service_category ?? ''}}">{{$data->service_category ?? ''}}</option>
- @endforeach
- @endif
-</select>
-
-
-                                @error('RUN')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-                               
-<!-- ============================================== -->
-
- <div class="col-md-1">
-                              <label > &nbsp;</label>  
-
-                                <select id="RUN2" name="RUN2" class="select2bs4 form-control @error('RUN2') is-invalid @enderror" data-vldtr="required">
-                                  <option value="">-</option>
-   <option value="N/A">N/A</option>
-    <option value="1">#1</option>
-      <option value="2">#2</option>
-        <option value="3">#3</option>
-          <option value="4">#4</option>
-            <option value="5">#5</option>
-              <option value="6">#6</option>
-                <option value="7">#7</option>
-                  <option value="8">#8</option>
-                    <option value="9">#9</option>
-                      <option value="10">#10</option>
-
-</select>
-
-                               
-                               </div>
-                                 <div class="col-md-1">
-                              <label > &nbsp;</label>  
-
-                                <select id="RUN3" name="RUN3" class="select2bs4 form-control @error('RUN3') is-invalid @enderror">
-                                
-       <option value="">-</option>
-       <option value="A">#A</option>
-       <option value="B">#B</option>
-       <option value="C">#C</option>
-       <option value="D">#D</option>
-           
-
-</select>
-
-                               
-                               </div>
-                               
 <!-- ============================================== -->
                         </div>
-
-<!-- ======================###########################################33======================== -->
-   <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                                <div class="col-md-4">
-                                 <label >{{ __('Arrive ') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker" data-vldtr="required" type="text" class="form-control @error('arraive_location') is-invalid @enderror"
-                                    name="arraive_location" value="{{ old('arraive_location') }}" autocomplete="arraive_location" autofocus  >
-</div>
-                                @error('arraive_location')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-<!-- ============================================== -->
-
-                              <div class="col-md-4">
-                                 <label >{{ __('Job Start') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker1" data-vldtr="required" type="text" class="form-control @error('startdate') is-invalid @enderror"
-                                    name="startdate" value="{{ old('startdate') }}" autocomplete="startdate" autofocus>
-</div>
-
-                            
-                                @error('startdate')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               
-                               </div>
-
-
-<!-- ============================================== -->
-                                <div class="col-md-4">
-                                 <label >{{ __('Job End ') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker2" data-vldtr="required" type="text" class="form-control @error('enddate') is-invalid @enderror"
-                                    name="enddate" value="{{ old('enddate') }}" autocomplete="enddate" autofocus>
-</div>
-                                @error('enddate')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-                               
-<!-- ============================================== -->
-                        </div>
-
-
-<!-- ====================######################################========================== -->
-
- <div class="form-group row">
-  
-  <!-- ============================================== -->                         
-                                <div class="col-md-6">
-                               <label >{{ __('Contract No ') }}</label>
-
-                          <select id="contract_no" name="contract_no" class=" select2bs4 form-control @error('contract_no') is-invalid @enderror" data-vldtr="required">
-                                  <option value="{{old('contract_no')}}">-Select-</option>
-                                  
-                                </select>
-
-                                @error('contract_no')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-
-
-
-                               <div class="col-md-6" style=>
-                                 <label >{{ __('Contract Name') }}</label>
-
-                               <select id="contract_name" name="contract_name" class=" select2bs4 form-control @error('contract_no') is-invalid @enderror" data-vldtr="required">
-                                  <option value="">-Select-</option>
-                                  
-                                </select>
-                                @error('contract_name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-</div>
-<div class="form-group row">
-
-<!-- ============================================== -->
-<!-- ============================================== -->                         
-                               
-
-
-<!-- ============================================== -->
-
-                            
-<!-- ============================================== -->                         
-                          
-
-<!-- ============================================== -->
-
-
-                        </div>
-
-
-<!-- ====================######################################========================== -->
-<div class="form-group row">
-  
-  <!-- ============================================== -->                         
-                                <div class="col-md-6">
-                               <label >{{ __(' HAM Supervisor  ') }}</label>
-
-                          <select id="Supervisor" name="Supervisor" class="select2bs4 form-control @error('Supervisor') is-invalid @enderror" data-vldtr="required">
-                             <option value="">-Select One-</option>
-                                 @if(isset($representativedata)) 
-                                 @foreach($representativedata as $repdata)
-                                 <option value="{{$repdata->name}}">{{$repdata->name}}</option>
-                                 @endforeach
-                                 @endif
-                                </select>
-
-                                @error('Supervisor')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-                                <div class="col-md-6">
-                               <label >{{ __('Clients Representative ') }}</label>
-
-                          <select id="Representative" name="Representative" class="select2bs4 form-control @error('Representative') is-invalid @enderror" data-vldtr="required">
-                                  <option value="{{old('Representative')}}">-Select One-</option>
-                                 
-                                </select>
-
-                                @error('Representative')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-</div>
-
-                       <!-- ====================######################################========================== -->
+<br>
 
  <div class="form-group row">
   
 <!-- ============================================== -->                         
                                 <div class="col-md-12">
-                                 <label >{{ __('Service Instructions') }}</label>
-<textarea class="textarea @error('service_desc') is-invalid @enderror" name="service_desc" id="service_desc"  style="width: 100%; height: 300px; font face="arial"-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" rows="5"></textarea>
+                                 <label >{{ __('Descriptions') }}</label>
+<textarea rows="2" class="form-control @error('open_description') is-invalid @enderror" name="open_description" id="open_description"  rows="5"></textarea>
                               
 
-                                @error('service_desc')
+                                @error('open_description')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -811,471 +527,138 @@
               <form method="POST" action="{{route('Client.update',$shupdate->id)}}">
                 @csrf
                  {{method_field('patch')}}
-                <input type="hidden" name="update_by" value="{{ Auth::user()->UserName ?? '' }}">
-                <input type="hidden" name="status" value="1">
+                <input type="hidden" name="number" value="{{$shupdate->number}}">
                 <input type="hidden" name="id" value="{{$shupdate->id}}">
-                <input type="hidden" name="ticketno" value="{{$shupdate->ticketno}}">
-                <input type="hidden" name="yearcounter" value="{{$shupdate->yearcounter}}">
+                <input type="hidden" name="updated_by_id" value="{{ Auth::user()->id ?? '' }}">
+                <input type="hidden" name="updated_at" value="<?php echo date('Y-m-d h:i:s') ?>">
+                <input type="hidden" name="status_id" value="1">
 
                 <div class="modal-content">
                 <div class="modal-header">
 
 
-              <h4 class="modal-title" style="border-color: #007bff">Edit Service Ticket</h4>
+              <h4 class="modal-title" style="border-color: #007bff">Edit Ticket</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-
-
-<!-- ====================######################################========================== -->
-
- <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                            
-
-
-
-                            <div class="col-md-4">
-                                
-                                 <label >{{ __('Ticket Type') }}</label>
-<select id="Ticket_Type" name="Ticket_Type" class="select2 form-control @error('Ticket_Type') is-invalid @enderror" style="width: 100%; height: 30;" data-vldtr="required" readonly="true">
-    
-     @if(isset($tickettypedata))
- @foreach($tickettypedata as $data)
- <?php if ($data->name==$shupdate->ticket_type) {?>
-<option value="{{$data->name ?? ''}}"  selected="true" >{{$data->name ?? ''}}</option>
-<?php } ?>
- @endforeach
-@endif
-</select>
-                           
-
-                                @error('Ticket_Type')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-
-<!-- ============================================== -->
-
-<!-- ============================================== -->
-
-                                <div class="col-md-4">
-                                 <label >{{ __('Ticket Date ') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker3" data-vldtr="required" type="text" class="form-control @error('ticketdate') is-invalid @enderror"
-                                    name="ticketdate" value="{{ $shupdate->ticketdate }}" autocomplete="ticketdate" readonly="true">
-</div>
-                                @error('ticketdate')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-<!-- ============================================== -->                         
-                        </div>
-
-
+      
 
 
             <div class="row">
 
   
 <!-- ============================================== -->                         
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 
-                                 <label >{{ __('Clients') }}</label>
-<select id="Clients" readonly="true" name="Clients" class="select2bs4 form-control @error('Clients') is-invalid @enderror" style="width: 100%; height: 30;" data-vldtr="required" >
-   
-    @if(isset($clientsdata))
- @foreach($clientsdata as $data)
- <?php if($shupdate->clientid==$data->id){?>
-<option value="{{$data->id ?? ''}}"  selected="true" >{{$data->name ?? ''}}</option>
-<?php }?>
+                                 <label >{{ __('State') }}</label>
+<select id="state_id" name="state_id" class="select2bs4 form-control @error('state_id') is-invalid @enderror" style="width: 100%; height: 30;" data-vldtr="required" >
+    <option value="">-Select-</option>
+     @if(isset($statedata))
+ @foreach($statedata as $data)
+<option value="{{$data->id ?? ''}}" <?php if($data->id==$shupdate->state_id){ ?> selected="true" <?php } ?> >{{$data->name_en ?? ''}}</option>
  @endforeach
  @endif
 </select>
                            
 
-                                @error('Clients')
+                                @error('state_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                                 @enderror
                             </div>
 
-<!-- ============================================== -->
 
-                              <div class="col-md-4">
-                                 <label >{{ __('Field') }}</label>
+                              <div class="col-md-3">
+                                 <label >{{ __('Stations') }}</label>
 
-                              <select id="block" name="block" value="{{ old('block') }}" class="select2bs4 form-control @error('block') is-invalid @enderror" data-vldtr="required">
-   
-    @if(isset($blockdata))
- @foreach($blockdata as $data)
- @if($data->id==$shupdate->blockid)
-<option value="{{$data->id ?? ''}}">{{$data->blockName ?? ''}}</option>
-@endif
+                              <select id="station_id" name="station_id" value="{{ old('station_id') }}" class="select2bs4 form-control @error('station_id') is-invalid @enderror" data-vldtr="required">
+                              <option value="">-Select-</option>
+  @if(isset($stationdata))
+ @foreach($stationdata as $data)
+ <option value="{{$data->id ?? ''}}" <?php if($data->id==$shupdate->station_id){ ?> selected="true" <?php } ?> >
+ {{$data->name_en ?? ''}}
+ </option>
  @endforeach
  @endif
-</select>
-
-                                @error('block')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-<!-- ============================================== -->
-                                <div class="col-md-4">
-                                 <label >{{ __('Location') }}</label>
-
-                                <select id="location" name="location" class="select2bs4 form-control @error('location') is-invalid @enderror" data-vldtr="required">
-
- @if(isset($locationdata))
-@foreach($locationdata as $data)
-@if($data->id==$shupdate->locationid)
-<option value="{{$data->id ?? ''}}">{{$data->location ?? ''}}</option>
- @endif
- @endforeach
- @endif
-</select>
-
-                                @error('location')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-                         
-<!-- ============================================== -->
-                        </div>
-
-<!-- ======================###########################################33======================== -->
-   <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                                 <div class="col-md-4">
-                                 <label >{{ __('Well') }}</label>
-
-                                <select id="well" name="well" class="select2bs4 form-control @error('well') is-invalid @enderror" data-vldtr="required">
-   
-    @if(isset($welldata))
-@foreach($welldata as $data)
-@if($data->id==$shupdate->well)
-<option value="{{$data->id ?? ''}}">{{$data->wellName ?? ''}}</option>
- @endif
- @endforeach
- @endif
-</select>
-
-                                @error('well')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-<!-- ============================================== -->
-
-                               <div class="col-md-4">
-                                 <label >{{ __('Rig') }}</label>
-
-                                <select id="RIG" name="RIG" class="select2bs4 form-control @error('RIG') is-invalid @enderror" data-vldtr="required">
-   
-      @if(isset($rigdata))
-@foreach($rigdata as $data)
-<option value="{{$data->name ?? ''}}" <?php if($data->name==$shupdate->rig){?> selected="true" <?php }?> >{{$data->name ?? ''}}</option>
- 
- @endforeach
- @endif
-</select>
-
-                                @error('RIG')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-<!-- ============================================== -->
-                                <div class="col-md-2">
-                                 <label >{{ __('Run') }}</label>
-
-  <select id="RUN" name="RUN" class="select2bs4 form-control @error('RUN') is-invalid @enderror" data-vldtr="required">
-    <option value="N/A" <?php if ($shupdate->run=='N/A'){ ?> selected="true" <?php } ?>>N/A</option>
     
-       @if(isset($categorydata))
-@foreach($categorydata as $data)
+</select>
 
-<option value="{{$data->service_category ?? ''}}"   <?php if($data->service_category==$shupdate->run){?> selected="true" <?php }?>>{{$data->service_category ?? ''}}</option>
- 
+                                @error('station_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                               </div>
+
+
+<!-- ============================================== -->
+                                <div class="col-md-3">
+                                 <label >{{ __('Equipments') }}</label>
+
+                                <select id="equipment_id" name="equipment_id" class="select2bs4 form-control @error('equipment_id') is-invalid @enderror" data-vldtr="required">
+<option value="">-Select Once-</option>
+  @if(isset($equipmentdata))
+ @foreach($equipmentdata as $data)
+<option value="{{$data->id ?? ''}}"  <?php if($data->id==$shupdate->equipment_id){ ?> selected="true" <?php } ?> >{{$data->name_en ?? ''}}</option>
  @endforeach
  @endif
 </select>
-</select>
 
-                                @error('RUN')
+                                @error('equipment_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                                 @enderror
                                </div>
 
-                               
-<!-- ============================================== -->
+                          <div class="col-md-3">
+                                 <label >{{ __('Breakdowns') }}</label>
 
- <div class="col-md-1">
-                              <label > &nbsp;</label>  
+                                <select id="breakdown_id" name="breakdown_id" class="select2bs4 form-control @error('breakdown_id') is-invalid @enderror" data-vldtr="required">
+                              
 
-   <select id="RUN2" name="RUN2" class="select2bs4 form-control @error('RUN2') is-invalid @enderror" data-vldtr="required">
-  <option value="N/A" <?php if ($shupdate->run2=='N/A'){ ?> selected="true" <?php } ?>>N/A</option>
-<option value="1" <?php if($shupdate->run2==1){ ?> selected="true" <?php } ?>>#1</option>
-<option value="2" <?php if($shupdate->run2==2){ ?> selected="true" <?php } ?>>#2</option>
-<option value="3" <?php if($shupdate->run2==3){ ?> selected="true" <?php } ?>>#3</option>
-<option value="4" <?php if($shupdate->run2==4){ ?> selected="true" <?php } ?>>#4</option>
-<option value="5" <?php if($shupdate->run2==5){ ?> selected="true" <?php } ?>>#5</option>
-<option value="6" <?php if($shupdate->run2==6){ ?> selected="true" <?php } ?>>#6</option>
-<option value="7" <?php if($shupdate->run2==7){ ?> selected="true" <?php } ?>>#7</option>
-<option value="8" <?php if($shupdate->run2==8){ ?> selected="true" <?php } ?>>#8</option>
-<option value="9" <?php if($shupdate->run2==9){ ?> selected="true" <?php } ?>>#9</option>
-<option value="10" <?php if($shupdate->run2==10){ ?> selected="true" <?php } ?>>#10</option>
-
+                                <option value="">-Select-</option>
+  @if(isset($breakdowndata))
+ @foreach($breakdowndata as $data)
+ <option value="{{$data->id ?? ''}}" <?php if($data->id==$shupdate->breakdown_id){ ?> selected="true" <?php } ?> >
+ {{$data->name_en ?? ''}}
+ </option>
+ @endforeach
+ @endif
+ 
 </select>
 
-                               
+                                @error('breakdown_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                                </div>
-                               <div class="col-md-1">
-                              <label > &nbsp;</label>  
-
-                                  <select id="RUN3" name="RUN3" class="select2bs4 form-control @error('RUN3') is-invalid @enderror" >
-<option value="" <?php if($shupdate->run3==''){ ?> selected="true" <?php } ?>></option>
-<option value="A" <?php if($shupdate->run3=='A'){ ?> selected="true" <?php } ?>>#A</option>
-<option value="B" <?php if($shupdate->run3=='B'){ ?> selected="true" <?php } ?>>#B</option>
-<option value="C" <?php if($shupdate->run3=='C'){ ?> selected="true" <?php } ?>>#C</option>
-<option value="D" <?php if($shupdate->run3=='D'){ ?> selected="true" <?php } ?>>#D</option>
-
-</select>
-
-                               
-                               </div>
-                               
 <!-- ============================================== -->
                         </div>
-
-<!-- ======================###########################################33======================== -->
-   <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                                <div class="col-md-4">
-                                 <label >{{ __('Arrive ') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker4" data-vldtr="required" type="text" class="form-control @error('arraive_location') is-invalid @enderror"
-                                    name="arraive_location" value="{{ $shupdate->arraive_location }}" autocomplete="arraive_location" autofocus  >
-</div>
-                                @error('arraive_location')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-<!-- ============================================== -->
-
-                              <div class="col-md-4">
-                                 <label >{{ __('Job Start') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker5" data-vldtr="required" type="text" class="form-control @error('startdate') is-invalid @enderror"
-                                    name="startdate" value="{{ $shupdate->startdate }}" autocomplete="startdate" autofocus>
-</div>
-                                @error('startdate')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-<!-- ============================================== -->
-                                <div class="col-md-4">
-                                 <label >{{ __('Job End ') }}</label>
-<div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                    </div>
-                                <input id="datepicker6" data-vldtr="required" type="text" class="form-control @error('enddate') is-invalid @enderror"
-                                    name="enddate" value="{{ $shupdate->enddate }}" autocomplete="enddate" autofocus>
-</div>
-                                @error('enddate')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-                               
-<!-- ============================================== -->
-                        </div>
-
-
-<!-- ====================######################################========================== -->
+<br>
 
  <div class="form-group row">
   
 <!-- ============================================== -->                         
-                                <div class="col-md-6">
-                               <label >{{ __('Contract No ') }}</label>
+                                <div class="col-md-12">
+                                 <label >{{ __('Descriptions') }}</label>
+<textarea rows="5" class="form-control @error('open_description') is-invalid @enderror" name="open_description" id="open_description"  rows="5">
+{{$shupdate->open_description}}
+</textarea>
+                              
 
-                          <select id="contract_no" name="contract_no" class="form-control @error('contract_no') is-invalid @enderror" data-vldtr="required">
-                           <option value="{{ $shupdate->contract_no }}">{{ $shupdate->contractno }}</option>
-                                  
-                                </select>
-
-                                @error('contract_no')
+                                @error('open_description')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                                 @enderror
                                </div>
 
-
-
-                               <div class="col-md-6" style=>
-                                 <label >{{ __('Contract Name') }}</label>
-
-                               <select id="contract_name" name="contract_name" class=" select2bs4 form-control @error('contract_no') is-invalid @enderror" data-vldtr="required">
-                                  <option value="{{$shupdate->contract_name}}">{{$shupdate->contract_name}}</option>
-                                  
-                                </select>
-                                @error('contract_name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-</div>
-<div class="form-group row">
-<!-- ============================================== -->
-
-                            
-
-<div class="col-md-6">
-                               <label >{{ __(' HAM Supervisor  ') }}</label>
-
-                          <select id="Supervisor" name="Supervisor" class="select2bs4 form-control @error('Supervisor') is-invalid @enderror" data-vldtr="required">
-                            
-                                 @if(isset($representativedata)) 
-                                 @foreach($representativedata as $repdata)
-                                 <option value="{{$repdata->name}}" @if($repdata->name==$shupdate->Supervisor) selected="true" @endif>{{$repdata->name}}</option>
-                                 @endforeach
-                                 @endif
-                                </select>
-
-                                @error('Supervisor')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-                                <div class="col-md-6">
-
-
-                               <label >{{ __('Clients Representative ') }}</label>
-
-                          <select id="Representative" name="Representative" class="select2bs4 form-control @error('Representative') is-invalid @enderror" data-vldtr="required">
-                          @foreach($representativedata2 as $rep)
- <option value="{{$rep->name}}" @if($shupdate->Representative==$rep->name) selected="true" @endif>{{$rep->name}}</option>
-@endforeach
-                                 
-                                 
-                                </select>
-
-                                @error('Representative')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-
-
-
-
-
-
-
-
-
-<!-- ============================================== -->                         
                           
-
-<!-- ============================================== -->
-
-
-                        </div>
-
-
-<!-- ====================######################################========================== -->
-<!-- ====================######################################========================== -->
-
- <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                                <div class="col-md-12">
-                                 <label >{{ __('Service Instructions') }}</label>
-<textarea class="textarea @error('service_desc') is-invalid @enderror" name="service_desc" id="service_desc"  style="width: 100%; height: 300px; font face="arial"-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" rows="5">
-  
- {{ $shupdate->service_desc }}
-</textarea>
-                              
-
-                                @error('service_desc')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                               </div>
-</div>
-
-
-                                <div class="form-group row">
-  
-<!-- ============================================== -->                         
-                                <div class="col-md-12">
-                                 <label >{{ __('Notes') }}</label>
-<textarea class="textarea @error('Notes') is-invalid @enderror" name="Notes" id="Notes"  style="width: 100%; height: 300px; font face="arial"-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" rows="5">
-  
- {{ $shupdate->Notes }}
-</textarea>
-                              
-
-                             </div> 
-                              
-
-</div>
-<!-- ============================================== -->
-<!-- ====================######################################========================== -->
             </div>
             <!-- =======================modal body======================= -->
             <div class="modal-footer justify-content-between">
@@ -1814,7 +1197,7 @@ $sum3=$sum3+($data2->qty * $data2->price )-(($data2->qty * $data2->price )*($dat
 
 
       <div class="modal fade" id="modal-logout">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-sm">
           <div class="modal-content bg-danger">
             <div class="modal-header">
               <h4 class="modal-title">log out system</h4>
@@ -1916,124 +1299,26 @@ $sum3=$sum3+($data2->qty * $data2->price )-(($data2->qty * $data2->price )*($dat
 
 
  <script type="text/javascript">
-jQuery(document).ready(function ()
-    {
-            jQuery('select[name="Description"]').on('change',function(){
-               var SERV = jQuery(this).val();
-               if(SERV)
-               {
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/service2/' +SERV,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="UOM"]').empty();
-                        // $('select[name="UOM"]').append('<option value="">-Select Once-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="UOM"]').append('<option value="'+ value +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-
-
-
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/service3/' +SERV,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="Price"]').empty();
-                        // $('select[name="Price"]').append('<option value="">-Select Once-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="Price"]').append('<option value="'+ value +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-               }
-              
-            });
-    });
-
-
-
-
- jQuery(document).ready(function ()
-    {
-            jQuery('select[name="CAT"]').on('change',function(){
-               var CAT = jQuery(this).val();
-               var clientid = $('#ClientsID').val();
-               // var clientid = $('select[name="Clients22"]').val();
-               if(CAT)
-               {
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks2/service/'+CAT+'/'+clientid,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="Description"]').empty();
-                         $('select[name="Description"]').append('<option value="">-Select Once-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="Description"]').append('<option value="'+ key +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-
-
-               }
-              
-            });
-    });
 
 
 
     jQuery(document).ready(function ()
     {
-            jQuery('select[name="Clients"]').on('change',function(){
-               var clientid = jQuery(this).val();
-               if(clientid)
+            jQuery('select[name="state_id"]').on('change',function(){
+               var state = jQuery(this).val();
+               if(state)
                {
                   jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/blocks/' +clientid,
+                     url : '<?php echo $surl; ?>ajax_fetch_data/stations/' + state,
                      type : "GET",
                      dataType : "json",
                      success:function(data)
                      {
                         console.log(data);
-                        jQuery('select[name="block"]').empty();
-                         $('select[name="block"]').append('<option value="">-Select Once-</option>');
+                        jQuery('select[name="station_id"]').empty();
+                         $('select[name="station_id"]').append('<option value="">-Select Once-</option>');
                         jQuery.each(data, function(key,value){
-                           $('select[name="block"]').append('<option value="'+ key +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-               }
-              
-            });
-    });
-
- jQuery(document).ready(function ()
-    {
-            jQuery('select[name="Clients"]').on('change',function(){
-               var clientid = jQuery(this).val();
-               if(clientid)
-               {
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/contracts/' +clientid,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="contract_no"]').empty();
-                         $('select[name="contract_no"]').append('<option value="">-Select Once-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="contract_no"]').append('<option value="'+ key +'">'+ value +'</option>');
+                           $('select[name="station_id"]').append('<option value="'+ key +'">'+ value +'</option>');
                         });
                      }
                   });
@@ -2045,21 +1330,21 @@ jQuery(document).ready(function ()
 
     jQuery(document).ready(function ()
     {
-            jQuery('select[name="contract_no"]').on('change',function(){
-               var clientid = jQuery(this).val();
-               if(clientid)
+            jQuery('select[name="equipment_id"]').on('change',function(){
+               var equipment = jQuery(this).val();
+               if(equipment)
                {
                   jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/contracts2/' +clientid,
+                     url : '<?php echo $surl; ?>ajax_fetch_data/breakdowns/' + equipment,
                      type : "GET",
                      dataType : "json",
                      success:function(data)
                      {
                         console.log(data);
-                        jQuery('select[name="contract_name"]').empty();
-                        
+                        jQuery('select[name="breakdown_id"]').empty();
+                         $('select[name="breakdown_id"]').append('<option value="">-Select Once-</option>');
                         jQuery.each(data, function(key,value){
-                           $('select[name="contract_name"]').append('<option value="'+ value +'">'+ value +'</option>');
+                           $('select[name="breakdown_id"]').append('<option value="'+ key +'">'+ value +'</option>');
                         });
                      }
                   });
@@ -2068,90 +1353,7 @@ jQuery(document).ready(function ()
             });
     });
 
-
-    jQuery(document).ready(function ()
-    {
-            jQuery('select[name="Clients"]').on('change',function(){
-               var clientid = jQuery(this).val();
-               if(clientid)
-               {
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/representative/' +clientid,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="Representative"]').empty();
-                         $('select[name="Representative"]').append('<option value="">-Select One-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="Representative"]').append('<option value="'+ value +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-               }
-              
-            });
-    });
-
-
-
-
-
-     jQuery(document).ready(function ()
-    {
-            jQuery('select[name="block"]').on('change',function(){
-               var clientid = jQuery(this).val();
-               if(clientid)
-               {
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/locations/' +clientid,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="location"]').empty();
-                         $('select[name="location"]').append('<option value="">-Select Once-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="location"]').append('<option value="'+ key +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-               }
-               
-            });
-    });
-
-
-
-
-
-
-     jQuery(document).ready(function ()
-    {
-            jQuery('select[name="location"]').on('change',function(){
-               var clientid = jQuery(this).val();
-               if(clientid)
-               {
-                  jQuery.ajax({
-                     url : '<?php echo $surl; ?>ajax_getblocks/wells/' +clientid,
-                     type : "GET",
-                     dataType : "json",
-                     success:function(data)
-                     {
-                        console.log(data);
-                        jQuery('select[name="well"]').empty();
-                         $('select[name="well"]').append('<option value="">-Select Once-</option>');
-                        jQuery.each(data, function(key,value){
-                           $('select[name="well"]').append('<option value="'+ key +'">'+ value +'</option>');
-                        });
-                     }
-                  });
-               }
-               
-            });
-    });
+ 
     </script>
 
 <script>

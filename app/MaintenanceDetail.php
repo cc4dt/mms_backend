@@ -9,7 +9,7 @@ class MaintenanceDetail extends Model
 {
     public function equipment_sub_part(): BelongsTo
     {
-        return $this->belongsTo('App\EquipmentSubPart');
+        return $this->belongsTo('App\SubPart');
     }
 
     public function attribute(): BelongsTo

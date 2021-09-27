@@ -19,6 +19,7 @@ class CreateStationsTable extends Migration
             $table->string('name_ar');
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->foreignId('state_id')->constrained()->onDelete('cascade');
+            $table->integer('period');
             $table->timestamps();
         });
     }

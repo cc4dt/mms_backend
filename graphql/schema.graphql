@@ -2,7 +2,7 @@
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
-scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar DateTimeUtc @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTimeUtc")
 
 ""
 scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
@@ -15,17 +15,17 @@ type Query {
     usersById(ids: [ID!]!): [User!]! @field(resolver: "UserQuery@usersById")
 
     userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
-    ticketStatus: [ConstField!]! @field(resolver: "MasterQuery@ticketStatus")
-    ticketTypes: [ConstField!]! @field(resolver: "MasterQuery@ticketTypes")
-    ticketTrades: [ConstField!]! @field(resolver: "MasterQuery@ticketTrades")
-    ticketPriorities: [ConstField!]!
-        @field(resolver: "MasterQuery@ticketPriorities")
+    ticketStatus: [TicketStatus!]! @all
+    ticketTypes: [TicketType!]! @all
+    ticketTrades: [TicketTrade!]! @all
+    ticketPriorities: [TicketPriority!]! @all
 }
 
 extend type Query @guard {
-    masterEquipment: [MasterEquipment!] @all
-    
-    equipmentParts: [EquipmentPart!] @all
+    masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
+    equipmentParts(id: ID): [Part!] @field(resolver: "MasterQuery@equipmentParts")
+    equipmentPart(id: ID!): Part! @field(resolver: "MasterQuery@equipmentPart") #@find
+
     dashboard: Dashboard! @field(resolver: "DashQuery")
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
@@ -44,7 +44,7 @@ type SLA {
 }
 
 type StatusReported {
-    key: String!
+    id: ID!
     name: String!
     count: Int!
     percentage: Float!
@@ -76,15 +76,15 @@ type User {
     email: String!
     level: ConstField!
     notifications: [Notification!]!  @morphMany(type: PAGINATOR)
-    created_at: DateTime
-    updated_at: DateTime
+    created_at: DateTimeUtc
+    updated_at: DateTimeUtc
 }
 
 type Notification {
     id: ID!
     type: String!
     data: JSON
-    read_at: DateTime
+    read_at: DateTimeUtc
 }
 
 type ConstField {
@@ -92,29 +92,53 @@ type ConstField {
     value: String
 }
 
+type TicketType {
+    id: ID!
+    key: String!
+    name: String!
+}
+
+type TicketTrade {
+    id: ID!
+    key: String!
+    name: String!
+}
+
+type TicketPriority {
+    id: ID!
+    key: String!
+    name: String!
+}
+
+type TicketStatus {
+    id: ID!
+    key: String!
+    name: String!
+}
+
 type Ticket {
     id: ID!
     number: String!
     station: Station!
     breakdown: Breakdown!
-    open_description: String!
-    type: ConstField
-    trade: ConstField
-    priority: ConstField
+    open_description: String
+    type: TicketType
+    trade: TicketTrade
+    priority: TicketPriority
     work_description: String
-    status: ConstField!
+    status: TicketStatus!
     teamleader: User
     maintenance_processes: [MaintenanceProcess!]
     created_by: User
     updated_by: User
-    created_at: DateTime
-    updated_at: DateTime
+    created_at: DateTimeUtc
+    updated_at: DateTimeUtc
 }
 
 type MaintenanceProcess {
     id: ID!
     equipment: MasterEquipment
-    equipment_part: EquipmentPart!
+    equipment_part: Part!
     details: [MaintenanceDetail!]
 }
 
@@ -132,11 +156,11 @@ type MasterDetail {
     value: String!
 }
 
-type EquipmentPart {
+type Part {
     id: ID!
     name: String!
     equipment: Equipment!
-    sub_parts: [EquipmentSubPart!]
+    sub_parts: [SubPart!]
     attributes: [Attribute!]
 }
 
@@ -146,14 +170,14 @@ type Attribute {
     type: ConstField!
 }
 
-type EquipmentSubPart {
+type SubPart {
     id: ID!
     name: String!
 }
 
 type MaintenanceDetail {
     id: ID!
-    equipment_sub_part: EquipmentSubPart
+    equipment_sub_part: SubPart
     attribute: Attribute!
     value: String!
 }
@@ -220,37 +244,39 @@ input LoginInput {
 }
 
 input OpenTicketInput {
+    state_id: ID!
     station_id: ID!
+    equipment_id: ID!
     breakdown_id: ID!
-    open_description: String!
+    open_description: String
 }
 
 input AssignTicketInput {
     teamleader_id: ID!
-    type: String!
-    trade: String!
-    priority: String!
-    work_description: String!
+    type_id: ID!
+    trade_id: ID!
+    priority_id: ID!
+    work_description: String
 }
 
 input CloseTicketInput {
-    equipment_id: ID!
+    equipment_id: ID
     equipment_part_id: ID!
-    status: String!
+    status_id: ID
     details: [DetailTicketInput!]
 }
 
 input DetailTicketInput {
-    equipment_sub_part_id: ID!
+    equipment_sub_part_id: ID
     attribute_id: ID!
     value: String!
 }
 
 type Login {
-    uid: ID
-    tokenType: String
-    token: String
-    deviceName: String
+    tokenType: String!
+    token: String!
+    deviceName: String!
+    me: User!
 }
 
 #################################################

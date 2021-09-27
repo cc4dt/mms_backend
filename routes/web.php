@@ -51,11 +51,13 @@ Route::get('/test', function () {
     return $user->notifications->first()->data;
 });
 
+
 Auth::routes();
-Route::resource('Client', 'ClientController');
+Route::resource('/Client', 'ClientController');
+Route::resource('/Admin', 'AdminController');
+Route::resource('/Supervisor', 'SupervisorController');
+Route::resource('/Teamleader', 'TeamleaderController');
+Route::resource('/Report', 'ReportController');
+Route::resource('/Dealer', 'DealerController');
 Route::get('/home', 'HomeController@index')->name('Home');
-Route::get('home', 'HomeController@index')->name('Home');
-//Route::get('/Clients', 'ClientController@index')->name('Client');
-Route::get('/Supervisors', 'SupervisorController@index')->name('Supervisor');
-Route::get('/Teamleaders', 'TeamleaderController@index')->name('Teamleader');
-Route::get('/Admins', 'AdminController@index')->name('Admin');
+Route::get('ajax_fetch_data/{table}/{id}','ajax_data\FetchController@getdata');
