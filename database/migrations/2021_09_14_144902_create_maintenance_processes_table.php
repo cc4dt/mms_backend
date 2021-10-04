@@ -17,7 +17,7 @@ class CreateMaintenanceProcessesTable extends Migration
             $table->id();
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
             $table->foreignId('equipment_id')->nullable()->constrained('master_equipment')->onDelete('cascade');
-            $table->foreignId('equipment_part_id')->constrained('equipment_parts')->onDelete('cascade');
+            $table->foreignId('part_id')->constrained('parts')->onDelete('cascade');
             $table->timestamps();
         });
     }

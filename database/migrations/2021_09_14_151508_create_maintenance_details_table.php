@@ -15,9 +15,9 @@ class CreateMaintenanceDetailsTable extends Migration
     {
         Schema::create('maintenance_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('maintenance_process_id')->constrained()->onDelete('cascade');
-            $table->foreignId('equipment_sub_part_id')->nullable()->constrained('equipment_sub_parts')->onDelete('cascade');
-            $table->foreignId('attribute_id')->constrained()->onDelete('cascade');
+            $table->foreignId('process_id')->constrained("maintenance_processes")->onDelete('cascade');
+            $table->foreignId('sub_part_id')->nullable()->constrained('sub_parts')->onDelete('cascade');
+            $table->foreignId('procedure_id')->constrained("maintenance_procedures")->onDelete('cascade');
             $table->text('value');
             $table->timestamps();
         });

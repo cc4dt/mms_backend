@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAttributeEquipmentPartsTable extends Migration
+class CreateMaintenanceProcedurePart extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateAttributeEquipmentPartsTable extends Migration
      */
     public function up()
     {
-        Schema::create('attribute_equipment_parts', function (Blueprint $table) {
+        Schema::create('maintenance_procedure_part', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('equipment_part_id')->constrained('equipment_parts')->onDelete('cascade');
-            $table->foreignId('attribute_id')->constrained()->onDelete('cascade');
+            $table->foreignId('maintenance_procedure_id')->constrained()->onDelete('cascade');
+            $table->foreignId('part_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateAttributeEquipmentPartsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('attribute_equipment_parts');
+        Schema::dropIfExists('maintenance_procedure_part');
     }
 }

@@ -19,4 +19,3 @@ class TicketTrade extends Model
         $this->{'name_' . app()->getlocale()} = $value;
     }
 }
-

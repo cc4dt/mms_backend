@@ -10,9 +10,10 @@ scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
 type Query {
     me: User @auth
 
-    users: [User!]! @paginate(defaultCount: 10) # @all
+    users(ids: [Int!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @paginate(defaultCount: 10) # @all
     user(id: ID! @eq): User @find
-    usersById(ids: [ID!]!): [User!]! @field(resolver: "UserQuery@usersById")
+    usersById(ids: [Int!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @paginate(defaultCount: 10) # @all
+
 
     userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
     ticketStatus: [TicketStatus!]! @all
@@ -22,18 +23,35 @@ type Query {
 }
 
 extend type Query @guard {
-    masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
-    equipmentParts(id: ID): [Part!] @field(resolver: "MasterQuery@equipmentParts")
-    equipmentPart(id: ID!): Part! @field(resolver: "MasterQuery@equipmentPart") #@find
+    # masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
+    masterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @all
+    part(id: ID! @eq): Part! @find
 
     dashboard: Dashboard! @field(resolver: "DashQuery")
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
-    tickets: [Ticket!]! @paginate(defaultCount: 10)
     ticket(id: ID! @eq): Ticket @find
+    tickets: [Ticket!]! 
+     @paginate(defaultCount: 10)
+     @orderBy(column: "updated_at", direction: DESC)
 
-    states: [State!]! @paginate(defaultCount: 10)
-    equipment: [Equipment!]! @paginate(defaultCount: 10)
+    state: [State!]! @find
+    allStates: [State!]! @all
+    paginateStates: [State!]! @paginate(defaultCount: 10)
+
+    equipment(id: ID! @eq): Equipment! @find
+    allEquipment: [Equipment!]! @all
+    paginateEquipment: [Equipment!]! @paginate(defaultCount: 10)
+}
+
+input OrderByClause{
+    field: String!
+    order: SortOrder!
+}
+
+enum SortOrder {
+    ASC
+    DESC
 }
 
 type SLA {
@@ -80,6 +98,13 @@ type User {
     updated_at: DateTimeUtc
 }
 
+enum USERLEVEL {
+  ADMIN @enum(value: 1)
+  SUPERVISOR @enum(value: 2)
+  TEAMLEADER @enum(value: 3)
+  CLIENT @enum(value: 4)
+}
+
 type Notification {
     id: ID!
     type: String!
@@ -119,7 +144,9 @@ type TicketStatus {
 type Ticket {
     id: ID!
     number: String!
+    state: State!
     station: Station!
+    equipment: Equipment!
     breakdown: Breakdown!
     open_description: String
     type: TicketType
@@ -128,7 +155,7 @@ type Ticket {
     work_description: String
     status: TicketStatus!
     teamleader: User
-    maintenance_processes: [MaintenanceProcess!]
+    maintenance_processes: [MaintenanceProcess!]  @hasMany
     created_by: User
     updated_by: User
     created_at: DateTimeUtc
@@ -138,7 +165,7 @@ type Ticket {
 type MaintenanceProcess {
     id: ID!
     equipment: MasterEquipment
-    equipment_part: Part!
+    part: Part!
     details: [MaintenanceDetail!]
 }
 
@@ -177,7 +204,7 @@ type SubPart {
 
 type MaintenanceDetail {
     id: ID!
-    equipment_sub_part: SubPart
+    sub_part: SubPart
     attribute: Attribute!
     value: String!
 }
@@ -198,7 +225,8 @@ type Equipment {
     id: ID!
     name: String!
     breakdowns: [Breakdown!]!
-    attributes: [Attribute!]
+    attributes: [Attribute!]!
+    parts: [Part!]!
 }
 
 type Breakdown {
@@ -261,13 +289,13 @@ input AssignTicketInput {
 
 input CloseTicketInput {
     equipment_id: ID
-    equipment_part_id: ID!
+    part_id: ID!
     status_id: ID
     details: [DetailTicketInput!]
 }
 
 input DetailTicketInput {
-    equipment_sub_part_id: ID
+    sub_part_id: ID
     attribute_id: ID!
     value: String!
 }

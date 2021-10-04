@@ -16,8 +16,6 @@ class User extends Authenticatable
 
     protected $appends = [
         'level',
-        'created_by',
-        'updated_by',
     ];
     /**
      * The attributes that are mass assignable.

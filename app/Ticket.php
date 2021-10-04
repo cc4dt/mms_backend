@@ -33,6 +33,10 @@ class Ticket extends Model
         'updated_by_id',
     ];
 
+    protected $appends = [
+        'load_time',
+        'actions',
+    ];
 
     static public function statusReported()
     {
@@ -50,7 +54,7 @@ class Ticket extends Model
         }
         return $items;
     }
-
+    
     public function teamleader(): BelongsTo
     {
         return $this->belongsTo('App\User');
@@ -110,6 +114,24 @@ class Ticket extends Model
     {
         return $this->belongsTo('App\TicketStatus');
     }
+    
+    public function getLoadTimeAttribute($value)
+    {
+        return $this->created_at->diffInHours($this->updated_at);
+    }
+    
+    public function getActionsAttribute($value)
+    {
+        $actions = [];
+        foreach ($this->maintenance_processes as $process) {
+            foreach ($process->details as $detail) {
+                if($detail->value || $detail->procedure->type->key == "bool") {
+                    $actions[] = $detail->procedure->name;
+                }
+            }
+        }
+        return $actions;
+    }
 
     static public function open($input)
     {
@@ -119,7 +141,7 @@ class Ticket extends Model
         $input['updated_by_id'] = Auth::id();
         $ticket = Ticket::create($input);
         if($ticket) {
-
+            
             try {
                 Notification::send(User::supervisors(), new TicketOpened($ticket));
             } catch (\Throwable $th) {
@@ -153,13 +175,13 @@ class Ticket extends Model
         $process = new MaintenanceProcess();
         $process->ticket_id = $this->id;
         $process->equipment_id = $input['equipment_id'];
-        $process->equipment_part_id = $input['equipment_part_id'];
-        if ($process->save()) {
+        $process->part_id = $input['part_id'];
+        if ($process->save() && $this->save()) {
             foreach ($input['details'] as $item) {
                 $detail = new MaintenanceDetail();
-                $detail->maintenance_process_id = $process->id;
-                $detail->equipment_sub_part_id = $item['equipment_sub_part_id'];
-                $detail->attribute_id = $item['attribute_id'];
+                $detail->process_id = $process->id;
+                $detail->sub_part_id = $item['sub_part_id'];
+                $detail->maintenance_procedure_id = $item['procedure_id'];
                 $detail->value = $item['value'];
                 $detail->save();
             }

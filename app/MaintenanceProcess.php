@@ -13,13 +13,18 @@ class MaintenanceProcess extends Model
         return $this->belongsTo('App\MasterEquipment');
     }
 
-    public function equipment_part(): BelongsTo
+    public function part(): BelongsTo
     {
         return $this->belongsTo('App\Part');
     }
 
+    public function ticket(): BelongsTo
+    {
+        return $this->belongsTo('App\Ticket');
+    }
+
     public function details(): HasMany
     {
-        return $this->hasMany('App\MaintenanceDetail');
+        return $this->hasMany('App\MaintenanceDetail', 'process_id');
     }
 }

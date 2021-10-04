@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\TicketAssigned;
-use App\Notifications\TicketOpened2;
+use App\Notifications\TicketOpened;
 use App\Breakdown;
 use App\Equipment;
 use App\Station;
@@ -18,38 +18,20 @@ use App\Company;
 use App\Ticket;
 use App\State;
 use App\User;
-use App\MaintenanceDetail;
 use DB;
 
 
-class ReportController extends Controller
+class TicketController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        if(Auth::user()->level_id==2)
-        {     
-        $arr['showdata'] = DB::table( 'tickets' )
-        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
-        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
-               ->select( 'tickets.*', 
-            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
-            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
-              ->orderBy( 'tickets.id','DESC')
-        ->get();
-      $arr2['statedata'] = State::all();
-      $arr3['equipmentdata'] = Equipment::all();
-  
- //print_r($arr);
-
-
-       return view('Supervisor')->with($arr)->with($arr2)->with($arr3);
-
-        }
+        $arr['ticket'] = Ticket::find($id);
+        return view('ticket')->with($arr);
     }
 
     /**
@@ -74,35 +56,23 @@ class ReportController extends Controller
 
         $request->validate(
             [
-            'id' => ['required', 'string'],
-            'number' => ['required', 'string'],
+            'state_id' => ['required', 'string'],
+            'station_id' => ['required', 'string'],
+            'equipment_id'=> ['required', 'string'],
+            'breakdown_id'=> ['required', 'string'],
+            'open_description'=> ['required', 'string'],
             ]
         );
-       print_r($request->all());
-
-    /* 
-    $res=Ticket::assign([
-    'id'=>$request->id,
-    'number'=>$request->number,
+    Ticket::open([
     'station_id'=>$request->station_id,
     'breakdown_id'=>$request->breakdown_id,
     'equipment_id'=>$request->equipment_id,
     'state_id'=>$request->state_id,
-    'open_description'=>$request->open_description,
-    'type'=>$request->type,
-    'trade'=>$request->trade,
-    'priority'=>$request->priority,
-    'teamleader_id'=>$request->teamleader_id]
+    'open_description'=>$request->open_description]
      );
+    $request->session()->flash('result','Tickets Create Successfully');
 
-     print_r($res);
-   // $request->session()->flash('result','Ticket Assign Successfully');
-
-     // return back();
-        
-      */  
-
-    
+      return back();
     }
 
     /**
@@ -124,7 +94,7 @@ class ReportController extends Controller
      */
     public function edit($id)
     {
-        if(Auth::user()->level_id==2)
+         if(Auth::user()->level_id==5)
         {
         $arr['showdata'] = DB::table( 'tickets' )
         ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
@@ -159,14 +129,23 @@ class ReportController extends Controller
         ->select( 'breakdowns.*')
         ->where('equipment_id',$tickets->equipment_id)
         ->get();
-        $arr7['showteamleader'] = DB::table( 'users' )
-        ->select( 'users.*')
-        ->where('users.level_id',3)
-        ->orderBy( 'users.name')
+        $arr7['shownew'] = DB::table( 'tickets' )
+        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
+        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
+        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
+        ->select( 'tickets.*', 
+            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
+            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
+        ->where('tickets.status_id',1)
+        ->where('tickets.created_by_id',Auth::user()->id)
+        ->orderBy( 'tickets.id','DESC')
+        ->limit(10)
         ->get();
-        return view('Supervisor')->with($arr)->with($arr2)->with($arr3)->with($arr4)->with($arr5)->with($arr6)->with($arr7);
+        return view('Client')->with($arr)->with($arr2)->with($arr3)->with($arr4)->with($arr5)->with($arr6)->with($arr7);
     }
-    }
+}
+
     /**
      * Update the specified resource in storage.
      *
@@ -197,41 +176,21 @@ class ReportController extends Controller
         $Row->station_id = $request->station_id;
         $Row->breakdown_id = $request->breakdown_id;
         $Row->open_description = $request->open_description;
+        $Row->status_id = $request->status_id;
         $Row->updated_by_id = $request->updated_by_id;
         $Row->updated_at = $request->updated_at;
         $Row->equipment_id = $request->equipment_id;
         $Row->state_id = $request->state_id;
-        $Row->status_id = 6;
-        $Row->trade_id = $request->trade;
-        $Row->type_id = $request->type;
-        $Row->priority_id = $request->priority;
-        $Row->teamleader_id = $request->teamleader_id;
-        $Row->work_description = $request->work_description;
-       if ( $Row->save() ) {
-            $request->session()->flash( 'result', 'Ticket Assined Successfully' );
+        if ( $Row->save() ) {
+            $request->session()->flash( 'result', 'Ticket Updated Successfully' );
              return back();
 
 
         }
 
-      /*  Ticket::assign([
-            'id'=>$request->id,
-            'state_id'=>$request->state_id,
-            'number'=>$request->number,
-            'station_id'=>$request->station_id,
-            'breakdown_id'=>$request->breakdown_id,
-            'open_description' => $request->open_description,
-            'equipment_id'=>$request->equipment_id,
-            'state_id'=>$request->state_id,
-            'updated_at'=>$request->updated_at,  
-            'trade_id'=>$request->trade_id,
-            'type_id'=>$request->type_id,
-            'priority_id'=>$request->priority_id,
-            'teamleader_id'=>$request->teamleader_id]);
 
-            $request->session()->flash( 'result', 'Ticket Assined Successfully' );
-            return back();
-            */
+
+
 
     }
 
@@ -253,41 +212,5 @@ class ReportController extends Controller
             return back();
         }
      
-    }
-    
-    public function breakdown()
-    {
-        $arr['tickets'] = Ticket::all()
-        ->load("equipment")
-        ->load("breakdown")
-        ->load("station");
-        $arr['stations'] = Station::all();
-        return view('breakdown-report')->with($arr);
-    }
-    
-    public function maintenance()
-    {
-        $arr['maintenance_details'] = MaintenanceDetail::whereHas('procedure', function($q) {
-            $q->whereNotNull("spare_part_id");
-         })->get()
-         ->loadMissing(
-            "procedure", 
-            "procedure.spare_part",
-        )->loadMissing(
-            "process.ticket.equipment",
-        )->loadMissing(
-          "process.ticket.station",
-        )->loadMissing(
-            "process.ticket.type",
-        )->loadMissing(
-            "process.ticket.teamleader",
-    );
-       
-    //    "process.ticket.teamleader", 
-    //    "process.ticket.equipment",
-    //    "process.ticket.station",
-        
-        $arr['stations'] = Station::all();
-        return view('maintenance-report')->with($arr);
     }
 }

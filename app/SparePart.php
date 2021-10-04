@@ -4,13 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EquipmentSubPart extends Model
+class SparePart extends Model
 {
-
     protected $appends = [
         'name',
     ];
-    
+
     public function getNameAttribute($value)
     {
         return $this->{'name_' . app()->getlocale()};

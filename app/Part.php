@@ -18,9 +18,9 @@ class Part extends Model
         return $this->hasMany('App\SubPart');
     }
 
-    public function attributes(): BelongsToMany
+    public function procedures(): BelongsToMany
     {
-        return $this->belongsToMany('App\Attribute', 'attribute_part', 'part_id', 'attribute_id');
+        return $this->belongsToMany('App\MaintenanceProcedure');
     }
 
     public function equipment(): BelongsTo

@@ -52,17 +52,15 @@ class MasterQuery
         return MasterEquipment::all();
     }
 
-    public function equipmentParts($_, array $args)
+    public function parts($_, array $args)
     {
         if (array_key_exists('id', $args)) {
             return Equipment::find($args["id"])->parts;
-            // return Part::where("equipment_id", $args["id"])->get();
         }
         return Part::all();
     }
 
-
-    public function equipmentPart($_, array $args)
+    public function part($_, array $args)
     {
         if (array_key_exists('id', $args)) {
             return Part::find($args["id"]);
