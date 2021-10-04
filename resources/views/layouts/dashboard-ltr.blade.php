@@ -38,7 +38,8 @@
     <link rel="stylesheet" href="{{ asset('LTR/plugins/datepicker/datepicker3.css')}}">
     <link rel="stylesheet" href="{{ asset('LTR/plugins/summernote/summernote-bs4.css')}}">
     <link href="{{ asset('Inline-Valideater/jquerysctipttop_ltr.css')}}" rel="stylesheet" type="text/css">
-
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <script src="{{ asset('Inline-Valideater/js/jquery.valideater-0.2.2_en.js')}}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
@@ -77,6 +78,10 @@
     <script src="{{ asset('LTR/plugins/datepicker/bootstrap-datepicker.js')}}"></script>
 
     <script src="{{ asset('LTR/plugins/summernote/summernote-bs4.min.js')}}"></script>
+
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
     <script>
     $("#ConfirmPassword").change(function() {
         var oldpassword = document.getElementById("oldpassword").value;

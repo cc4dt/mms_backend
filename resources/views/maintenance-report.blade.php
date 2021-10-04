@@ -68,7 +68,6 @@
 
                     <script>
                     var maintenanceDetails = @json($maintenance_details);
-                    console.log(maintenanceDetails);
                     const columns = [{
                             title: "Ticket No"
                         },
@@ -100,17 +99,30 @@
                             e.process.ticket.number,
                             e.process.ticket.station.name,
                             e.process.ticket.equipment.name,
-                            e.value,
+                            e.value ?? "",
                             e.procedure.spare_part.name,
                             e.process.ticket.teamleader.name,
                             e.process.ticket.type.name,
-                            new Date(e.process.ticket.updated_at).toLocaleString(), 
+                            new Date(e.process.ticket.updated_at).toLocaleString(),
                         ]);
                     });
 
                     var example = jQuery('#example').DataTable({
                         data: dataSet,
-                        columns: columns
+                        columns: columns,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy',
+                            'print',
+                            {
+                                extend: 'csv',
+                                charset: 'UTF-8',
+                                fieldSeparator: ';',
+                                bom: true,
+                                filename: 'CsvTest',
+                                title: 'CsvTest'
+                            }
+                        ]
                     });
 
                     jQuery(document).ready(function() {
@@ -124,11 +136,12 @@
                                         e.process.ticket.number,
                                         e.process.ticket.station.name,
                                         e.process.ticket.equipment.name,
-                                        e.value,
+                                        e.value ?? "",
                                         e.procedure.spare_part.name,
                                         e.process.ticket.teamleader.name,
                                         e.process.ticket.type.name,
-                                        new Date(e.process.ticket.updated_at).toLocaleString(), 
+                                        new Date(e.process.ticket.updated_at)
+                                        .toLocaleString(),
                                     ]).draw(false);
                             });
                         });

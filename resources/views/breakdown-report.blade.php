@@ -68,7 +68,6 @@
 
                     <script>
                     var tickets = @json($tickets);
-                    console.log(tickets);
                     const columns = [{
                             title: "Ticket No"
                         },
@@ -110,7 +109,20 @@
 
                     var example = jQuery('#example').DataTable({
                         data: dataSet,
-                        columns: columns
+                        columns: columns,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy',
+                            'print',
+                            {
+                                extend: 'csv',
+                                charset: 'UTF-8',
+                                fieldSeparator: ';',
+                                bom: true,
+                                filename: 'CsvTest',
+                                title: 'CsvTest'
+                            }
+                        ]
                     });
 
                     jQuery(document).ready(function() {

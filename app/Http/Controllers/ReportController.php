@@ -19,6 +19,7 @@ use App\Ticket;
 use App\State;
 use App\User;
 use App\MaintenanceDetail;
+use App\MaintenanceProcedure;
 use DB;
 
 
@@ -257,10 +258,14 @@ class ReportController extends Controller
     
     public function breakdown()
     {
-        $arr['tickets'] = Ticket::all()
-        ->load("equipment")
-        ->load("breakdown")
-        ->load("station");
+        $arr['tickets'] = Ticket::whereHas('status', function($q) {
+            $q->where("key", "closed");
+         })->get()
+        ->loadMissing(
+            "equipment",
+            "breakdown",
+            "station",
+        );
         $arr['stations'] = Station::all();
         return view('breakdown-report')->with($arr);
     }
@@ -268,20 +273,16 @@ class ReportController extends Controller
     public function maintenance()
     {
         $arr['maintenance_details'] = MaintenanceDetail::whereHas('procedure', function($q) {
-            $q->whereNotNull("spare_part_id");
+            $q->where("type_id", MaintenanceProcedure::getTypeId("replace"));
          })->get()
          ->loadMissing(
             "procedure", 
             "procedure.spare_part",
-        )->loadMissing(
             "process.ticket.equipment",
-        )->loadMissing(
-          "process.ticket.station",
-        )->loadMissing(
+            "process.ticket.station",
             "process.ticket.type",
-        )->loadMissing(
             "process.ticket.teamleader",
-    );
+        );
        
     //    "process.ticket.teamleader", 
     //    "process.ticket.equipment",

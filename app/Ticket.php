@@ -125,9 +125,8 @@ class Ticket extends Model
         $actions = [];
         foreach ($this->maintenance_processes as $process) {
             foreach ($process->details as $detail) {
-                if($detail->value || $detail->procedure->type->key == "bool") {
+                if($detail->procedure->type->key != "other")
                     $actions[] = $detail->procedure->name;
-                }
             }
         }
         return $actions;

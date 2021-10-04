@@ -14,10 +14,10 @@ class MaintenanceProcedure extends Model
     ];
     
     public const TYPES = [
-        1 => 'int',
-        2 => 'string',
-        3 => 'bool',
-        4 => 'text',
+        1 => 'mainten',
+        2 => 'replace',
+        3 => 'clean',
+        4 => 'other',
     ];
 
     static public function constList($list)
@@ -60,6 +60,15 @@ class MaintenanceProcedure extends Model
                 "key" => self::TYPES[$this->attributes['type_id']],
                 "value" => __('constants.'.self::TYPES[$this->attributes['type_id']]),
             ];
+    }
+
+    static public function getTypeId($value) {
+        $typeID = array_search($value, self::TYPES);
+        if($typeID) {
+            return $typeID;
+        } else { 
+            return null;
+        }
     }
 
     public function setTypeAttribute($value)
