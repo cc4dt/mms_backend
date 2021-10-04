@@ -113,14 +113,20 @@
                         dom: 'Bfrtip',
                         buttons: [
                             'copy',
-                            'print',
+                            {
+                                extend: 'print',
+                                charset: 'UTF-8',
+                                bom: true,
+                            },
+                            {
+                                extend: 'excel',
+                                charset: 'UTF-8',
+                                bom: true,
+                            },
                             {
                                 extend: 'csv',
                                 charset: 'UTF-8',
-                                fieldSeparator: ';',
                                 bom: true,
-                                filename: 'CsvTest',
-                                title: 'CsvTest'
                             }
                         ]
                     });
