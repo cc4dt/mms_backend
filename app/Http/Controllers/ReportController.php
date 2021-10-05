@@ -291,4 +291,19 @@ class ReportController extends Controller
         $arr['stations'] = Station::all();
         return view('maintenance-report')->with($arr);
     }
+    
+    public function pm()
+    {
+        $json = file_get_contents('https://ham.sd/system/pms.php');
+        $obj = json_decode($json);
+        
+        if($obj) {
+            $arr['stations'] = $obj->stations ?? [];
+            $arr['pms'] = $obj->data ?? [];
+        } else {
+            $arr['stations'] = [];
+            $arr['pms'] = [];
+        }
+        return view('pm-report')->with($arr);
+    }
 }

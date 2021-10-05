@@ -631,6 +631,13 @@
                                         <p>Spare Part Report</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="@if(Auth::user()->level_id==2) {{ route('pm-report') }} @endif"
+                                        class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Preventive Maintenace</p>
+                                    </a>
+                                </li>
                                 @endif
                             </ul>
                         </li>

@@ -62,5 +62,6 @@ Route::resource('/Dealer', 'DealerController')->middleware('auth');
 Route::get('/ticket/{id}', 'TicketController@index')->middleware('auth')->name('ticket');
 Route::get('/report/breakdown', 'ReportController@breakdown')->middleware('auth')->name('breakdown-report');
 Route::get('/report/maintenance', 'ReportController@maintenance')->middleware('auth')->name('maintenance-report');
+Route::get('/report/pm', 'ReportController@pm')->middleware('auth')->name('pm-report');
 Route::get('/home', 'HomeController@index')->middleware('auth')->name('Home');
 Route::get('ajax_fetch_data/{table}/{id}','ajax_data\FetchController@getdata');
