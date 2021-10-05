@@ -10,10 +10,9 @@ scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
 type Query {
     me: User @auth
 
-    users(ids: [Int!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @paginate(defaultCount: 10) # @all
+    allUsers(ids: [ID!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @all
+    paginateusers(ids: [ID!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @paginate(defaultCount: 10) # @all
     user(id: ID! @eq): User @find
-    usersById(ids: [Int!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @paginate(defaultCount: 10) # @all
-
 
     userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
     ticketStatus: [TicketStatus!]! @all
@@ -24,7 +23,8 @@ type Query {
 
 extend type Query @guard {
     # masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
-    masterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @all
+    allMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @all
+    paginateMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @paginate(defaultCount: 10)
     part(id: ID! @eq): Part! @find
 
     dashboard: Dashboard! @field(resolver: "DashQuery")
@@ -188,7 +188,20 @@ type Part {
     name: String!
     equipment: Equipment!
     sub_parts: [SubPart!]
-    attributes: [Attribute!]
+    procedures: [MaintenanceProcedure!]
+}
+
+
+type MaintenanceProcedure {
+    id: ID!
+    name: String!
+    type: ConstField!
+    spare_part: [SparePart!]
+}
+
+type SparePart {
+    id: ID!
+    name: String!
 }
 
 type Attribute {
@@ -205,7 +218,7 @@ type SubPart {
 type MaintenanceDetail {
     id: ID!
     sub_part: SubPart
-    attribute: Attribute!
+    procedure: MaintenanceProcedure!
     value: String!
 }
 
@@ -296,8 +309,8 @@ input CloseTicketInput {
 
 input DetailTicketInput {
     sub_part_id: ID
-    attribute_id: ID!
-    value: String!
+    procedure_id: ID!
+    value: String
 }
 
 type Login {

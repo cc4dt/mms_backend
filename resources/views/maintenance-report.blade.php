@@ -100,10 +100,10 @@
                             e.process.ticket.station.name,
                             e.process.ticket.equipment.name,
                             e.value ?? "",
-                            e.procedure.spare_part.name,
+                            e.procedure.spare_part?.name ?? "",
                             e.process.ticket.teamleader.name,
                             e.process.ticket.type.name,
-                            new Date(e.process.ticket.updated_at).toLocaleString(),
+                            new Date(e.created_at).toLocaleString(),
                         ]);
                     });
 
@@ -143,11 +143,10 @@
                                         e.process.ticket.station.name,
                                         e.process.ticket.equipment.name,
                                         e.value ?? "",
-                                        e.procedure.spare_part.name,
+                                        e.procedure.spare_part?.name ?? "",
                                         e.process.ticket.teamleader.name,
                                         e.process.ticket.type.name,
-                                        new Date(e.process.ticket.updated_at)
-                                        .toLocaleString(),
+                                        new Date(e.created_at).toLocaleString(),
                                     ]).draw(false);
                             });
                         });

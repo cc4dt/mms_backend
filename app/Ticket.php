@@ -180,7 +180,7 @@ class Ticket extends Model
                 $detail = new MaintenanceDetail();
                 $detail->process_id = $process->id;
                 $detail->sub_part_id = $item['sub_part_id'];
-                $detail->maintenance_procedure_id = $item['procedure_id'];
+                $detail->procedure_id = $item['procedure_id'];
                 $detail->value = $item['value'];
                 $detail->save();
             }
