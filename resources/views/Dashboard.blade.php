@@ -437,6 +437,23 @@
               </div>
               <!-- /.card-body -->
             </div>
+            <div class="card card-info">
+              <div class="card-header">
+                  <h3 class="card-title">SLA</h3>
+                  <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                          <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                          <i class="fas fa-times"></i>
+                      </button>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <canvas id="pieChartSLA" min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+                <!-- /.card-body -->
+            </div>
             <!-- LINE CHART -->
             <div class="card card-info" style="display:none">
               <div class="card-header">
@@ -1256,6 +1273,37 @@
       data: pieData,
       options: pieOptions
     })
+
+    var pieDataSLA = {
+            labels: [
+                "IN SLA",
+                "OUT SLA",
+            ],
+            datasets: [{
+                data: [
+                  {{ \App\Ticket::inSLA()->count() }},
+                  {{ \App\Ticket::outSLA()->count() }},
+                ],
+                backgroundColor: [
+                    "#888888",
+                    "#bbbbbb",
+                ],
+            }]
+        }
+        
+        var pieChartCanvasSLA = $('#pieChartSLA').get(0).getContext('2d')
+        var pieDataSLA = pieDataSLA;
+        var pieOptionsSLA = {
+            maintainAspectRatio: false,
+            responsive: true,
+        }
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.
+        new Chart(pieChartCanvasSLA, {
+            type: 'pie',
+            data: pieDataSLA,
+            options: pieOptionsSLA
+        })
 
     //-------------
     //- BAR CHART -

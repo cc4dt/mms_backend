@@ -90,7 +90,10 @@
                             title: "Resolution"
                         },
                         {
-                            title: "Load Time"
+                            title: "Led Time"
+                        },
+                        {
+                            title: "Status"
                         },
                     ]
                     var dataSet = [];
@@ -103,7 +106,8 @@
                             e.actions.join(', '),
                             new Date(e.created_at).toLocaleString(),
                             new Date(e.updated_at).toLocaleString(),
-                            e.load_time,
+                            e.led_time,
+                            e.status.name
                         ]);
                     });
 
@@ -146,7 +150,8 @@
                                         e.station.name,
                                         new Date(e.created_at).toLocaleString(),
                                         new Date(e.updated_at).toLocaleString(),
-                                        e.load_time,
+                                        e.led_time,
+                                        e.status.name
                                     ]).draw(false);
                             });
                         });

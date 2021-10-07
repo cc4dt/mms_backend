@@ -258,13 +258,15 @@ class ReportController extends Controller
     
     public function breakdown()
     {
-        $arr['tickets'] = Ticket::whereHas('status', function($q) {
-            $q->where("key", "closed");
-         })->get()
+        // whereHas('status', function($q) {
+        //     $q->where("key", "closed");
+        //  })->get()
+        $arr['tickets'] = Ticket::all()
         ->loadMissing(
             "equipment",
             "breakdown",
             "station",
+            "status",
         );
         $arr['stations'] = Station::all();
         return view('breakdown-report')->with($arr);
@@ -278,15 +280,12 @@ class ReportController extends Controller
          ->loadMissing(
             "procedure", 
             "procedure.spare_part",
+            "process.equipment",
             "process.ticket.equipment",
             "process.ticket.station",
             "process.ticket.type",
             "process.ticket.teamleader",
         );
-       
-    //    "process.ticket.teamleader", 
-    //    "process.ticket.equipment",
-    //    "process.ticket.station",
         
         $arr['stations'] = Station::all();
         return view('maintenance-report')->with($arr);
@@ -294,8 +293,13 @@ class ReportController extends Controller
     
     public function pm()
     {
-        $json = file_get_contents('https://ham.sd/system/pms.php');
-        $obj = json_decode($json);
+        $obj = [];
+        try {
+            $json = file_get_contents('https://ham.sd/system/pms.php');
+            $obj = json_decode($json);
+        } catch (\Throwable $th) {
+            $arr['errors'][] = "Server Error No Data";
+        }
         
         if($obj) {
             $arr['stations'] = $obj->stations ?? [];

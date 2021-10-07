@@ -81,7 +81,7 @@
                             title: "Date"
                         },
                         {
-                            title: "Node"
+                            title: "Note"
                         }
                     ]
                     var dataSet = [];

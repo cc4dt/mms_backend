@@ -34,7 +34,7 @@ class Ticket extends Model
     ];
 
     protected $appends = [
-        'load_time',
+        'led_time',
         'actions',
     ];
 
@@ -53,6 +53,67 @@ class Ticket extends Model
             ];
         }
         return $items;
+    }
+    
+
+    static public function inSLA() {
+        return Ticket::whereHas('type',  function($q) {
+            $q->where("key", "breakdown");
+         })
+         ->whereHas('status',  function($q) {
+            $q->where("key", "closed");
+         })
+         ->where(function($qp) {
+            $qp->where(function($q) {
+               $q->whereHas('priority',  function($q) {
+                  $q->where("key", "normal");
+               });
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [24]);
+            })
+            ->orWhere(function($q) {
+               $q->whereHas('priority',  function($q) {
+                  $q->where("key", "urgent");
+               });
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [12]);
+            })
+            ->orWhere(function($q) {
+               $q->whereHas('priority',  function($q) {
+                  $q->where("key", "emergency");
+               });
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [5]);
+            });
+         })
+         ->get();
+    }
+
+    static public function outSLA() {
+        return Ticket::whereHas('type',  function($q) {
+            $q->where("key", "breakdown");
+         })
+         ->whereHas('status',  function($q) {
+            $q->where("key", "closed");
+         })
+         ->where(function($qp) {
+            $qp->where(function($q) {
+               $q->whereHas('priority',  function($q) {
+                  $q->where("key", "normal");
+               });
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [24]);
+            })
+            ->orWhere(function($q) {
+               $q->whereHas('priority',  function($q) {
+                  $q->where("key", "urgent");
+               });
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [12]);
+            })
+            ->orWhere(function($q) {
+               $q->whereHas('priority',  function($q) {
+                  $q->where("key", "emergency");
+               });
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [5]);
+            });
+         })
+         ->get();
     }
     
     public function teamleader(): BelongsTo
@@ -115,9 +176,9 @@ class Ticket extends Model
         return $this->belongsTo('App\TicketStatus');
     }
     
-    public function getLoadTimeAttribute($value)
+    public function getLedTimeAttribute($value)
     {
-        return $this->created_at->diffInHours($this->updated_at);
+        return $this->created_at->diff($this->updated_at)->format('%d:%H:%i');
     }
     
     public function getActionsAttribute($value)
