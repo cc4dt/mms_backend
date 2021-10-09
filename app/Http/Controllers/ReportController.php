@@ -271,6 +271,8 @@ class ReportController extends Controller
         $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
         $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
         $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
+        $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
+        
         return view('breakdown-report')->with($arr);
     }
     

@@ -86,6 +86,7 @@
     <script src="{{ asset('LTR/plugins/datatables/vfs_fonts.js')}}"></script>
     <script src="{{ asset('LTR/plugins/datatables/buttons.html5.min.js')}}"></script>
     <script src="{{ asset('LTR/plugins/datatables/buttons.print.min.js')}}"></script>
+    <script src="{{ asset('LTR/plugins/datatables/buttons.colVis.min.js')}}"></script>
     <script>
     $("#ConfirmPassword").change(function() {
         var oldpassword = document.getElementById("oldpassword").value;
@@ -295,7 +296,7 @@
                                         </a> </td>
                                     <td align="center" width="40%"> <a href="#" class="dropdown-item dropdown-footer"
                                             data-toggle="modal" data-target="#modal-logout">
-                                            <image src="{{ asset('dist/img/exit.png')}}" width="20" height="20"> Logout
+                                            <img src="{{ asset('dist/img/exit.png')}}" width="20" height="20"> Logout
                                         </a> </td>
                                 </tr>
 
