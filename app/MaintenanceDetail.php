@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MaintenanceDetail extends Model
 {
+    protected $fillable = [
+        "sub_part_id",
+        "procedure_id",
+        "value",
+    ];
+
     public function sub_part(): BelongsTo
     {
         return $this->belongsTo('App\SubPart');

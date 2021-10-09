@@ -20,6 +20,7 @@ use App\State;
 use App\User;
 use App\MaintenanceDetail;
 use App\MaintenanceProcedure;
+use App\TicketStatus;
 use DB;
 
 
@@ -261,14 +262,15 @@ class ReportController extends Controller
         // whereHas('status', function($q) {
         //     $q->where("key", "closed");
         //  })->get()
-        $arr['tickets'] = Ticket::all()
-        ->loadMissing(
+        $arr['tickets'] = Ticket::all()->loadMissing(
             "equipment",
             "breakdown",
             "station",
             "status",
         );
-        $arr['stations'] = Station::all();
+        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
+        $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
         return view('breakdown-report')->with($arr);
     }
     

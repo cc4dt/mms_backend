@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MaintenanceProcess extends Model
 {
+    protected $fillable = [
+        "equipment_id",
+        "part_id",
+    ];
+
     public function equipment(): BelongsTo
     {
         return $this->belongsTo('App\MasterEquipment');

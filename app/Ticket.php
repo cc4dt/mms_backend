@@ -35,6 +35,7 @@ class Ticket extends Model
 
     protected $appends = [
         'led_time',
+        'sla',
         'actions',
     ];
 
@@ -68,13 +69,13 @@ class Ticket extends Model
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "normal");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [24]);
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [72]);
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "urgent");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [12]);
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [24]);
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
@@ -98,13 +99,13 @@ class Ticket extends Model
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "normal");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [24]);
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [72]);
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "urgent");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [12]);
+               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [24]);
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
@@ -145,6 +146,11 @@ class Ticket extends Model
     {
         return $this->hasMany('App\MaintenanceProcess');
     }
+
+    public function timelines(): HasMany
+    {
+        return $this->hasMany('App\TicketTimeline');
+    }
     
     public function state(): BelongsTo
     {
@@ -178,7 +184,24 @@ class Ticket extends Model
     
     public function getLedTimeAttribute($value)
     {
-        return $this->created_at->diff($this->updated_at)->format('%d:%H:%i');
+        if($this->status->key == "closed")
+            return $this->created_at->diff($this->updated_at)->format('%d:%H:%i');
+    }
+    
+    public function getSlaAttribute($value)
+    {
+        if($this->priority) {
+            if($this->priority->key == "normal") {
+                return 72;
+            }
+            elseif ($this->priority->key == "urgent") {
+                return 24;
+            }
+            elseif ($this->priority->key == "emergency") {
+                return 5;
+            }
+        }
+        return 0;
     }
     
     public function getActionsAttribute($value)
@@ -200,8 +223,9 @@ class Ticket extends Model
         $input['created_by_id'] = Auth::id();
         $input['updated_by_id'] = Auth::id();
         $ticket = Ticket::create($input);
+
         if($ticket) {
-            
+            $ticket->timelines()->create($input);
             try {
                 Notification::send(User::supervisors(), new TicketOpened($ticket));
             } catch (\Throwable $th) {
@@ -213,10 +237,13 @@ class Ticket extends Model
 
     public function assign($input)
     {
-        $input['updated_by_id'] = Auth::id();
         $input['status_id'] = TicketStatus::where("key", "waiting_for_access")->first()->id;
+        $input['updated_by_id'] = Auth::id();
 
         if ($this->update($input)) {
+            $input['created_by_id'] = Auth::id();
+            $this->timelines()->create($input);
+
             try {
                 $this->teamleader->notify(new TicketAssigned($this));
             } catch (\Throwable $th) {
@@ -229,24 +256,19 @@ class Ticket extends Model
 
     public function close($input)
     {
-        $this->updated_by_id = Auth::id();
-        $this->status_id = isset($input['status_id']) ? $input['status_id'] : TicketStatus::where("key", "closed")->first()->id;
-        $this->save();
-        $process = new MaintenanceProcess();
-        $process->ticket_id = $this->id;
-        $process->equipment_id = $input['equipment_id'];
-        $process->part_id = $input['part_id'];
-        if ($process->save() && $this->save()) {
-            foreach ($input['details'] as $item) {
-                $detail = new MaintenanceDetail();
-                $detail->process_id = $process->id;
-                $detail->sub_part_id = $item['sub_part_id'];
-                $detail->procedure_id = $item['procedure_id'];
-                $detail->value = $item['value'];
-                $detail->save();
+        $input['status_id'] = isset($input['status_id']) ? $input['status_id'] : TicketStatus::where("key", "closed")->first()->id;
+        $input['updated_by_id'] = Auth::id();
+        if($this->update($input)) {
+            $input['created_by_id'] = Auth::id();
+            $this->timelines()->create($input);
+
+            $process = $this->maintenance_processes()->create($input);
+            if ($process) {
+                foreach ($input['details'] as $item) {
+                    $process->details()->create($item);
+                }
             }
             return $this;
         }
     }
-
 }

@@ -56,6 +56,32 @@
                             @endif
                         </select>
                     </div>
+                    <div class="col-md-3">
+
+                        <select id="status_id" name="status_id"
+                            class="select2bs4 form-control @error('status_id') is-invalid @enderror"
+                            data-vldtr="required">
+                            <option value="">-Select Status-</option>
+                            @if(isset($status))
+                            @foreach($status as $data)
+                            <option value="{{$data->id ?? ''}}">{{$data->name ?? ''}}</option>
+                            @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+
+                        <select id="equipment_id" name="equipment_id"
+                            class="select2bs4 form-control @error('equipment_id') is-invalid @enderror"
+                            data-vldtr="required">
+                            <option value="">-Select Equipment-</option>
+                            @if(isset($equipment))
+                            @foreach($equipment as $data)
+                            <option value="{{$data->id ?? ''}}">{{$data->name ?? ''}}</option>
+                            @endforeach
+                            @endif
+                        </select>
+                    </div>
                 </div>
 
 
@@ -67,7 +93,12 @@
                     </dev>
 
                     <script>
+                    var station = "";
+                    var status = "";
+                    var equipment = "";
+                    
                     var tickets = @json($tickets);
+                    console.log(@json($stations));
                     const columns = [{
                             title: "Ticket No"
                         },
@@ -79,6 +110,9 @@
                         },
                         {
                             title: "Breakdown"
+                        },
+                        {
+                            title: "SLA"
                         },
                         {
                             title: "Action Done"
@@ -103,6 +137,7 @@
                             e.station.name,
                             e.equipment.name,
                             e.breakdown.name,
+                            e.sla,
                             e.actions.join(', '),
                             new Date(e.created_at).toLocaleString(),
                             new Date(e.updated_at).toLocaleString(),
@@ -135,25 +170,45 @@
                         ]
                     });
 
+                    function filterReport() {
+                        example.rows().remove().draw(false);
+                        tickets.forEach(e => {
+                            if ((e.station_id == station || !station) && 
+                            (e.status_id == status || !status) && 
+                            (e.equipment_id == equipment || !equipment))
+                                example.row.add([
+                                    e.number,
+                                    e.station.name,
+                                    e.equipment.name,
+                                    e.breakdown.name,
+                                    e.sla,
+                                    e.actions.join(', '),
+                                    new Date(e.created_at).toLocaleString(),
+                                    new Date(e.updated_at).toLocaleString(),
+                                    e.led_time,
+                                    e.status.name
+                                ]).draw(false);
+                        });
+                    }
+
                     jQuery(document).ready(function() {
                         jQuery('select[name="station_id"]').on('change', function() {
-                            var station = jQuery(this).val();
-                            console.log(station);
-                            example.rows().remove().draw(false);
-                            tickets.forEach(e => {
-                                if (e.station_id == station || !station)
-                                    example.row.add([
-                                        e.number,
-                                        e.station.name,
-                                        e.equipment.name,
-                                        e.breakdown.name,
-                                        e.station.name,
-                                        new Date(e.created_at).toLocaleString(),
-                                        new Date(e.updated_at).toLocaleString(),
-                                        e.led_time,
-                                        e.status.name
-                                    ]).draw(false);
-                            });
+                            station = jQuery(this).val();
+                            filterReport();
+                        });
+                    });
+
+                    jQuery(document).ready(function() {
+                        jQuery('select[name="status_id"]').on('change', function() {
+                            status = jQuery(this).val();
+                            filterReport();
+                        });
+                    });
+
+                    jQuery(document).ready(function() {
+                        jQuery('select[name="equipment_id"]').on('change', function() {
+                            equipment = jQuery(this).val();
+                            filterReport();
                         });
                     });
                     </script>
