@@ -1,22 +1,7 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ config('app.name', 'HAM') }}</title>
-
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="{{asset('dashboard/plugins/fontawesome-free/css/all.min.css')}}">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="{{asset('dashboard/dist/css/adminlte.min.css')}}">
-</head>
-<body class="hold-transition sidebar-mini sidebar-collapse">
-<div class="wrapper">
+@extends('layouts.dashboard-ltr')
+@section('content')
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+  {{-- <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -194,10 +179,10 @@
         <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
             class="fas fa-th-large"></i></a>      </li>
     </ul>
-  </nav>
+  </nav> --}}
   <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
+  {{-- <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link">
@@ -283,7 +268,7 @@
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
-  </aside>
+  </aside> --}}
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -390,8 +375,135 @@
               <!-- /.card-footer -->
             </div>
             <!-- /.card -->
+            
+          <!-- TABLE: LATEST ORDERS -->
+          <div class="card card-info">
+            <div class="card-header border-transparent">
+              <h3 class="card-title">Daily Activity</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <div class="p-3 table-responsive">
+                <table id="daily" class="table table-bordered table-striped" width="100%">
+                </table>
+              </div>
+              <!-- /.table-responsive -->
+            </div>
+            <!-- /.card-body -->
+            
+            <!-- /.card-footer -->
           </div>
+          <!-- /.card -->
+            
+          <!-- TABLE: LATEST ORDERS -->
+          <div class="card card-success">
+            <div class="card-header border-transparent">
+              <h3 class="card-title">Oustanding</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+              <div class="p-3 table-responsive">
+                <table id="monthly" class="table table-bordered table-striped" width="100%">
+                </table>
+              </div>
+              <!-- /.table-responsive -->
+            </div>
+            <!-- /.card-body -->
+            
+            <!-- /.card-footer -->
+          </div>
+          <!-- /.card -->
+      </div>
       
+      <?php
+        $dailyData = \App\Ticket::daily()->loadMissing("station", "equipment", "breakdown", "status");
+        $monthlyData = \App\Ticket::monthly()->loadMissing("station", "equipment", "breakdown", "status");
+      ?>
+      <script>
+        const dailyColumns = [{
+                title: "Ticket No"
+            },
+            {
+                title: "Station"
+            },
+            {
+                title: "Equipment"
+            },
+            {
+                title: "Breakdown"
+            },
+            {
+                title: "Status"
+            },
+        ];
+        
+        var dailyTickets = @json($dailyData);
+
+        var dailyDataSet = [];
+        dailyTickets.forEach(e => {
+          dailyDataSet.push([
+                e.number,
+                e.station.name,
+                e.equipment.name,
+                e.breakdown.name,
+                e.status.name
+            ]);
+        });
+
+        var daily = jQuery('#daily').DataTable({
+            data: dailyDataSet,
+            columns: dailyColumns,
+            // dom: 'Bfrtip',
+            lengthMenu: [
+                [10, 25, 50, 100, 250],
+                ['10', '25', '50', '100', '250']
+            ],
+        });
+
+        var monthlyTickets = @json($monthlyData);
+
+        var monthlyDataSet = [];
+        monthlyTickets.forEach(e => {
+          monthlyDataSet.push([
+                e.number,
+                e.station.name,
+                e.equipment.name,
+                e.breakdown.name,
+                e.status.name
+            ]);
+        });
+
+        var monthly = jQuery('#monthly').DataTable({
+            data: monthlyDataSet,
+            columns: dailyColumns,
+            // dom: 'Bfrtip',
+            lengthMenu: [
+                [10, 25, 50, 100, 250],
+                ['10', '25', '50', '100', '250']
+            ],
+        });
+
+      </script>
       
        <div class="col-md-4">
        
@@ -934,8 +1046,6 @@
     <!-- Add Content Here -->
   </aside>
   <!-- /.control-sidebar -->
-</div>
-<!-- ./wrapper -->
 
 
 
@@ -1034,7 +1144,7 @@
         </div>
         <!-- /.modal-dialog -->
       </div>
-<!-- jQuery -->
+{{-- <!-- jQuery -->
 <script src="{{asset('dashboard/plugins/jquery/jquery.min.js')}}"></script>
 <!-- Bootstrap 4 -->
 <script src="{{asset('dashboard/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
@@ -1047,7 +1157,7 @@
 
 
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dashboard/dist/js/pages/dashboard2.js"></script>
+<script src="dashboard/dist/js/pages/dashboard2.js"></script> --}}
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -1362,5 +1472,4 @@
   
   })
 </script>
-</body>
-</html>
+@endsection

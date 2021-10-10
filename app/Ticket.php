@@ -56,6 +56,24 @@ class Ticket extends Model
         return $items;
     }
     
+    static public function daily()
+    {
+        return Ticket::whereDate('created_at', Carbon::today())
+        ->orderBy('created_at', 'desc')->get();
+    }
+        
+    static public function monthly()
+    {
+        return Ticket::whereYear('created_at', Carbon::now()->year)
+        ->whereMonth('created_at', Carbon::now()->month)  
+        ->whereHas('status',  function($q) {
+            $q->where("key", "!=", "closed");
+         })  
+         ->whereHas('status',  function($q) {
+             $q->where("key", "!=", "cancelled");
+          })
+        ->orderBy('created_at', 'desc')->get();
+    }
 
     static public function inSLA() {
         return Ticket::whereHas('type',  function($q) {
@@ -258,7 +276,10 @@ class Ticket extends Model
     {
         $input['status_id'] = isset($input['status_id']) ? $input['status_id'] : TicketStatus::where("key", "closed")->first()->id;
         $input['updated_by_id'] = Auth::id();
-        if($this->update($input)) {
+        if($this->update([
+            'status_id' => $input['status_id'],
+            'updated_by_id' => $input['updated_by_id'],
+        ])) {
             $input['created_by_id'] = Auth::id();
             $this->timelines()->create($input);
 

@@ -27,28 +27,12 @@ Route::get('/login', function () {
 });
 
 Route::get('/test', function () {
-    // Ticket::first()->close([
-    //     "equipment_id" => 1,
-    //     "part_id" => 1,
-    //     "details" => [
-    //         [
-    //             "sub_part_id" => 1,
-    //             "attribute_id" => 1,
-    //             "value" => "true",
-    //         ]
-    //     ]
-    // ]);
-    // print_r(Ticket::first());
-    // print_r(Part::first());
-    // print_r(Part::first()->subParts);
-    // print_r(MasterEquipment::first());
-    // print_r(MasterEquipment::first()->details);
-    // print_r(Ticket::first()->maintenance_processes);
-    // print_r(Ticket::first()->maintenance_processes[0]->details);
-    $user = User::find(3);
-    print_r($user->notifications->first()->data);
-    var_dump($user->notifications->first()->data);
-    return $user->notifications->first()->data;
+    // var_dump(Ticket::toDay());
+    // var_dump(Ticket::daily());
+    foreach (Ticket::monthly() as $value) {
+        var_dump($value->number);
+    }
+    // return $user->notifications->first()->data;
 });
 
 
