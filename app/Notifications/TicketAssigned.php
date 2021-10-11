@@ -99,6 +99,8 @@ class TicketAssigned extends Notification
                 "id" => (string) $this->ticket->id,
                 "type" => "ticket",
                 "action" => "assigned",
+                "notification_title" => __("message.ticket_assigned_title"),
+                "notification_body" => __("message.ticket_assigned_body", ["number" => $this->ticket->number, "supervisor" => $this->ticket->updated_by->name]),
             ],
             "notification" => [
                 "title" => __("message.ticket_assigned_title"),

@@ -98,6 +98,8 @@ class TicketOpened extends Notification
                 "id" => (string) $this->ticket->id,
                 "type" => "ticket",
                 "action" => "opened",
+                "notification_title" => __("message.ticket_opened_title"),
+                "notification_body" => __("message.ticket_opened_body", ["station" => $this->ticket->station->name, "client" => $this->ticket->updated_by->name]),
             ],
             "notification" => [
                 "title" => __("message.ticket_opened_title"),
