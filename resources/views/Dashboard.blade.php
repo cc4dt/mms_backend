@@ -479,6 +479,25 @@
                 ['10', '25', '50', '100', '250']
             ],
         });
+        const monthlyColumns = [{
+                title: "Ticket No"
+            },
+            {
+                title: "Station"
+            },
+            {
+                title: "Equipment"
+            },
+            {
+                title: "Breakdown"
+            },
+            {
+                title: "Status"
+            },
+            {
+                title: "Date"
+            },
+        ];
 
         var monthlyTickets = @json($monthlyData);
 
@@ -489,13 +508,14 @@
                 e.station.name,
                 e.equipment.name,
                 e.breakdown.name,
-                e.status.name
+                e.status.name,
+                new Date(e.created_at).toLocaleString(),
             ]);
         });
 
         var monthly = jQuery('#monthly').DataTable({
             data: monthlyDataSet,
-            columns: dailyColumns,
+            columns: monthlyColumns,
             // dom: 'Bfrtip',
             lengthMenu: [
                 [10, 25, 50, 100, 250],

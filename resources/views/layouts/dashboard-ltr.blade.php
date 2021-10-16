@@ -234,230 +234,184 @@
 
     <div class="wrapper">
         <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <!-- Left navbar links -->
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="{{ asset(route('Home')) }}" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" class="nav-link">Contact</a>
-                </li>
-            </ul>
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Contact</a>
+      </li>
+    </ul>
 
-            <!-- SEARCH FORM -->
-            <form class="form-inline ml-3">
-                <div class="input-group input-group-sm">
-                    <input class="form-control form-control-navbar" type="search" placeholder="Search"
-                        aria-label="Search">
-                    <div class="input-group-append">
-                        <button class="btn btn-navbar" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Navbar Search -->
+    <!-- Messages Dropdown Menu -->
+      <!-- Messages Dropdown Menu -->
+      <li class="nav-item dropdown">
 
-            <!-- Right navbar links -->
-            <ul class="navbar-nav ml-auto">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="fa fa-user"></i>
+          <span class="badge badge-danger navbar-badge"></span>        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <center>
+        <div class="image">
+          <img src="{{ asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" width="110" height="100" alt="User Image">
+        </div>
+       
+          <a href="#" class="d-block"></a>
+       
+     </center>
 
+     <table border="0" width="100%" align="center">
+      <tr><td colspan="2" align="center">{{ Auth::user()->name ?? '' }}</td></tr>
+      <tr><td align="center" width="60%"> <a href="#" class="dropdown-item dropdown-footer" data-toggle="modal" data-target="#modal-change"> 
+                          <image src="{{ asset('dist/img/change.png')}}" width="20" height="20"> Chane My Password  
+                          </a>    </td><td align="center" width="40%"> <a href="#" class="dropdown-item dropdown-footer" data-toggle="modal" data-target="#modal-logout"> 
+                      <image src="{{ asset('dist/img/exit.png')}}" width="20" height="20">     Logout  
+                          </a>   </td></tr>
+     
+   </table>
+        
+           
+           <div class="dropdown-divider"></div>  
 
-                <!-- Messages Dropdown Menu -->
-                <!-- Messages Dropdown Menu -->
-                <li class="nav-item dropdown">
-
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user"></i>
-                        <span class="badge badge-danger navbar-badge"></span> </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a href="#" class="dropdown-item">
-                            <!-- Message Start -->
-                            <center>
-                                <div class="image">
-                                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}"
-                                        class="img-circle elevation-2" width="110" height="100" alt="User Image">
-                                </div>
-
-                                <a href="#" class="d-block"></a>
-
-                            </center>
-
-                            <table border="0" width="100%" align="center">
-                                <tr>
-                                    <td colspan="2" align="center">{{ Auth::user()->name ?? '' }}</td>
-                                </tr>
-                                <tr>
-                                    <td align="center" width="60%"> <a href="#" class="dropdown-item dropdown-footer"
-                                            data-toggle="modal" data-target="#modal-change">
-                                            <image src="{{ asset('dist/img/change.png') }}" width="20" height="20">
-                                                Chane
-                                                My Password
-                                        </a> </td>
-                                    <td align="center" width="40%"> <a href="#" class="dropdown-item dropdown-footer"
-                                            data-toggle="modal" data-target="#modal-logout">
-                                            <img src="{{ asset('dist/img/exit.png') }}" width="20" height="20"> Logout
-                                        </a> </td>
-                                </tr>
-
-                            </table>
-
-
-                            <div class="dropdown-divider"></div>
-
-                    </div>
-                </li>
-                <!-- Notifications Dropdown Menu -->
-
-                <!-- Notifications Dropdown Menu -->
+            </div>
+      </li>
+      <!-- Notifications Dropdown Menu -->
 
 
 
 
-                <!-- Messages Dropdown Menu -->
-                <li class="nav-item dropdown">
+      <!-- Messages Dropdown Menu -->
+      <li class="nav-item dropdown">
 
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fa fa-comments"></i>
-                        <span class="badge badge-danger navbar-badge">
-                            @if (Auth::user()->level_id == 1)@endif
-                            @if (Auth::user()->level_id == 2) {{ \App\Ticket::count() }} @endif
-                            @if (Auth::user()->level_id == 3)
-                                {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }}
-                            @endif
-                            @if (Auth::user()->level_id == 4)
-                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                            @endif
-                            @if (Auth::user()->level_id == 5)
-                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                            @endif
-                        </span> </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="fa fa-comments"></i>
+          <span class="badge badge-danger navbar-badge">
+          @if(Auth::user()->level_id==1)@endif
+          @if(Auth::user()->level_id==2) {{ \App\Ticket::count() }} @endif
+          @if(Auth::user()->level_id==3) {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }} @endif
+          @if(Auth::user()->level_id==4) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+          @if(Auth::user()->level_id==5) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+        </span>        </a>
+         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+         
+             
+        @for($i=1;$i<=9;$i++)  
+              <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+                <div class="media-body">
+                <h3 class="dropdown-item-title">
+                <span class="float-right text-sm text-muted">
 
-
-                        @for ($i = 1; $i <= 9; $i++) <a href="#"
-                                class="dropdown-item">
-                                <!-- Message Start -->
-                                <div class="media">
-                                    <div class="media-body">
-                                        <h3 class="dropdown-item-title">
-                                            <span class="float-right text-sm text-muted">
-
-                                                @if (Auth::user()->level_id == 1)
-
-                                                @endif
-                                                @if (Auth::user()->level_id == 2)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->get()->count() }} :
-                                                    Tickets
-                                                @endif
-                                                @if (Auth::user()->level_id == 3)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
-                                                    : Tickets
-                                                @endif
-                                                @if (Auth::user()->level_id == 4)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                                                    : Tickets
-                                                @endif
-                                                @if (Auth::user()->level_id == 5)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                                                    : Tickets
-                                                @endif
-
-                                            </span>
-                                        </h3>
-                                        <p class="text-sm">{{ \App\TicketStatus::find($i)->name }}</p>
-                                    </div>
-                                </div>
-                                <!-- Message End -->
-                            </a>
-                            <div class="dropdown-divider"></div>
-
-                        @endfor
+          @if(Auth::user()->level_id==1)
+          
+          @endif
+          @if(Auth::user()->level_id==2) 
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }} : Tickets 
+           @endif
+          @if(Auth::user()->level_id==3) 
+          {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} : Tickets 
+          @endif
+          @if(Auth::user()->level_id==4) 
+          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} : Tickets 
+          @endif
+          @if(Auth::user()->level_id==5) 
+          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} : Tickets 
+          @endif
+                  
+            </span>                </h3>
+                <p class="text-sm">{{ \App\TicketStatus::find($i)->name }}</p>
+            </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          
+          @endfor
 
 
 
 
 
+        
+          <a href="#" class="dropdown-item dropdown-footer">See All</a>        </div>
+      </li>
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="fa fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">
+           
+          @if(Auth::user()->level_id==1)
+          
+          @endif
+          @if(Auth::user()->level_id==2) 
+          {{ \App\Ticket::count() }}
+           @endif
+          @if(Auth::user()->level_id==3) 
+          {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+          @endif
+          @if(Auth::user()->level_id==4) 
+          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          @endif
+          @if(Auth::user()->level_id==5) 
+          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          @endif
+          
+          </span>        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">
+            
+         
 
-                        <a href="#" class="dropdown-item dropdown-footer">See All</a>
-                    </div>
-                </li>
-                <!-- Notifications Dropdown Menu -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fa fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge">
-
-                            @if (Auth::user()->level_id == 1)
-
-                            @endif
-                            @if (Auth::user()->level_id == 2)
-                                {{ \App\Ticket::count() }}
-                            @endif
-                            @if (Auth::user()->level_id == 3)
-                                {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
-                            @endif
-                            @if (Auth::user()->level_id == 4)
-                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                            @endif
-                            @if (Auth::user()->level_id == 5)
-                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                            @endif
-
-                        </span> </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-item dropdown-header">
-
-
-
-                            @if (Auth::user()->level_id == 1)
-
-                            @endif
-                            @if (Auth::user()->level_id == 2)
-                                {{ \App\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
-                                New Tickets
-                            @endif
-                            @if (Auth::user()->level_id == 3)
-                                {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
-                                New Tickets
-                            @endif
-                            @if (Auth::user()->level_id == 4)
-                                {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                                New Tickets
-                            @endif
-                            @if (Auth::user()->level_id == 5)
-                                {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
-                                New Tickets
-                            @endif
-
-                        </span>
-                        <div class="dropdown-divider"></div>
-
-                        @if (isset($shownew))
-                            @foreach ($shownew as $data)
+          @if(Auth::user()->level_id==1)
+          
+          @endif
+          @if(Auth::user()->level_id==2) 
+          {{ \App\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} New Tickets
+           @endif
+          @if(Auth::user()->level_id==3) 
+          {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} New Tickets
+          @endif
+          @if(Auth::user()->level_id==4) 
+          {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }} New Tickets
+          @endif
+          @if(Auth::user()->level_id==5) 
+          {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }} New Tickets
+          @endif
+        
+        </span>
+          <div class="dropdown-divider"></div>
+        
+          @if(isset($shownew))
+ @foreach($shownew as $data)
 
 
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-file mr-2"></i> {{ $data->station_en ?? '' }}
-                                    <span
-                                        class="float-right text-muted text-sm">{{ $show->breakdown_en ?? '' }}</span>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                            @endforeach
-                        @endif
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i>  {{$data->station_en ?? ''}}
+            <span class="float-right text-muted text-sm">{{ $show->breakdown_en ?? '' }}</span>          </a>
+          <div class="dropdown-divider"></div>
+          @endforeach
+ @endif
 
-                        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
-                            class="fas fa-th-large"></i></a>
-                </li>
-            </ul>
-        </nav>
-        <!-- /.navbar -->
+          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
+            class="fas fa-th-large"></i></a>      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">

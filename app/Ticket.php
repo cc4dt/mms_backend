@@ -36,6 +36,7 @@ class Ticket extends Model
     protected $appends = [
         'led_time',
         'sla',
+        'in_sla',
         'actions',
     ];
 
@@ -202,8 +203,10 @@ class Ticket extends Model
     
     public function getLedTimeAttribute($value)
     {
-        if($this->status->key == "closed")
-            return $this->created_at->diff($this->updated_at)->format('%d:%H:%i');
+        if($this->status->key == "closed") {
+            $totalDuration = $this->created_at->diffInSeconds($this->updated_at);
+            return floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
+        }
     }
     
     public function getSlaAttribute($value)
@@ -220,6 +223,26 @@ class Ticket extends Model
             }
         }
         return 0;
+    }
+    
+    public function getInSlaAttribute($value)
+    {
+        foreach ($this->timelines as $value) {
+            // dump($value->status->key . $value->created_at);
+            if($value->status->key == 'closed' && $value->created_at) {
+                $hours = $this->created_at->diffInHours($value->created_at);
+                if($this->priority->key == "normal" && $hours <= 72) {
+                    return true;
+                }
+                elseif ($this->priority->key == "urgent" && $hours <= 24) {
+                    return true;
+                }
+                elseif ($this->priority->key == "emergency" && $hours <= 5) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public function getActionsAttribute($value)

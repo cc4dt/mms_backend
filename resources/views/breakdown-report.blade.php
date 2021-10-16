@@ -91,6 +91,18 @@
                             @endif
                         </select>
                     </div>
+
+                    <div class="p-3 col-md-3">
+                        <select id="type_id" name="type_id"
+                            class="select2bs4 form-control @error('type_id') is-invalid @enderror" data-vldtr="required">
+                            <option value="">-Select Type-</option>
+                            @if (isset($types))
+                                @foreach ($types as $data)
+                                    <option value="{{ $data->id ?? '' }}">{{ $data->name ?? '' }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
                 </div>
                 <div class="p-3 table-responsive">
                     <table id="example" class="table table-bordered table-striped" width="100%">
@@ -100,12 +112,10 @@
         </div>
     </div>
     <script>
-        var station = "";
-        var status = "";
-        var equipment = "";
-        var breakdown = "";
+        var station = "", status = "", equipment = "", breakdown = "", type = "";
 
         var tickets = @json($tickets);
+        
         const columns = [{
                 title: "Ticket No"
             },
@@ -119,7 +129,13 @@
                 title: "Breakdown"
             },
             {
+                title: "Type"
+            },
+            {
                 title: "SLA"
+            },
+            {
+                title: "SLA Sataus"
             },
             {
                 title: "Action Done"
@@ -141,10 +157,12 @@
         tickets.forEach(e => {
             dataSet.push([
                 e.number,
-                e.station.name,
-                e.equipment.name,
-                e.breakdown.name,
+                e.station?.name ?? "",
+                e.equipment?.name ?? "",
+                e.breakdown?.name ?? "",
+                e.type?.name ?? "",
                 e.sla,
+                e.in_sla ? 'IN' : 'OUT',
                 e.actions.join(', '),
                 new Date(e.created_at).toLocaleString(),
                 new Date(e.updated_at).toLocaleString(),
@@ -196,14 +214,17 @@
             tickets.forEach(e => {
                 if ((e.station_id == station || !station) &&
                     (e.status_id == status || !status) &&
+                    (e.type_id == type || !type) &&
                     (e.breakdown_id == breakdown || !breakdown) &&
                     (e.equipment_id == equipment || !equipment))
                     example.row.add([
                         e.number,
-                        e.station.name,
-                        e.equipment.name,
-                        e.breakdown.name,
+                        e.station?.name ?? "",
+                        e.equipment?.name ?? "",
+                        e.breakdown?.name ?? "",
+                        e.type?.name ?? "",
                         e.sla,
+                        e.in_sla ? 'IN' : 'OUT',
                         e.actions.join(', '),
                         new Date(e.created_at).toLocaleString(),
                         new Date(e.updated_at).toLocaleString(),
@@ -230,6 +251,13 @@
         jQuery(document).ready(function() {
             jQuery('select[name="status_id"]').on('change', function() {
                 status = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('select[name="type_id"]').on('change', function() {
+                type = jQuery(this).val();
                 filterReport();
             });
         });

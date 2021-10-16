@@ -21,6 +21,8 @@ use App\User;
 use App\MaintenanceDetail;
 use App\MaintenanceProcedure;
 use App\TicketStatus;
+use App\TicketType;
+use App\SparePart;
 use DB;
 
 
@@ -267,10 +269,12 @@ class ReportController extends Controller
             "breakdown",
             "station",
             "status",
+            "type",
         );
         $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
         $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
         $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
+        $arr['types'] = TicketType::all('id', 'name_ar', 'name_en');
         $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
         
         return view('breakdown-report')->with($arr);
@@ -292,6 +296,9 @@ class ReportController extends Controller
         );
         
         $arr['stations'] = Station::all();
+        $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
+        $arr['types'] = TicketType::all('id', 'name_ar', 'name_en');
+        $arr['spareparts'] = SparePart::all('id', 'name_ar', 'name_en');
         return view('maintenance-report')->with($arr);
     }
     
