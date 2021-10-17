@@ -23,14 +23,17 @@ type Query {
 
 extend type Query @guard {
     # masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
+
+    masterEquipment(id: ID @eq, serial: String @eq): MasterEquipment @find
     allMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @all
     paginateMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @paginate(defaultCount: 10)
+    
     part(id: ID! @eq): Part! @find
 
     dashboard: Dashboard! @field(resolver: "DashQuery")
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
-    ticket(id: ID! @eq): Ticket @find
+    ticket(id: ID @eq, number: String @eq): Ticket @find
     tickets: [Ticket!]! 
      @paginate(defaultCount: 10)
      @orderBy(column: "updated_at", direction: DESC)
@@ -177,6 +180,7 @@ type MaintenanceProcess {
     id: ID!
     equipment: MasterEquipment
     part: Part!
+    ticket: Ticket!
     details: [MaintenanceDetail!]
 }
 
@@ -185,6 +189,7 @@ type MasterEquipment {
     equipment: Equipment!
     station: Station!
     serial: String
+    processes: [MaintenanceProcess!]
     details: [MasterDetail!]
 }
 
@@ -243,6 +248,7 @@ type Station {
     id: ID!
     name: String!
     state: State!
+    equipment: [MasterEquipment!]
 }
 
 type Equipment {

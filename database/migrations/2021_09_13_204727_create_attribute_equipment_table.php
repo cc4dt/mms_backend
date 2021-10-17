@@ -14,10 +14,10 @@ class CreateAttributeEquipmentTable extends Migration
     public function up()
     {
         Schema::create('attribute_equipment', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('equipment_id')->constrained('equipment')->onDelete('cascade');
             $table->foreignId('attribute_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
+            
+            $table->primary(['equipment_id', 'attribute_id']);
         });
     }
 

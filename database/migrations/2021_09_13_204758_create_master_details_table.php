@@ -14,11 +14,11 @@ class CreateMasterDetailsTable extends Migration
     public function up()
     {
         Schema::create('master_details', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('master_equipment_id')->constrained('master_equipment')->onDelete('cascade');
+            $table->foreignId('equipment_id')->constrained('master_equipment')->onDelete('cascade');
             $table->foreignId('attribute_id')->constrained()->onDelete('cascade');
             $table->text('value');
-            $table->timestamps();
+            
+            $table->primary(['equipment_id', 'attribute_id']);
         });
     }
 

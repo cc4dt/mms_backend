@@ -234,184 +234,209 @@
 
     <div class="wrapper">
         <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="" class="nav-link">Home</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Contact</a>
-      </li>
-    </ul>
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                            class="fas fa-bars"></i></a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="#" class="nav-link">Contact</a>
+                </li>
+            </ul>
 
-    <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-      <!-- Navbar Search -->
-    <!-- Messages Dropdown Menu -->
-      <!-- Messages Dropdown Menu -->
-      <li class="nav-item dropdown">
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Navbar Search -->
+                <!-- Messages Dropdown Menu -->
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
 
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fa fa-user"></i>
-          <span class="badge badge-danger navbar-badge"></span>        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <center>
-        <div class="image">
-          <img src="{{ asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" width="110" height="100" alt="User Image">
-        </div>
-       
-          <a href="#" class="d-block"></a>
-       
-     </center>
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user"></i>
+                        <span class="badge badge-danger navbar-badge"></span> </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a href="#" class="dropdown-item">
+                            <!-- Message Start -->
+                            <center>
+                                <div class="image">
+                                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}"
+                                        class="img-circle elevation-2" width="110" height="100" alt="User Image">
+                                </div>
 
-     <table border="0" width="100%" align="center">
-      <tr><td colspan="2" align="center">{{ Auth::user()->name ?? '' }}</td></tr>
-      <tr><td align="center" width="60%"> <a href="#" class="dropdown-item dropdown-footer" data-toggle="modal" data-target="#modal-change"> 
-                          <image src="{{ asset('dist/img/change.png')}}" width="20" height="20"> Chane My Password  
-                          </a>    </td><td align="center" width="40%"> <a href="#" class="dropdown-item dropdown-footer" data-toggle="modal" data-target="#modal-logout"> 
-                      <image src="{{ asset('dist/img/exit.png')}}" width="20" height="20">     Logout  
-                          </a>   </td></tr>
-     
-   </table>
-        
-           
-           <div class="dropdown-divider"></div>  
+                                <a href="#" class="d-block"></a>
 
-            </div>
-      </li>
-      <!-- Notifications Dropdown Menu -->
+                            </center>
+
+                            <table border="0" width="100%" align="center">
+                                <tr>
+                                    <td colspan="2" align="center">{{ Auth::user()->name ?? '' }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="center" width="60%"> <a href="#" class="dropdown-item dropdown-footer"
+                                            data-toggle="modal" data-target="#modal-change">
+                                            <image src="{{ asset('dist/img/change.png') }}" width="20" height="20">
+                                                Chane My Password
+                                        </a> </td>
+                                    <td align="center" width="40%"> <a href="#" class="dropdown-item dropdown-footer"
+                                            data-toggle="modal" data-target="#modal-logout">
+                                            <image src="{{ asset('dist/img/exit.png') }}" width="20" height="20">
+                                                Logout
+                                        </a> </td>
+                                </tr>
+
+                            </table>
 
 
+                            <div class="dropdown-divider"></div>
 
-
-      <!-- Messages Dropdown Menu -->
-      <li class="nav-item dropdown">
-
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fa fa-comments"></i>
-          <span class="badge badge-danger navbar-badge">
-          @if(Auth::user()->level_id==1)@endif
-          @if(Auth::user()->level_id==2) {{ \App\Ticket::count() }} @endif
-          @if(Auth::user()->level_id==3) {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }} @endif
-          @if(Auth::user()->level_id==4) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
-          @if(Auth::user()->level_id==5) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
-        </span>        </a>
-         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-         
-             
-        @for($i=1;$i<=9;$i++)  
-              <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-                <div class="media-body">
-                <h3 class="dropdown-item-title">
-                <span class="float-right text-sm text-muted">
-
-          @if(Auth::user()->level_id==1)
-          
-          @endif
-          @if(Auth::user()->level_id==2) 
-          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }} : Tickets 
-           @endif
-          @if(Auth::user()->level_id==3) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} : Tickets 
-          @endif
-          @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} : Tickets 
-          @endif
-          @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} : Tickets 
-          @endif
-                  
-            </span>                </h3>
-                <p class="text-sm">{{ \App\TicketStatus::find($i)->name }}</p>
-            </div>
-            </div>
-            <!-- Message End -->
-          </a>
-          <div class="dropdown-divider"></div>
-          
-          @endfor
+                    </div>
+                </li>
+                <!-- Notifications Dropdown Menu -->
 
 
 
 
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
 
-        
-          <a href="#" class="dropdown-item dropdown-footer">See All</a>        </div>
-      </li>
-      <!-- Notifications Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="fa fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">
-           
-          @if(Auth::user()->level_id==1)
-          
-          @endif
-          @if(Auth::user()->level_id==2) 
-          {{ \App\Ticket::count() }}
-           @endif
-          @if(Auth::user()->level_id==3) 
-          {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
-          @endif
-          @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
-          @endif
-          @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
-          @endif
-          
-          </span>        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">
-            
-         
-
-          @if(Auth::user()->level_id==1)
-          
-          @endif
-          @if(Auth::user()->level_id==2) 
-          {{ \App\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} New Tickets
-           @endif
-          @if(Auth::user()->level_id==3) 
-          {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }} New Tickets
-          @endif
-          @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }} New Tickets
-          @endif
-          @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }} New Tickets
-          @endif
-        
-        </span>
-          <div class="dropdown-divider"></div>
-        
-          @if(isset($shownew))
- @foreach($shownew as $data)
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fa fa-comments"></i>
+                        <span class="badge badge-danger navbar-badge">
+                            @if (Auth::user()->level_id == 1)@endif
+                            @if (Auth::user()->level_id == 2) {{ \App\Ticket::count() }} @endif
+                            @if (Auth::user()->level_id == 3) {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }} @endif
+                            @if (Auth::user()->level_id == 4) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+                            @if (Auth::user()->level_id == 5) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+                        </span> </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
 
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i>  {{$data->station_en ?? ''}}
-            <span class="float-right text-muted text-sm">{{ $show->breakdown_en ?? '' }}</span>          </a>
-          <div class="dropdown-divider"></div>
-          @endforeach
- @endif
+                        @for ($i = 1; $i <= 9; $i++)
+                            <a href="#" class="dropdown-item">
+                                <!-- Message Start -->
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h3 class="dropdown-item-title">
+                                            <span class="float-right text-sm text-muted">
 
-          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
-            class="fas fa-th-large"></i></a>      </li>
-    </ul>
-  </nav>
-  <!-- /.navbar -->
+                                                @if (Auth::user()->level_id == 1)
+
+                                                @endif
+                                                @if (Auth::user()->level_id == 2)
+                                                    {{ \App\Ticket::where(['status_id' => $i])->get()->count() }} :
+                                                    Tickets
+                                                @endif
+                                                @if (Auth::user()->level_id == 3)
+                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                                    : Tickets
+                                                @endif
+                                                @if (Auth::user()->level_id == 4)
+                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                                    : Tickets
+                                                @endif
+                                                @if (Auth::user()->level_id == 5)
+                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                                    : Tickets
+                                                @endif
+
+                                            </span>
+                                        </h3>
+                                        <p class="text-sm">{{ \App\TicketStatus::find($i)->name }}</p>
+                                    </div>
+                                </div>
+                                <!-- Message End -->
+                            </a>
+                            <div class="dropdown-divider"></div>
+
+                        @endfor
+
+
+
+
+
+
+                        <a href="#" class="dropdown-item dropdown-footer">See All</a>
+                    </div>
+                </li>
+                <!-- Notifications Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge">
+
+                            @if (Auth::user()->level_id == 1)
+
+                            @endif
+                            @if (Auth::user()->level_id == 2)
+                                {{ \App\Ticket::count() }}
+                            @endif
+                            @if (Auth::user()->level_id == 3)
+                                {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                            @endif
+                            @if (Auth::user()->level_id == 4)
+                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                            @endif
+                            @if (Auth::user()->level_id == 5)
+                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                            @endif
+
+                        </span> </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">
+
+
+
+                            @if (Auth::user()->level_id == 1)
+
+                            @endif
+                            @if (Auth::user()->level_id == 2)
+                                {{ \App\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                New Tickets
+                            @endif
+                            @if (Auth::user()->level_id == 3)
+                                {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                New Tickets
+                            @endif
+                            @if (Auth::user()->level_id == 4)
+                                {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                New Tickets
+                            @endif
+                            @if (Auth::user()->level_id == 5)
+                                {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                New Tickets
+                            @endif
+
+                        </span>
+                        <div class="dropdown-divider"></div>
+
+                        @if (isset($shownew))
+                            @foreach ($shownew as $data)
+
+
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-file mr-2"></i> {{ $data->station_en ?? '' }}
+                                    <span
+                                        class="float-right text-muted text-sm">{{ $show->breakdown_en ?? '' }}</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            @endforeach
+                        @endif
+
+                        <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
+                            class="fas fa-th-large"></i></a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
 
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
@@ -452,8 +477,8 @@
                             </a>
 
                         </li>
-                        @if (isset(Auth::user()->IsAdmin))
-                            @if (Auth::user()->IsAdmin == 1)
+                        @if (false)
+                            @if (false)
                                 <li class="nav-item has-treeview">
                                     <a href="#" class="nav-link">
                                         <i class="nav-icon far fa-plus-square"></i>
@@ -544,23 +569,21 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="
-                
-           @if (Auth::user()->level_id == 1)
-
+                                         @if (Auth::user()->isAdmin())
+                                        {{ route('Admin.index') }}
                                         @endif
-                                        @if (Auth::user()->level_id == 2)
+                                        @if (Auth::user()->isSupervisor())
                                             {{ route('Supervisor.index') }}
                                         @endif
-                                        @if (Auth::user()->level_id == 3)
+                                        @if (Auth::user()->isTeamleader())
                                             {{ route('Teamleader.index') }}
                                         @endif
-                                        @if (Auth::user()->level_id == 4)
+                                        @if (Auth::user()->isDealer())
                                             {{ route('Dealer.index') }}
                                         @endif
-                                        @if (Auth::user()->level_id == 5)
+                                        @if (Auth::user()->isClient())
                                             {{ route('Client.index') }}
                                         @endif
-
                                         " class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Breakdowns</p>
@@ -570,7 +593,7 @@
                             </ul>
                         </li>
 
-                        @if (Auth::user()->level_id == 2)
+                        @if (Gate::allows('view-reports'))
 
                             <li class="nav-item has-treeview">
                                 <a href="#" class="nav-link">
@@ -583,19 +606,19 @@
                                 <ul class="nav nav-treeview">
 
                                     <li class="nav-item">
-                                        <a href="@if (Auth::user()->level_id == 2) {{ route('breakdown-report') }} @endif" class="nav-link">
+                                        <a href="{{ route('breakdown-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Breakdown Tickets</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="@if (Auth::user()->level_id == 2) {{ route('maintenance-report') }} @endif" class="nav-link">
+                                        <a href="{{ route('maintenance-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Spare Part Report</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="@if (Auth::user()->level_id == 2) {{ route('pm-report') }} @endif" class="nav-link">
+                                        <a href="{{ route('pm-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Preventive Maintenace</p>
                                         </a>
@@ -603,11 +626,6 @@
                         @endif
                     </ul>
                     </li>
-
-
-
-
-
                     </ul>
 
                 </nav>

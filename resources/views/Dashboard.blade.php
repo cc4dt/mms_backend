@@ -340,6 +340,7 @@
                       <td>
                         <div class="sparkbar" data-color="#00a65a" data-height="20">   
            @if(Auth::user()->level_id==1)
+           {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
           
           @endif
           @if(Auth::user()->level_id==2) 
@@ -349,10 +350,10 @@
           {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
           @endif
           @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} 
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
           @endif
           @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
           @endif</div>
                       </td>
                     </tr>
@@ -646,6 +647,7 @@
                 <span class="info-box-number"> 
                   
                 @if(Auth::user()->level_id==1)
+                {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
           
           @endif
           @if(Auth::user()->level_id==2) 
@@ -660,14 +662,16 @@
           {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }}
           @endif
           @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} 
-          Tickets From 
-          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} 
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
+          
+          Tickets From  
+           {{ \App\Ticket::get()->count() }}  
           @endif
           @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
-          Tickets Form
-          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
+          
+          Tickets From  
+           {{ \App\Ticket::get()->count() }}  
           @endif
         </span>
 
@@ -691,22 +695,21 @@
             )*100),2)
            }}%
           @endif
-          @if(Auth::user()->level_id==4 and (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())>0) 
+          @if(Auth::user()->level_id==4 and (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
           {{ round(((
-            (\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
             )*100),2)
-          
-          }}%
+         }}%
           @endif
-          @if(Auth::user()->level_id==5 and (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())>0) 
-          {{ round(
-            ((\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+          @if(Auth::user()->level_id==5 and (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
+          {{ round(((
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())
-            )*100,2)
-          }}%
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
+            )*100),2)
+         }}%
           @endif"></div>
                 </div>
                 <span class="progress-description">
@@ -729,20 +732,21 @@
             )*100),2)
            }}%
           @endif
-          @if(Auth::user()->level_id==4 and (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())) 
+          @if(Auth::user()->level_id==4 and (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
           {{ round(((
-            (\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
             )*100),2)
-          
-          }}%
+         }}%
           @endif
-          @if(Auth::user()->level_id==5 and  (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())>0) 
-          {{ round(((\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+          @if(Auth::user()->level_id==5 and (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
+          {{ round(((
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count()))*100,2)
-          }}%
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
+            )*100),2)
+         }}%
           @endif
                 </span>
               </div>
@@ -926,14 +930,16 @@
           {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }}
           @endif
           @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} 
-          Tickets From 
-          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} 
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
+          
+          Tickets From  
+           {{ \App\Ticket::get()->count() }} 
           @endif
           @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
-          Tickets Form
-          {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}
+          
+          Tickets From  
+           {{ \App\Ticket::get()->count() }} 
           @endif
         </span>
 
@@ -957,20 +963,21 @@
             )*100),2)
            }}%
           @endif
-          @if(Auth::user()->level_id==4 and  (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())>0) 
+          @if(Auth::user()->level_id==4 and  (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
           {{ round(((
-            (\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
             )*100),2)
-          
-          }}%
+         }}%
           @endif
-          @if(Auth::user()->level_id==5 and (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count()))*100,2)>0) 
-          {{ round(((\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+          @if(Auth::user()->level_id==5 and  (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
+          {{ round(((
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count()))*100,2)
-          }}%
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
+            )*100),2)
+         }}%
           @endif"></div>
                 </div>
                 <span class="progress-description">
@@ -993,21 +1000,21 @@
             )*100),2)
            }}
           @endif
-          @if(Auth::user()->level_id==4 and  (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())>0) 
+          @if(Auth::user()->level_id==4 and (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
           {{ round(((
-            (\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
             )*100),2)
-          
-          }} %
+         }} %
           @endif
-          @if(Auth::user()->level_id==5 and (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())>0) 
-          {{ round(((\App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count())
+          @if(Auth::user()->level_id==5 and (\App\Ticket::count())/(\App\Ticket::get()->count())>0) 
+          {{ round(((
+            (\App\Ticket::where(['status_id' => $i])->get()->count())/(\App\Ticket::get()->count())
             /
-            (\App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count())
-            )*100,2)
-          }} %
+            (\App\Ticket::count())/(\App\Ticket::get()->count())
+            )*100),2)
+         }} %
           @endif
                 </span>
               </div>
@@ -1164,20 +1171,7 @@
         </div>
         <!-- /.modal-dialog -->
       </div>
-{{-- <!-- jQuery -->
-<script src="{{asset('dashboard/plugins/jquery/jquery.min.js')}}"></script>
-<!-- Bootstrap 4 -->
-<script src="{{asset('dashboard/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-<!-- ChartJS -->
-<script src="{{asset('dashboard/plugins/chart.js/Chart.min.js')}}"></script>
-<!-- AdminLTE App -->
-<script src="{{asset('dashboard/dist/js/adminlte.min.js')}}"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="{{asset('dashboard/dist/js/demo.js')}}"></script>
 
-
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="dashboard/dist/js/pages/dashboard2.js"></script> --}}
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -1309,10 +1303,10 @@
           {{ \App\Ticket::where(['equipment_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}, 
           @endif
           @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['equipment_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }},
+          {{ \App\Ticket::where(['equipment_id' => $i])->get()->count() }}, 
           @endif
           @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['equipment_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} ,
+          {{ \App\Ticket::where(['equipment_id' => $i])->get()->count() }}, 
           @endif
          @endfor
 
@@ -1356,10 +1350,10 @@
           {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}, 
           @endif
           @if(Auth::user()->level_id==4) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }},
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}, 
           @endif
           @if(Auth::user()->level_id==5) 
-          {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }} ,
+          {{ \App\Ticket::where(['status_id' => $i])->get()->count() }}, 
           @endif
          @endfor
 

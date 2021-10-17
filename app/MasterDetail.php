@@ -7,11 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MasterDetail extends Model
 {
-    public function equipment(): BelongsTo
-    {
-        return $this->belongsTo('App\MasterEquipment');
-    }
-    
+    public $timestamps = false;
 
     public function attribute(): BelongsTo
     {

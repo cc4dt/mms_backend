@@ -26,6 +26,11 @@ class Station extends Model
         return $this->belongsTo('App\State');
     }
     
+    public function equipment(): HasMany
+    {
+        return $this->hasMany('App\MasterEquipment');
+    }
+    
     public function tickets(): HasMany
     {
         return $this->hasMany('App\Ticket');

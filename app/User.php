@@ -119,6 +119,46 @@ class User extends Authenticatable
         return $this->hasMany('App\FcmToken');
     }
     
+    public function isAdmin()
+    {
+        if($this->level->key == "admin")
+            return true;
+        else
+            return false;
+    }
+    
+    public function isSupervisor()
+    {
+        if($this->level->key == "supervisor")
+            return true;
+        else
+            return false;
+    }
+    
+    public function isTeamleader()
+    {
+        if($this->level->key == "teamleader")
+            return true;
+        else
+            return false;
+    }
+    
+    public function isDealer()
+    {
+        if($this->level->key == "dealer")
+            return true;
+        else
+            return false;
+    }
+    
+    public function isClient()
+    {
+        if($this->level->key == "client")
+            return true;
+        else
+            return false;      
+    }
+
     public function getDeviceTokens()
     {
         $tokens = [];

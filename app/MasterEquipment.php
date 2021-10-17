@@ -18,8 +18,13 @@ class MasterEquipment extends Model
         return $this->belongsTo('App\Station');
     }
     
+    public function processes(): HasMany
+    {
+        return $this->hasMany('App\MaintenanceProcess', 'equipment_id');
+    }
+    
     public function details(): HasMany
     {
-        return $this->hasMany('App\MasterDetail');
+        return $this->hasMany('App\MasterDetail', 'equipment_id');
     }
 }
