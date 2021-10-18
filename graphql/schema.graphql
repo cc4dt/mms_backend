@@ -24,7 +24,8 @@ type Query {
 extend type Query @guard {
     # masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
 
-    masterEquipment(id: ID @eq, serial: String @eq): MasterEquipment @find
+    masterEquipment(id: ID! @eq): MasterEquipment @find
+    masterEquipmentBySerial(serial: String! @eq): MasterEquipment @find
     allMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @all
     paginateMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @paginate(defaultCount: 10)
     
@@ -148,6 +149,7 @@ type TicketTimeline {
     id: ID!
     ticket: Ticket!
     status: TicketStatus!
+    description: String
     created_by: User
     updated_by: User
     created_at: DateTimeUtc
@@ -167,9 +169,10 @@ type Ticket {
     priority: TicketPriority
     work_description: String
     status: TicketStatus!
-    timelines: [TicketTimeline!]!
+    timelines: [TicketTimeline!]! @hasMany @orderBy(column: "created_at")
+    timeline: TicketTimeline!
     teamleader: User
-    maintenance_processes: [MaintenanceProcess!]!  @hasMany
+    maintenance_processes: [MaintenanceProcess!]! @hasMany
     created_by: User
     updated_by: User
     created_at: DateTimeUtc
@@ -306,7 +309,7 @@ input OpenTicketInput {
     station_id: ID!
     equipment_id: ID!
     breakdown_id: ID!
-    open_description: String
+    description: String
 }
 
 input AssignTicketInput {
@@ -314,13 +317,14 @@ input AssignTicketInput {
     type_id: ID!
     trade_id: ID!
     priority_id: ID!
-    work_description: String
+    description: String
 }
 
 input CloseTicketInput {
     equipment_id: ID
     part_id: ID!
     status_id: ID
+    description: String
     details: [DetailTicketInput!]
 }
 

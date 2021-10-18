@@ -9,6 +9,7 @@ class TicketTimeline extends Model
 {
     protected $fillable = [
         "status_id",
+        "description",
         "created_by_id",
         "updated_by_id",
     ];

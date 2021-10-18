@@ -38,6 +38,7 @@ class Ticket extends Model
         'sla',
         'in_sla',
         'actions',
+        'timeline',
     ];
 
     static public function statusReported()
@@ -208,7 +209,7 @@ class Ticket extends Model
             return floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
         }
     }
-    
+
     public function getSlaAttribute($value)
     {
         if($this->priority) {
@@ -223,6 +224,13 @@ class Ticket extends Model
             }
         }
         return 0;
+    }
+
+    public function getTimelineAttribute($value)
+    {
+        if($this->timelines) {
+            return $this->timelines()->orderBy('created_at', 'desc')->first();
+        }
     }
     
     public function getInSlaAttribute($value)
