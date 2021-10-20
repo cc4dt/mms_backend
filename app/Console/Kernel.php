@@ -4,6 +4,9 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\NotifyNormalTicketDeadline;
+use App\Console\Commands\NotifyEmergencyTicketDeadline;
+use App\Console\Commands\NotifyUrgentTicketDeadline;
 
 class Kernel extends ConsoleKernel
 {
@@ -13,7 +16,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        NotifyNormalTicketDeadline::class,
+        NotifyEmergencyTicketDeadline::class,
+        NotifyUrgentTicketDeadline::class,
     ];
 
     /**
@@ -24,7 +29,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('ticket:normal')->everySixHours()
+            ->unlessBetween('23:00', '6:00');
+        $schedule->command('ticket:urgent')->everyThreeHours()
+            ->unlessBetween('23:00', '6:00');
+        $schedule->command('ticket:emergency')->hourly()
+            ->unlessBetween('23:00', '6:00');
     }
 
     /**

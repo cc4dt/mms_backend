@@ -86,6 +86,12 @@ class User extends Authenticatable
         return User::where('level_id', $levelID)->get();
     }
 
+    static public function clients()
+    {
+        $levelID = array_search('client', self::LEVELS);
+        return User::where('level_id', $levelID)->get();
+    }
+
 
     public function updated_by(): BelongsTo
     {

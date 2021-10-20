@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\TicketAssigned;
 use App\Notifications\TicketOpened;
+use App\Notifications\TicketClosed;
 
 class Ticket extends Model
 {
@@ -35,6 +36,7 @@ class Ticket extends Model
 
     protected $appends = [
         'led_time',
+        'deadline',
         'sla',
         'in_sla',
         'actions',
@@ -209,6 +211,15 @@ class Ticket extends Model
             return floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
         }
     }
+    
+    public function getDeadlineAttribute($value)
+    {
+        if($this->sla) {
+            $deadline = $this->created_at->copy()->addHours($this->sla);
+            if($deadline >= Carbon::now())
+                return $deadline;
+        }
+    }
 
     public function getSlaAttribute($value)
     {
@@ -236,16 +247,9 @@ class Ticket extends Model
     public function getInSlaAttribute($value)
     {
         foreach ($this->timelines as $value) {
-            // dump($value->status->key . $value->created_at);
             if($value->status->key == 'closed' && $value->created_at) {
                 $hours = $this->created_at->diffInHours($value->created_at);
-                if($this->priority->key == "normal" && $hours <= 72) {
-                    return true;
-                }
-                elseif ($this->priority->key == "urgent" && $hours <= 24) {
-                    return true;
-                }
-                elseif ($this->priority->key == "emergency" && $hours <= 5) {
+                if ($this->sla && $hours <= $this->sla) {
                     return true;
                 }
             }
@@ -319,6 +323,17 @@ class Ticket extends Model
                 foreach ($input['details'] as $item) {
                     $process->details()->create($item);
                 }
+            }
+
+            try {
+                $users = User::supervisors()->merge(User::clients());
+                foreach ($users as $key => $value) {
+                    if($value->id == Auth::id())
+                        $users->forget($key);
+                }
+                Notification::send($users, new TicketClosed($this));
+            } catch (\Throwable $th) {
+                //throw $th;
             }
             return $this;
         }

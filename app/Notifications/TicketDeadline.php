@@ -15,19 +15,21 @@ use NotificationChannels\Fcm\Resources\ApnsConfig;
 use NotificationChannels\Fcm\Resources\ApnsFcmOptions;
 use App\Ticket;
 
-class TicketOpened extends Notification
+class TicketDeadline extends Notification
 {
     use Queueable;
 
     public $ticket;
+    public $time;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($ticket)
+    public function __construct($ticket, $time)
     {
         $this->ticket = $ticket;
+        $this->time = $time;
     }
 
     /**
@@ -97,13 +99,13 @@ class TicketOpened extends Notification
             "data" => [
                 "id" => (string) $this->ticket->id,
                 "type" => "ticket",
-                "action" => "opened",
-                "notification_title" => __("message.ticket_opened_title"),
-                "notification_body" => __("message.ticket_opened_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "client" => $this->ticket->updated_by->name]),
+                "action" => "deadline",
+                "notification_title" => __("message.ticket_deadline_title"),
+                "notification_body" => __("message.ticket_deadline_body", ["time" => $this->time, "ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name]),
             ],
             "notification" => [
-                "title" => __("message.ticket_opened_title"),
-                "body" => __("message.ticket_opened_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "client" => $this->ticket->updated_by->name]),
+                "title" => __("message.ticket_deadline_title"),
+                "body" => __("message.ticket_deadline_body", ["time" => $this->time, "ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name]),
             ]
         ];
     }
