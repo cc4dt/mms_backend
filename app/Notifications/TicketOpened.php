@@ -99,11 +99,11 @@ class TicketOpened extends Notification
                 "type" => "ticket",
                 "action" => "opened",
                 "notification_title" => __("message.ticket_opened_title"),
-                "notification_body" => __("message.ticket_opened_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "client" => $this->ticket->updated_by->name]),
+                "notification_body" => __("message.ticket_opened_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "username" => $this->ticket->created_by->name]),
             ],
             "notification" => [
                 "title" => __("message.ticket_opened_title"),
-                "body" => __("message.ticket_opened_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "client" => $this->ticket->updated_by->name]),
+                "body" => __("message.ticket_opened_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "username" => $this->ticket->created_by->name]),
             ]
         ];
     }

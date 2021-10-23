@@ -307,9 +307,12 @@ class Ticket extends Model
         }
     }
 
-    public function close($input)
+    public function receive($input)
     {
-        $input['status_id'] = isset($input['status_id']) ? $input['status_id'] : TicketStatus::where("key", "closed")->first()->id;
+        if(isset($input['is_need_spare']) && $input['is_need_spare'])
+            $input['status_id'] = TicketStatus::where("key", "waiting_for_spare_parts")->first()->id;
+        else
+            $input['status_id'] = TicketStatus::where("key", "waiting_for_client_approval")->first()->id;
         $input['updated_by_id'] = Auth::id();
         if($this->update([
             'status_id' => $input['status_id'],
@@ -326,6 +329,32 @@ class Ticket extends Model
             }
 
             try {
+                // $users = User::supervisors()->merge(User::clients());
+                // foreach ($users as $key => $value) {
+                //     if($value->id == Auth::id())
+                //         $users->forget($key);
+                // }
+                // Notification::send($users, new TicketClosed($this));
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            return $this;
+        }
+    }
+    
+    public function close($input)
+    {
+        if(isset($input['is_reversed']) && $input['is_reversed'])
+            $input['status_id'] = TicketStatus::where("key", "pending")->first()->id;
+        else
+            $input['status_id'] = TicketStatus::where("key", "closed")->first()->id;
+        $input['updated_by_id'] = Auth::id();
+
+        if ($this->update($input)) {
+            $input['created_by_id'] = Auth::id();
+            $this->timelines()->create($input);
+
+            try {
                 $users = User::supervisors()->merge(User::clients());
                 foreach ($users as $key => $value) {
                     if($value->id == Auth::id())
@@ -335,6 +364,7 @@ class Ticket extends Model
             } catch (\Throwable $th) {
                 //throw $th;
             }
+            // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
             return $this;
         }
     }

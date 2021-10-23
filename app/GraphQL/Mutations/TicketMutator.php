@@ -34,9 +34,16 @@ class TicketMutator
         return $ticket->assign($args['input']);
     }
 
+    public function receive($_, array $args)
+    {
+        $ticket = Ticket::find($args['id']);
+        return $ticket->receive($args['input']);
+    }
+
     public function close($_, array $args)
     {
         $ticket = Ticket::find($args['id']);
         return $ticket->close($args['input']);
     }
+    
 }

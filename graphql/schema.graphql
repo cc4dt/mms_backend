@@ -210,17 +210,28 @@ type Part {
     procedures: [MaintenanceProcedure!]
 }
 
+type SubPart {
+    id: ID!
+    name: String!
+}
 
 type MaintenanceProcedure {
     id: ID!
     name: String!
     type: ConstField!
-    spare_part: [SparePart!]
+    spare_part: SparePart!
 }
 
 type SparePart {
     id: ID!
     name: String!
+    sub_parts: [SpareSubPart!]
+}
+
+type SpareSubPart {
+    id: ID!
+    name: String!
+    part: SparePart!
 }
 
 type Attribute {
@@ -229,15 +240,11 @@ type Attribute {
     type: ConstField!
 }
 
-type SubPart {
-    id: ID!
-    name: String!
-}
-
 type MaintenanceDetail {
     id: ID!
     sub_part: SubPart
     procedure: MaintenanceProcedure!
+    spare_sub_part: SpareSubPart
     value: String!
 }
 
@@ -291,6 +298,11 @@ type Mutation {
         @guard
         @field(resolver: "TicketMutator@assign")
 
+    
+    receiveTicket(id: ID!, input: ReceiveTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@receive")
+
     closeTicket(id: ID!, input: CloseTicketInput!): Ticket
         @guard
         @field(resolver: "TicketMutator@close")
@@ -320,17 +332,23 @@ input AssignTicketInput {
     description: String
 }
 
-input CloseTicketInput {
+input ReceiveTicketInput {
     equipment_id: ID
     part_id: ID!
-    status_id: ID
+    is_need_spare: Boolean
     description: String
     details: [DetailTicketInput!]
+}
+
+input CloseTicketInput {
+    description: String
+    is_reversed: Boolean
 }
 
 input DetailTicketInput {
     sub_part_id: ID
     procedure_id: ID!
+    spare_sub_part_id: ID
     value: String
 }
 

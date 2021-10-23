@@ -29,9 +29,10 @@ Route::get('/login', function () {
 Route::get('/test', function () {
     // var_dump(Ticket::toDay());
     // var_dump(Ticket::daily());
-    foreach (Ticket::monthly() as $value) {
-        var_dump($value->number);
+    foreach (App\Part::find(19)->procedures as $value) {
+        var_dump($value->spare_part->spare_sub_parts);
     }
+    // var_dump(App\Part::find(19)->procedures->spare_part->spare_sub_parts);
     // return $user->notifications->first()->data;
 });
 

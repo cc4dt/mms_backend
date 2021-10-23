@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SparePart extends Model
+class SpareSubPart extends Model
 {
     protected $appends = [
         'name',
@@ -23,8 +23,8 @@ class SparePart extends Model
         $this->{'name_' . app()->getlocale()} = $value;
     }
 
-    public function sub_parts(): HasMany
-    {   
-        return $this->hasMany('App\SpareSubPart', 'spare_part_id');
+    public function part(): BelongsTo
+    {
+        return $this->belongsTo('App\SparePart', 'spare_part_id');
     }
 }

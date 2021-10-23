@@ -17,6 +17,7 @@ class CreateMaintenanceDetailsTable extends Migration
             $table->id();
             $table->foreignId('process_id')->constrained("maintenance_processes")->onDelete('cascade');
             $table->foreignId('sub_part_id')->nullable()->constrained('sub_parts')->onDelete('cascade');
+            $table->foreignId('spare_sub_part_id')->nullable()->constrained('spare_sub_parts')->onDelete('cascade');
             $table->foreignId('procedure_id')->constrained("maintenance_procedures")->onDelete('cascade');
             $table->text('value');
             $table->timestamps();

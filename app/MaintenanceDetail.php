@@ -27,4 +27,11 @@ class MaintenanceDetail extends Model
     {
         return $this->belongsTo('App\MaintenanceProcess');
     }
+
+    public function spare_sub_part(): BelongsTo
+    {
+        return $this->belongsTo('App\SpareSubPart');
+    }
+
+    
 }
