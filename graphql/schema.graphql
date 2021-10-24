@@ -219,7 +219,7 @@ type MaintenanceProcedure {
     id: ID!
     name: String!
     type: ConstField!
-    spare_part: SparePart!
+    spare_part: SparePart
 }
 
 type SparePart {
@@ -335,6 +335,7 @@ input AssignTicketInput {
 input ReceiveTicketInput {
     equipment_id: ID
     part_id: ID!
+    status_id: ID
     is_need_spare: Boolean
     description: String
     details: [DetailTicketInput!]

@@ -309,10 +309,25 @@ class Ticket extends Model
 
     public function receive($input)
     {
-        if(isset($input['is_need_spare']) && $input['is_need_spare'])
-            $input['status_id'] = TicketStatus::where("key", "waiting_for_spare_parts")->first()->id;
-        else
-            $input['status_id'] = TicketStatus::where("key", "waiting_for_client_approval")->first()->id;
+        
+        if(isset($input['status_id'])) {
+            $input['status_id'] = $input['status_id'];
+
+        }
+        else {
+            if(isset($input['is_need_spare']) && $input['is_need_spare']) {
+                if($this->type == 'breakdown')
+                    $input['status_id'] = TicketStatus::where("key", "closed")->first()->id;
+                else
+                    $input['status_id'] = TicketStatus::where("key", "waiting_for_spare_parts")->first()->id;
+            }
+            else {
+                if($this->type == 'breakdown')
+                    $input['status_id'] = TicketStatus::where("key", "closed")->first()->id;
+                else
+                    $input['status_id'] = TicketStatus::where("key", "waiting_for_client_approval")->first()->id;
+            }
+        }
         $input['updated_by_id'] = Auth::id();
         if($this->update([
             'status_id' => $input['status_id'],

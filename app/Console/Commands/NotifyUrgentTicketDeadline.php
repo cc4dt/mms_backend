@@ -30,6 +30,16 @@ class NotifyUrgentTicketDeadline extends Command
      */
     public function __construct()
     {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
         $tickets = Ticket::whereHas('status',  function($q) {
             $q->where("key", "!=", "closed")->where("key", "!=", "cancelled");
         })->whereHas('priority',  function($q) {
@@ -48,17 +58,7 @@ class NotifyUrgentTicketDeadline extends Command
                 }
             }
         }
-
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
-    public function handle()
-    {
+        
         return 0;
     }
 }
