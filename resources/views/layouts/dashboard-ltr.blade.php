@@ -472,7 +472,6 @@
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
                                     Dashboard
-                                    <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
 
@@ -625,6 +624,17 @@
                                     </li>
                         @endif
                     </ul>
+                    </li>
+                    
+                    <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+                    <li class="nav-item">
+                        <a href="{{ route('link.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-link"></i>
+                            <p>
+                                Links
+                            </p>
+                        </a>
+
                     </li>
                     </ul>
 
