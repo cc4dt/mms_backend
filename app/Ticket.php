@@ -206,9 +206,15 @@ class Ticket extends Model
     
     public function getLedTimeAttribute($value)
     {
-        if($this->status->key == "closed") {
-            $totalDuration = $this->created_at->diffInSeconds($this->updated_at);
-            return floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
+        foreach ($this->timelines as $value) {
+            if($value->status->key == 'waiting_for_client_approval' && $value->created_at) {
+                $totalDuration = $this->created_at->diffInSeconds($value->created_at);
+                return floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
+            }
+            else if($value->status->key == 'closed' && $value->created_at) {
+                $totalDuration = $this->created_at->diffInSeconds($value->created_at);
+                return floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
+            }
         }
     }
     
@@ -247,7 +253,13 @@ class Ticket extends Model
     public function getInSlaAttribute($value)
     {
         foreach ($this->timelines as $value) {
-            if($value->status->key == 'closed' && $value->created_at) {
+            if($value->status->key == 'waiting_for_client_approval' && $value->created_at) {
+                $hours = $this->created_at->diffInHours($value->created_at);
+                if ($this->sla && $hours <= $this->sla) {
+                    return true;
+                }
+            }
+            else if($value->status->key == 'closed' && $value->created_at) {
                 $hours = $this->created_at->diffInHours($value->created_at);
                 if ($this->sla && $hours <= $this->sla) {
                     return true;
@@ -312,7 +324,6 @@ class Ticket extends Model
         
         if(isset($input['status_id'])) {
             $input['status_id'] = $input['status_id'];
-
         }
         else {
             if(isset($input['is_need_spare']) && $input['is_need_spare']) {

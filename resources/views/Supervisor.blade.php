@@ -83,7 +83,7 @@
                             <tr>
                                 <th>{{ $show->number ?? '' }}</th>
                                 <th>
-                                    {{ \App\TicketStatus::find($show->status_id)->name }}
+                                    {{ \App\TicketStatus::find($show->timeline->status_id)->name }}
                                 </th>
                                 <th>Khartoum </th>
                                 <th>{{ $show->station_en ?? '' }}</th>
@@ -92,7 +92,7 @@
                                 <th>{{ $show->created_at ?? '' }}</th>
                                 <th>{{ $show->open_description ?? '' }}</th>
                                 <th>
-                                    @if($show->status_id==1)
+                                    @if($show->timeline->status_id==1)
                                     <a href="{{asset(route('Supervisor.edit',$show->id))}}">
                                         <li class="fa fa-edit"></li>
                                     </a>
@@ -104,7 +104,7 @@
                                         <li class="fa fa-eye" data-backdrop="static" data-keyboard="false"
                                             data-toggle="modal" data-target="#" style="color: rgb(0,0,0);"></li>
                                     </a>
-                                    @if($show->status_id==1)
+                                    @if($show->timeline->status_id==1)
 
                                     {{" - "}}
                                     <a href="#">

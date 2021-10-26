@@ -87,32 +87,32 @@
                    
                            
                           
-                           @if($show->status_id==1)
+                           @if($show->timeline->status_id==1)
                            {{ 'opened' }}
                              @endif
-                              @if($show->status_id==2)
+                              @if($show->timeline->status_id==2)
                            {{ 'closed' }}
                              @endif
-                              @if($show->status_id==3)
+                              @if($show->timeline->status_id==3)
                            {{ 'cancelled' }}
                              @endif
-                              @if($show->status_id==4)
+                              @if($show->timeline->status_id==4)
                            {{ 'waiting_for_spare_parts' }}
                              @endif
-                              @if($show->status_id==5)
+                              @if($show->timeline->status_id==5)
                            {{ 'waiting_for_approval' }}
                              @endif
-                              @if($show->status_id==6)
+                              @if($show->timeline->status_id==6)
                            {{ 'waiting_for_access' }}
                              @endif
-                               @if($show->status_id==7)
+                               @if($show->timeline->status_id==7)
                            {{ 'transfer_to_job' }}
                              @endif
 
-                            @if($show->status_id==8)
+                            @if($show->timeline->status_id==8)
                            {{ 'pending' }}
                              @endif
-                           @if($show->status_id==9)
+                           @if($show->timeline->status_id==9)
                            {{ 'needs_approval_from_Client' }}
                              @endif
 
@@ -132,7 +132,7 @@
           <th > 
         
 
-     @if($show->status_id==1)    
+     @if($show->timeline->status_id==1)    
  <a href="{{asset(route('Client.edit',$show->id))}}"> <li class="fa fa-edit" ></li>
                            </a>
                            @endif
@@ -146,7 +146,7 @@
 
 
   
- @if($show->status_id==1)
+ @if($show->timeline->status_id==1)
 
  {{" - "}}
                               <a href="#"> <li class="fa fa-trash" style="color: rgb(255,0,0);" 

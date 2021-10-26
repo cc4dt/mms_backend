@@ -9,6 +9,7 @@ class MaintenanceDetail extends Model
 {
     protected $fillable = [
         "sub_part_id",
+        "spare_sub_part_id",
         "procedure_id",
         "value",
     ];

@@ -71,7 +71,7 @@
                         <th>
 
                    
-                        {{ \App\TicketStatus::find($show->status_id)->name }} 
+                        {{ \App\TicketStatus::find($show->timeline->status_id)->name }} 
                           
                            
 
@@ -90,7 +90,7 @@
           <th > 
         
 
-     @if($show->status_id<>2)    
+     @if($show->timeline->status_id<>2)    
  <a href="{{asset(route('Teamleader.edit',$show->id))}}"> <li class="fa fa-edit" ></li>
                            </a>
                            @endif
@@ -104,7 +104,7 @@
 
 
   
- @if($show->status_id==1)
+ @if($show->timeline->status_id==1)
 
  {{" - "}}
                               <a href="#"> <li class="fa fa-trash" style="color: rgb(255,0,0);" 
@@ -805,7 +805,7 @@
 <label>Actions</label>
             <select name="status_id" class="form-control">
             @for($i=2;$i<=9;$i++)     
-            <option value="{{$i}}" <?php if($shupdate->status_id==$i){ ?> selected="true" <?php } ?> >{{ \App\TicketStatus::find($i)->name }}</option>
+            <option value="{{$i}}" <?php if($shupdate->timeline->status_id==$i){ ?> selected="true" <?php } ?> >{{ \App\TicketStatus::find($i)->name }}</option>
               @endfor      
           </select>
 </div>
