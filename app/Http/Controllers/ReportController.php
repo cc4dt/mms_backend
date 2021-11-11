@@ -286,6 +286,7 @@ class ReportController extends Controller
             $q->where("type_id", MaintenanceProcedure::getTypeId("replace"));
          })->get()
          ->loadMissing(
+            "spare_sub_part",
             "procedure", 
             "procedure.spare_part",
             "process.equipment",
@@ -313,9 +314,11 @@ class ReportController extends Controller
         }
         
         if($obj) {
+            $arr['equipment'] = $obj->equipment ?? [];
             $arr['stations'] = $obj->stations ?? [];
             $arr['pms'] = $obj->data ?? [];
         } else {
+            $arr['equipment'] =  [];
             $arr['stations'] = [];
             $arr['pms'] = [];
         }

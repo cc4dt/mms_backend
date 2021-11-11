@@ -42,7 +42,7 @@
             <!-- /.card-header -->
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="p-3 col-md-3">
                         <select id="station_id" name="station_id"
                             class="select2bs4 form-control @error('station_id') is-invalid @enderror" data-vldtr="required">
                             <option value="">-Select Station-</option>
@@ -52,6 +52,34 @@
                                 @endforeach
                             @endif
                         </select>
+                    </div>
+                    
+                    <div class="p-3 col-md-3">
+                        <select id="equipment" name="equipment"
+                            class="select2bs4 form-control @error('equipment') is-invalid @enderror"
+                            data-vldtr="required">
+                            <option value="">-Select Equipment-</option>
+                            @if (isset($equipment))
+                                @foreach ($equipment as $data)
+                                    <option value="{{ $data ?? '' }}">{{ $data ?? '' }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    <div class="p-3 col-md-3">
+                        <select id="duration" name="duration"
+                            class="select2bs4 form-control" data-vldtr="required">
+                            <option value="">-Select Duration-</option>
+                            <option value="1">1 month</option>
+                            <option value="3">3 months</option>
+                            <option value="6">6 months</option>
+                            <option value="12">12 months</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 col-md-3">
+                        <input type="date" id="from" name="from" class="form-control">
                     </div>
                 </div>
 
@@ -63,6 +91,7 @@
     </div>
 
     <script>
+        var station = "", equipment = "", from = "", duration = "";
         var pms = @json($pms);
         const columns = [{
                 title: "Station"
@@ -130,22 +159,52 @@
             ]
         });
 
+        function filterReport() {
+            var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
+            var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            let result = pms.filter((o) => {
+                return (moment(new Date(o.date), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
+                    (o.station_id == station || !station) &&
+                    (o.equipment == equipment || !equipment);
+                });
+
+            example.rows().remove().draw(false);
+            result.forEach(e => {
+                example.row.add([
+                    e.station,
+                    e.equipment,
+                    e.serial,
+                    new Date(e.date).toLocaleString(),
+                    e.note,
+                ]).draw(false);
+            });
+        }
+
         jQuery(document).ready(function() {
             jQuery('select[name="station_id"]').on('change', function() {
-                var station = jQuery(this).val();
-                console.log(station);
-                example.rows().remove().draw(false);
-                pms.forEach(e => {
-                    if (e.station_id == station || !station)
-                        example.row.add([
-                            e.station,
-                            e.equipment,
-                            e.serial,
-                            // e.actions.join(', '),
-                            new Date(e.date).toLocaleString(),
-                            e.note,
-                        ]).draw(false);
-                });
+                station = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('select[name="equipment"]').on('change', function() {
+                equipment = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('select[name="duration"]').on('change', function() {
+                duration = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('input[name="from"]').on('change', function() {
+                from = jQuery(this).val();
+                filterReport();
             });
         });
     </script>

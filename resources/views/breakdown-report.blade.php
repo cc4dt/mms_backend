@@ -103,6 +103,22 @@
                             @endif
                         </select>
                     </div>
+
+                    <div class="p-3 col-md-3">
+                        <select id="duration" name="duration"
+                            class="select2bs4 form-control" data-vldtr="required">
+                            <option value="">-Select Duration-</option>
+                            <option value="1">1 month</option>
+                            <option value="2">2 month</option>
+                            <option value="3">3 months</option>
+                            <option value="6">6 months</option>
+                            <option value="12">12 months</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 col-md-3">
+                        <input type="date" id="from" name="from" class="form-control">
+                    </div>
                 </div>
                 <div class="p-3 table-responsive">
                     <table id="example" class="table table-bordered table-striped" width="100%">
@@ -112,7 +128,7 @@
         </div>
     </div>
     <script>
-        var station = "", status = "", equipment = "", breakdown = "", type = "";
+        var station = "", status = "", equipment = "", breakdown = "", type = "", from = "", duration = "";
 
         var tickets = @json($tickets);
         
@@ -211,26 +227,32 @@
 
         function filterReport() {
             example.rows().remove().draw(false);
-            tickets.forEach(e => {
-                if ((e.station_id == station || !station) &&
-                    (e.status_id == status || !status) &&
-                    (e.type_id == type || !type) &&
-                    (e.breakdown_id == breakdown || !breakdown) &&
-                    (e.equipment_id == equipment || !equipment))
-                    example.row.add([
-                        e.number,
-                        e.station?.name ?? "",
-                        e.equipment?.name ?? "",
-                        e.breakdown?.name ?? "",
-                        e.type?.name ?? "",
-                        e.sla,
-                        e.in_sla ? 'IN' : 'OUT',
-                        e.actions.join(', '),
-                        new Date(e.created_at).toLocaleString(),
-                        new Date(e.updated_at).toLocaleString(),
-                        e.led_time,
-                        e.status.name
-                    ]).draw(false);
+            var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
+            var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            let result = tickets.filter((o) => {
+                return (moment(new Date(o.created_at), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
+                    (o.station_id == station || !station) &&
+                    (o.status_id == status || !status) &&
+                    (o.type_id == type || !type) &&
+                    (o.breakdown_id == breakdown || !breakdown) &&
+                    (o.equipment_id == equipment || !equipment);
+                });
+
+            result.forEach(e => {
+                example.row.add([
+                    e.number,
+                    e.station?.name ?? "",
+                    e.equipment?.name ?? "",
+                    e.breakdown?.name ?? "",
+                    e.type?.name ?? "",
+                    e.sla,
+                    e.in_sla ? 'IN' : 'OUT',
+                    e.actions.join(', '),
+                    new Date(e.created_at).toLocaleString(),
+                    new Date(e.updated_at).toLocaleString(),
+                    e.led_time,
+                    e.status.name
+                ]).draw(false);
             });
         }
 
@@ -265,6 +287,20 @@
         jQuery(document).ready(function() {
             jQuery('select[name="equipment_id"]').on('change', function() {
                 equipment = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('select[name="duration"]').on('change', function() {
+                duration = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('input[name="from"]').on('change', function() {
+                from = jQuery(this).val();
                 filterReport();
             });
         });

@@ -89,6 +89,22 @@
                             @endif
                         </select>
                     </div>
+
+                    <div class="p-3 col-md-3">
+                        <select id="duration" name="duration"
+                            class="select2bs4 form-control" data-vldtr="required">
+                            <option value="">-Select Duration-</option>
+                            <option value="1">1 month</option>
+                            <option value="2">2 month</option>
+                            <option value="3">3 months</option>
+                            <option value="6">6 months</option>
+                            <option value="12">12 months</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 col-md-3">
+                        <input type="date" id="from" name="from" class="form-control">
+                    </div>
                 </div>
 
                 <div class="p-3 table-responsive">
@@ -99,7 +115,7 @@
     </div>
 
     <script>
-        var station = "", equipment = "", type = "", spare = "";
+        var station = "", equipment = "", type = "", spare = "", from = "", duration = "";
 
         var maintenanceDetails = @json($maintenance_details);
 
@@ -135,7 +151,7 @@
                 e.process.ticket.station.name,
                 e.process.ticket.equipment.name,
                 e.process.equipment?.serial ?? "#",
-                e.procedure.spare_part?.name ?? e.procedure.name,
+                e.spare_sub_part?.name ?? e.procedure.spare_part?.name ?? e.procedure.name,
                 e.process.ticket.teamleader.name,
                 e.process.ticket.type.name,
                 new Date(e.created_at).toLocaleString(),
@@ -182,21 +198,27 @@
 
         function filterReport() {
             example.rows().remove().draw(false);
-            maintenanceDetails.forEach(e => {
-                if ((e.process.ticket.station_id == station || !station) &&
-                    (e.procedure.spare_part_id == spare || !spare) &&
-                    (e.process.ticket.type_id == type || !type) &&
-                    (e.process.ticket.equipment_id == equipment || !equipment))
-                    example.row.add([
-                        e.process.ticket.number,
-                        e.process.ticket.station.name,
-                        e.process.ticket.equipment.name,
-                        e.process.equipment?.serial ?? "#",
-                        e.procedure.spare_part?.name ?? e.procedure.name,
-                        e.process.ticket.teamleader.name,
-                        e.process.ticket.type.name,
-                        new Date(e.created_at).toLocaleString(),
-                    ]).draw(false);
+            var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
+            var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            let result = maintenanceDetails.filter((o) => {
+                return (moment(new Date(o.created_at), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
+                    (o.process.ticket.station_id == station || !station) &&
+                    (o.procedure.spare_part_id == spare || !spare) &&
+                    (o.process.ticket.type_id == type || !type) &&
+                    (o.process.ticket.equipment_id == equipment || !equipment);
+                });
+
+            result.forEach(e => {
+                example.row.add([
+                    e.process.ticket.number,
+                    e.process.ticket.station.name,
+                    e.process.ticket.equipment.name,
+                    e.process.equipment?.serial ?? "#",
+                    e.spare_sub_part?.name ?? e.procedure.spare_part?.name ?? e.procedure.name,
+                    e.process.ticket.teamleader.name,
+                    e.process.ticket.type.name,
+                    new Date(e.created_at).toLocaleString(),
+                ]).draw(false);
             });
         }
 
@@ -224,6 +246,20 @@
         jQuery(document).ready(function() {
             jQuery('select[name="spare_id"]').on('change', function() {
                 spare = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('select[name="duration"]').on('change', function() {
+                duration = jQuery(this).val();
+                filterReport();
+            });
+        });
+
+        jQuery(document).ready(function() {
+            jQuery('input[name="from"]').on('change', function() {
+                from = jQuery(this).val();
                 filterReport();
             });
         });
