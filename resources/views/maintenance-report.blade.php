@@ -214,44 +214,13 @@
             //     title: "Waiting"
             // }
         ];
+        var spareParts = getSpareParts(maintenanceDetails);
 
-        var spareParts = [];
-        var sparePartKeys = [];
-        maintenanceDetails.forEach(e => {
-            // var state = e.process?.timeline?.status?.key == 'waiting_for_spare_parts' ? 'waiting': 'used';
-            if(e.spare_sub_part) {
-                var key = 'sub.' + e.spare_sub_part.id;
-                if(spareParts[key]) {
-                    spareParts[key]['qty'] += 1;
-                } else {
-                    sparePartKeys.push(key);
-                    spareParts[key] = {
-                        'spare' : e.spare_sub_part.name,
-                        'qty' :  1,
-                        // 'used' : state == 'used' ? 1 : 0,
-                        // 'waiting' : state == 'waiting' ? 1 : 0,
-                    };
-                }
-            } else {
-                var key = 'super.' + e.procedure.id;
-                if(spareParts[key]) {
-                    spareParts[key]['qty'] += 1;
-                } else {
-                    sparePartKeys.push(key);
-                    spareParts[key] = {
-                        'spare' : e.procedure.spare_part?.name ?? e.procedure.name,
-                        'qty' :  1,
-                        // 'used' : state == 'used' ? 1 : 0,
-                        // 'waiting' : state == 'waiting' ? 1 : 0,
-                    };
-                }
-            }
-        });
         var qtyDataSet = [];
-        sparePartKeys.forEach(e => {
+        spareParts['keys'].forEach(e => {
             qtyDataSet.push([
-                spareParts[e]['spare'],
-                spareParts[e]['qty'] ?? 0,
+                spareParts['data'][e]['spare'],
+                spareParts['data'][e]['qty'] ?? 0,
                 // spareParts[e]['used'] ?? 0,
                 // spareParts[e]['waiting'] ?? 0,
             ]);
@@ -297,6 +266,8 @@
 
         function filterReport() {
             example.rows().remove().draw(false);
+            qtyDateTable.rows().remove().draw(false);
+
             var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
             var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
             let result = maintenanceDetails.filter((o) => {
@@ -306,6 +277,15 @@
                     (o.process.ticket.type_id == type || !type) &&
                     (o.process.ticket.equipment_id == equipment || !equipment);
                 });
+
+            var spareParts = getSpareParts(result);
+
+            spareParts['keys'].forEach(e => {
+                qtyDateTable.row.add([
+                    spareParts['data'][e]['spare'],
+                    spareParts['data'][e]['qty'] ?? 0,
+                ]).draw(false);
+            });
 
             result.forEach(e => {
                 example.row.add([
@@ -319,6 +299,42 @@
                     new Date(e.created_at).toLocaleString(),
                 ]).draw(false);
             });
+        }
+
+        function getSpareParts(details) {
+            var spareParts = [];
+            var sparePartKeys = [];
+            details.forEach(e => {
+                // var state = e.process?.timeline?.status?.key == 'waiting_for_spare_parts' ? 'waiting': 'used';
+                if(e.spare_sub_part) {
+                    var key = 'sub.' + e.spare_sub_part.id;
+                    if(spareParts[key]) {
+                        spareParts[key]['qty'] += 1;
+                    } else {
+                        sparePartKeys.push(key);
+                        spareParts[key] = {
+                            'spare' : e.spare_sub_part.name,
+                            'qty' :  1,
+                            // 'used' : state == 'used' ? 1 : 0,
+                            // 'waiting' : state == 'waiting' ? 1 : 0,
+                        };
+                    }
+                } else {
+                    var key = 'super.' + e.procedure.id;
+                    if(spareParts[key]) {
+                        spareParts[key]['qty'] += 1;
+                    } else {
+                        sparePartKeys.push(key);
+                        spareParts[key] = {
+                            'spare' : e.procedure.spare_part?.name ?? e.procedure.name,
+                            'qty' :  1,
+                            // 'used' : state == 'used' ? 1 : 0,
+                            // 'waiting' : state == 'waiting' ? 1 : 0,
+                        };
+                    }
+                }
+            });
+            return {'keys': sparePartKeys, 'data': spareParts};
         }
 
         jQuery(document).ready(function() {

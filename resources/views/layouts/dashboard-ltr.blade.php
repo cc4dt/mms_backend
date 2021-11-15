@@ -622,6 +622,12 @@
                                             <p>Preventive Maintenace</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('pm-fireexting-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Fireexting</p>
+                                        </a>
+                                    </li>
                         @endif
                     </ul>
                     </li>

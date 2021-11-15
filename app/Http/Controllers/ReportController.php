@@ -369,4 +369,25 @@ class ReportController extends Controller
         }
         return view('pm-report')->with($arr);
     }
+    
+    public function pm_fireexting()
+    {
+        $obj = [];
+        try {
+            $json = file_get_contents('https://ham.sd/system/api/fireexting.php');
+            $obj = json_decode($json);
+        } catch (\Throwable $th) {
+            $arr['errors'][] = "Server Error No Data";
+        }
+        
+        if($obj) {
+            $arr['stations'] = $obj->stations ?? [];
+            $arr['fires'] = $obj->data ?? [];
+        } else {
+            $arr['stations'] = [];
+            $arr['fires'] = [];
+        }
+        return view('pm-fireexting-report')->with($arr);
+    }
+    
 }
