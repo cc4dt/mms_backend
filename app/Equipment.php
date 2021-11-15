@@ -23,6 +23,11 @@ class Equipment extends Model
         return $this->hasMany('App\Breakdown');
     }
 
+    public function equipment(): HasMany
+    {
+        return $this->hasMany('App\MasterEquipment', 'equipment_id');
+    }
+
     public function attributes(): BelongsToMany
     {
         return $this->belongsToMany('App\Attribute');

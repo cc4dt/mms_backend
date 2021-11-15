@@ -108,6 +108,10 @@
                 </div>
 
                 <div class="p-3 table-responsive">
+                    <table id="qty" class="table table-bordered table-striped" width="100%"></table>
+                </div>
+                <hr>
+                <div class="p-3 table-responsive">
                     <table id="example" class="table table-bordered table-striped" width="100%"></table>
                 </div>
             </div>
@@ -143,7 +147,8 @@
             {
                 title: "Date"
             },
-        ]
+        ];
+
         var dataSet = [];
         maintenanceDetails.forEach(e => {
             dataSet.push([
@@ -161,6 +166,100 @@
         var example = jQuery('#example').DataTable({
             data: dataSet,
             columns: columns,
+            dom: 'Bfrtip',
+            lengthMenu: [
+                [10, 25, 50, 100, 250],
+                ['10', '25', '50', '100', '250']
+            ],
+            buttons: [
+                'copy',
+                {
+                    extend: 'print',
+                    charset: 'UTF-8',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    exportOptions: {
+                        columns: ':visible'
+                    },
+                },
+                {
+                    extend: 'excel',
+                    charset: 'UTF-8',
+                    exportOptions: {
+                        columns: ':visible'
+                    },
+                },
+                {
+                    extend: 'csv',
+                    charset: 'UTF-8',
+                    exportOptions: {
+                        columns: ':visible'
+                    },
+                },
+                'colvis',
+                'pageLength'
+            ]
+        });
+
+        const qtyColumns = [{
+                title: "Sparepart"
+            },
+            {
+                title: "Qty"
+            },
+            // {
+            //     title: "Used"
+            // },
+            // {
+            //     title: "Waiting"
+            // }
+        ];
+
+        var spareParts = [];
+        var sparePartKeys = [];
+        maintenanceDetails.forEach(e => {
+            // var state = e.process?.timeline?.status?.key == 'waiting_for_spare_parts' ? 'waiting': 'used';
+            if(e.spare_sub_part) {
+                var key = 'sub.' + e.spare_sub_part.id;
+                if(spareParts[key]) {
+                    spareParts[key]['qty'] += 1;
+                } else {
+                    sparePartKeys.push(key);
+                    spareParts[key] = {
+                        'spare' : e.spare_sub_part.name,
+                        'qty' :  1,
+                        // 'used' : state == 'used' ? 1 : 0,
+                        // 'waiting' : state == 'waiting' ? 1 : 0,
+                    };
+                }
+            } else {
+                var key = 'super.' + e.procedure.id;
+                if(spareParts[key]) {
+                    spareParts[key]['qty'] += 1;
+                } else {
+                    sparePartKeys.push(key);
+                    spareParts[key] = {
+                        'spare' : e.procedure.spare_part?.name ?? e.procedure.name,
+                        'qty' :  1,
+                        // 'used' : state == 'used' ? 1 : 0,
+                        // 'waiting' : state == 'waiting' ? 1 : 0,
+                    };
+                }
+            }
+        });
+        var qtyDataSet = [];
+        sparePartKeys.forEach(e => {
+            qtyDataSet.push([
+                spareParts[e]['spare'],
+                spareParts[e]['qty'] ?? 0,
+                // spareParts[e]['used'] ?? 0,
+                // spareParts[e]['waiting'] ?? 0,
+            ]);
+        });
+        
+        var qtyDateTable = jQuery('#qty').DataTable({
+            data: qtyDataSet,
+            columns: qtyColumns,
             dom: 'Bfrtip',
             lengthMenu: [
                 [10, 25, 50, 100, 250],

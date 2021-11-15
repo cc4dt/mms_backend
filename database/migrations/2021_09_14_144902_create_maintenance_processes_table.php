@@ -16,7 +16,9 @@ class CreateMaintenanceProcessesTable extends Migration
         Schema::create('maintenance_processes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
-            $table->foreignId('equipment_id')->nullable()->constrained('master_equipment')->onDelete('cascade');
+            $table->foreignId('timeline_id')->constrained("ticket_timelines")->onDelete('cascade');
+            $table->foreignId('equipment_id')->constrained('equipment')->onDelete('cascade');
+            $table->foreignId('master_equipment_id')->nullable()->constrained('master_equipment')->onDelete('cascade');
             $table->foreignId('part_id')->constrained('parts')->onDelete('cascade');
             $table->timestamps();
         });

@@ -152,8 +152,8 @@ type TicketTimeline {
     description: String
     created_by: User
     updated_by: User
-    created_at: DateTimeUtc
-    updated_at: DateTimeUtc
+    timestamp: DateTimeUtc
+    maintenance_processes: [MaintenanceProcess!]
 }
 
 type Ticket {
@@ -173,15 +173,14 @@ type Ticket {
     timeline: TicketTimeline!
     teamleader: User
     maintenance_processes: [MaintenanceProcess!]! @hasMany
-    created_by: User
-    updated_by: User
-    created_at: DateTimeUtc
-    updated_at: DateTimeUtc
+    created_by: User!
+    updated_by: User!
 }
 
 type MaintenanceProcess {
     id: ID!
-    equipment: MasterEquipment
+    equipment: Equipment
+    master_equipment: MasterEquipment
     part: Part!
     ticket: Ticket!
     details: [MaintenanceDetail!]
@@ -205,7 +204,7 @@ type MasterDetail {
 type Part {
     id: ID!
     name: String!
-    equipment: Equipment!
+    equipment: Equipment
     sub_parts: [SubPart!]
     procedures: [MaintenanceProcedure!]
 }
@@ -266,6 +265,7 @@ type Equipment {
     name: String!
     breakdowns: [Breakdown!]!
     attributes: [Attribute!]!
+    equipment(station_id: ID @eq): [MasterEquipment!]! @hasMany
     parts: [Part!]!
 }
 
@@ -306,6 +306,8 @@ type Mutation {
     closeTicket(id: ID!, input: CloseTicketInput!): Ticket
         @guard
         @field(resolver: "TicketMutator@close")
+        
+    deleteTicket(id: ID!): Ticket @delete
 }
 
 input LoginInput {
@@ -322,6 +324,7 @@ input OpenTicketInput {
     equipment_id: ID!
     breakdown_id: ID!
     description: String
+    date: DateTimeUtc
 }
 
 input AssignTicketInput {
@@ -333,17 +336,22 @@ input AssignTicketInput {
 }
 
 input ReceiveTicketInput {
-    equipment_id: ID
-    part_id: ID!
     status_id: ID
     is_need_spare: Boolean
     description: String
-    details: [DetailTicketInput!]
+    processes: [ProcessTicketInput!]
 }
 
 input CloseTicketInput {
     description: String
     is_reversed: Boolean
+}
+
+input ProcessTicketInput {
+    equipment_id: ID!
+    master_equipment_id: ID
+    part_id: ID!
+    details: [DetailTicketInput!]
 }
 
 input DetailTicketInput {

@@ -290,6 +290,51 @@ class ReportController extends Controller
             "procedure", 
             "procedure.spare_part",
             "process.equipment",
+            "process.timeline.status",
+            "process.ticket.equipment",
+            "process.ticket.station",
+            "process.ticket.type",
+            "process.ticket.teamleader",
+        );
+        
+        $arr['stations'] = Station::all();
+        $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
+        $arr['types'] = TicketType::all('id', 'name_ar', 'name_en');
+        $arr['spareparts'] = SparePart::all('id', 'name_ar', 'name_en');
+        return view('maintenance-report')->with($arr);
+    }
+    
+    public function procedures()
+    {
+        $procedures = [];
+        
+        $maintenanceProcedure = MaintenanceProcedure::where("type_id", MaintenanceProcedure::getTypeId("replace"));
+        foreach ($maintenanceProcedure as $procedure) {
+            $procedureDetails = MaintenanceDetail::where('procedure_id', $procedure->id);
+            
+            if ($procedure->spare_part->sub_parts) {
+                foreach ($procedure->spare_part->sub_parts as $sub_part) {
+                    $row = [
+                        $sub_part->name,
+
+                    ];
+                }
+            } else {
+                $row = [
+                    $procedure->spare_part ? $procedure->spare_part->name : $procedure->name,
+                    $procedureDetails->where()->count
+                ];
+            }
+            $procedures[] = $row;
+        }
+        $arr['procedures'] = MaintenanceDetail::whereHas('procedure', function($q) {
+            $q->where("type_id", MaintenanceProcedure::getTypeId("replace"));
+         })->get()
+         ->loadMissing(
+            "spare_sub_part",
+            "procedure", 
+            "procedure.spare_part",
+            "process.equipment",
             "process.ticket.equipment",
             "process.ticket.station",
             "process.ticket.type",

@@ -18,6 +18,7 @@ class CreateTicketTimelinesTable extends Migration
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
             $table->foreignId('status_id')->constrained("ticket_statuses")->onDelete('cascade');
             $table->text('description')->nullable();
+            $table->timestamp('timestamp');
             $table->foreignId('created_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->foreignId('updated_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->timestamps();

@@ -22,11 +22,7 @@ class Part extends Model
     {
         return $this->belongsToMany('App\MaintenanceProcedure');
     }
-
-    public function equipment(): BelongsTo
-    {
-        return $this->belongsTo('App\Equipment');
-    }
+    
 
     public function getNameAttribute($value)
     {

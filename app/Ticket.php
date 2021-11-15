@@ -283,6 +283,11 @@ class Ticket extends Model
 
     static public function open($input)
     {
+        if (isset($input['date']) && Auth::user()->isSupervisor()) {
+            $input['timestamp'] = new Carbon($input['date']);
+        } else {
+            $input['timestamp'] = Carbon::now();
+        }
         $input['number'] = Carbon::now()->timestamp;
         $input['status_id'] = TicketStatus::where("key", "opened")->first()->id;
         $input['created_by_id'] = Auth::id();
@@ -340,17 +345,16 @@ class Ticket extends Model
             }
         }
         $input['updated_by_id'] = Auth::id();
-        if($this->update([
-            'status_id' => $input['status_id'],
-            'updated_by_id' => $input['updated_by_id'],
-        ])) {
+        if($this->update($input)) {
             $input['created_by_id'] = Auth::id();
-            $this->timelines()->create($input);
-
-            $process = $this->maintenance_processes()->create($input);
-            if ($process) {
-                foreach ($input['details'] as $item) {
-                    $process->details()->create($item);
+            $timeline = $this->timelines()->create($input);
+            foreach ($input['processes'] as $processItem) {
+                $processItem["ticket_id"] = $this->id;
+                $process = $timeline->maintenance_processes()->create($processItem);
+                if ($process) {
+                    foreach ($processItem['details'] as $item) {
+                        $process->details()->create($item);
+                    }
                 }
             }
 
