@@ -40,10 +40,16 @@ class TicketMutator
         return $ticket->receive($args['input']);
     }
 
-    public function close($_, array $args)
+    public function client_approval($_, array $args)
     {
         $ticket = Ticket::find($args['id']);
-        return $ticket->close($args['input']);
+        return $ticket->client_approval($args['input']);
+    }
+
+    public function approval($_, array $args)
+    {
+        $ticket = Ticket::find($args['id']);
+        return $ticket->approval($args['input']);
     }
     
 }

@@ -17,8 +17,18 @@ class DashQuery
         $total = Ticket::inSLA()->count() + Ticket::outSLA()->count();
         return (object) [
             "sla" => [
-                (object) ["key" => "in", "name" => "IN SLA", "count" => Ticket::inSLA()->count(), "percentage" => Ticket::inSLA()->count() / $total * 100],
-                (object) ["key" => "out", "name" => "OUT SLA", "count" => Ticket::outSLA()->count(), "percentage" => Ticket::outSLA()->count() / $total * 100]
+                (object) [
+                    "key" => "in", 
+                    "name" => "IN SLA", 
+                    "count" => Ticket::inSLA()->count(), 
+                    "percentage" => number_format((float) (Ticket::inSLA()->count() / $total * 100), 1, '.', '')
+                ],
+                (object) [
+                    "key" => "out", 
+                    "name" => "OUT SLA", 
+                    "count" => Ticket::outSLA()->count(), 
+                    "percentage" => number_format((float) (Ticket::outSLA()->count() / $total * 100), 1, '.', '')
+                ]
             ],
             "topReported" => Breakdown::all()
                 ->sortByDesc(function ($item, $key) {

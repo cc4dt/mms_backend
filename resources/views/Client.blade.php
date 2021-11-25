@@ -160,7 +160,7 @@
  
 
 
-   @if($show->status_id==9)   
+   @if($show->timeline->status_id==9)   
 
    {{" - "}} 
     <a href="#"> <button  class="btn-success" 

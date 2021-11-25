@@ -14,6 +14,9 @@ use App\Notifications\TicketAssigned;
 use App\Notifications\TicketOpened;
 use App\Notifications\TicketClosed;
 
+use GraphQL\Type\Definition\ResolveInfo;
+use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+
 class Ticket extends Model
 {
 
@@ -40,7 +43,7 @@ class Ticket extends Model
         'sla',
         'in_sla',
         'actions',
-        'timeline',
+        'by_client'
     ];
 
     static public function statusReported()
@@ -173,6 +176,11 @@ class Ticket extends Model
     {
         return $this->hasMany('App\TicketTimeline');
     }
+
+    public function timeline(): HasOne
+    {
+        return $this->hasOne(TicketTimeline::class)->latest();
+    }
     
     public function state(): BelongsTo
     {
@@ -242,13 +250,6 @@ class Ticket extends Model
         }
         return 0;
     }
-
-    public function getTimelineAttribute($value)
-    {
-        if($this->timelines) {
-            return $this->timelines()->orderBy('created_at', 'desc')->first();
-        }
-    }
     
     public function getInSlaAttribute($value)
     {
@@ -279,6 +280,56 @@ class Ticket extends Model
             }
         }
         return $actions;
+    }
+    
+    public function getByClientAttribute($value)
+    {
+        if(in_array($this->created_by->level->key, ['dealer', 'client']))
+            return true;
+        return false;
+    }
+
+    public function scopeOnType($query, $type)
+    {
+        if(!$type)
+            return $query;
+        return $query->whereHas('type', function ($query) use($type) {
+            $query->where('key', $type);
+        })->orDoesntHave('type');
+    }
+    
+    public function scopeHasStatus($query, $status)
+    {
+        if(!$status)
+            return $query;
+        return $query->whereHas('timelines', function ($query) use($status) {
+            $query->whereHas('status', function ($query) use($status) {
+                $query->where('key', $status);
+            });
+        });
+    }
+    
+    public function scopeOnStatus($query, $status)
+    {
+        if(!$status)
+            return $query;
+        return $query->whereHas('timelines', function ($query) use($status) {
+            $query
+                ->whereHas('status', function ($query) use($status) {
+                    $query->where('key', $status);
+                })
+                ->whereIn('id', function ($query) {
+                    $query
+                        ->selectRaw('max(id)')
+                        ->from('ticket_timelines')
+                        ->whereColumn('ticket_id', 'tickets.id');
+                });
+        });
+    }
+    
+    public function jobs($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return Ticket::hasStatus('transfer_to_job');
     }
 
     static public function open($input)
@@ -372,12 +423,12 @@ class Ticket extends Model
         }
     }
     
-    public function close($input)
+    public function client_approval($input)
     {
         if(isset($input['is_reversed']) && $input['is_reversed'])
             $input['status_id'] = TicketStatus::where("key", "pending")->first()->id;
         else
-            $input['status_id'] = TicketStatus::where("key", "closed")->first()->id;
+            $input['status_id'] = TicketStatus::where("key", "waiting_for_approval")->first()->id;
         $input['updated_by_id'] = Auth::id();
 
         if ($this->update($input)) {
@@ -385,12 +436,35 @@ class Ticket extends Model
             $this->timelines()->create($input);
 
             try {
-                $users = User::supervisors()->merge(User::clients());
-                foreach ($users as $key => $value) {
-                    if($value->id == Auth::id())
-                        $users->forget($key);
-                }
-                Notification::send($users, new TicketClosed($this));
+                // $users = User::supervisors()->merge(User::clients());
+                // foreach ($users as $key => $value) {
+                //     if($value->id == Auth::id())
+                //         $users->forget($key);
+                // }
+                // Notification::send(User::supervisors(), new TicketClosed($this));
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
+            return $this;
+        }
+    }
+    
+    public function approval($input)
+    {
+        $input['updated_by_id'] = Auth::id();
+
+        if ($this->update($input)) {
+            $input['created_by_id'] = Auth::id();
+            $this->timelines()->create($input);
+
+            try {
+                // $users = User::supervisors()->merge(User::clients());
+                // foreach ($users as $key => $value) {
+                //     if($value->id == Auth::id())
+                //         $users->forget($key);
+                // }
+                // Notification::send(User::supervisors(), new TicketClosed($this));
             } catch (\Throwable $th) {
                 //throw $th;
             }

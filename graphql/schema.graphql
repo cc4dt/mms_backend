@@ -22,12 +22,11 @@ type Query {
 }
 
 extend type Query @guard {
-    # masterEquipment(id: ID): [MasterEquipment!] @field(resolver: "MasterQuery@masterEquipment")
-
     masterEquipment(id: ID! @eq): MasterEquipment @find
     masterEquipmentBySerial(serial: String! @eq): MasterEquipment @find
     allMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @all
-    paginateMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] @paginate(defaultCount: 10)
+    paginateMasterEquipment(equipment_id: ID @eq, station_id: ID @eq): [MasterEquipment!] 
+     @paginate(defaultCount: 10)
     
     part(id: ID! @eq): Part! @find
 
@@ -35,10 +34,17 @@ extend type Query @guard {
     teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
 
     ticket(id: ID @eq, number: String @eq): Ticket @find
-    tickets: [Ticket!]! 
+
+    tickets(hasStatus: TicketStatuses @scope(name: "hasStatus"), 
+        status: String @scope(name: "onStatus"),
+        type: TicketTypes @scope(name: "onType")): [Ticket!]! 
      @paginate(defaultCount: 10)
      @orderBy(column: "updated_at", direction: DESC)
 
+    jobs: [Ticket!]!
+     @paginate(defaultCount: 10, builder: "App\\Ticket@jobs")
+     @orderBy(column: "updated_at", direction: DESC)
+     
     state: [State!]! @find
     allStates: [State!]! @all
     paginateStates: [State!]! @paginate(defaultCount: 10)
@@ -48,14 +54,16 @@ extend type Query @guard {
     paginateEquipment: [Equipment!]! @paginate(defaultCount: 10)
 }
 
-input OrderByClause{
-    field: String!
-    order: SortOrder!
+enum TicketStatuses {
+    Opened @enum(value: "opened")
+    Closed @enum(value: "closed")
+    TransferToJob @enum(value: "transfer_to_job")
 }
 
-enum SortOrder {
-    ASC
-    DESC
+enum TicketTypes {
+    Breakdown @enum(value: "breakdown")
+    Job @enum(value: "job")
+    Corrective @enum(value: "corrective")
 }
 
 type SLA {
@@ -168,11 +176,12 @@ type Ticket {
     trade: TicketTrade
     priority: TicketPriority
     work_description: String
-    status: TicketStatus!
-    timelines: [TicketTimeline!]! @hasMany @orderBy(column: "created_at")
+    timelines: [TicketTimeline!]! @hasMany @orderBy(column: "timestamp")
     timeline: TicketTimeline!
+    status: TicketStatus!
     teamleader: User
     maintenance_processes: [MaintenanceProcess!]! @hasMany
+    by_client: Boolean
     created_by: User!
     updated_by: User!
 }
@@ -303,9 +312,12 @@ type Mutation {
         @guard
         @field(resolver: "TicketMutator@receive")
 
-    closeTicket(id: ID!, input: CloseTicketInput!): Ticket
+    clientApprovalTicket(id: ID!, input: ClientApprovalTicket!): Ticket
         @guard
-        @field(resolver: "TicketMutator@close")
+        @field(resolver: "TicketMutator@client_approval")
+    approvalTicket(id: ID!, input: ApprovalTicketInput!): Ticket
+        @guard
+        @field(resolver: "TicketMutator@approval")
         
     deleteTicket(id: ID!): Ticket @delete
 }
@@ -342,9 +354,14 @@ input ReceiveTicketInput {
     processes: [ProcessTicketInput!]
 }
 
-input CloseTicketInput {
+input ClientApprovalTicket {
     description: String
     is_reversed: Boolean
+}
+
+input ApprovalTicketInput {
+    description: String
+    status_id: ID!
 }
 
 input ProcessTicketInput {

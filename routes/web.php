@@ -27,13 +27,20 @@ Route::get('/login', function () {
 });
 
 Route::get('/test', function () {
-    // var_dump(Ticket::toDay());
-    // var_dump(Ticket::daily());
-    foreach (App\Part::find(19)->procedures as $value) {
-        var_dump($value->spare_part->spare_sub_parts);
+    
+    // $timelines = Timeline::whereHas('status', function (Builder $query) {
+    //     $query->where('key', 'transfer_to_job');
+    // });
+
+    $tickets = Ticket::whereHas('timelines', function ($query) {
+        $query->whereHas('status', function ($query) {
+            $query->where('key', 'transfer_to_job');
+        });
+    });
+    echo $tickets->toRawSql() . "<br>";
+    foreach ($tickets->get() as $value) {
+        echo "id: ".$value->id."<br>";
     }
-    // var_dump(App\Part::find(19)->procedures->spare_part->spare_sub_parts);
-    // return $user->notifications->first()->data;
 });
 
 
