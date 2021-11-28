@@ -31,7 +31,7 @@ extend type Query @guard {
     part(id: ID! @eq): Part! @find
 
     dashboard: Dashboard! @field(resolver: "DashQuery")
-    teamleaders: [User!]! @field(resolver: "UserQuery@teamleaders")
+    teamleaders: [User!]! @all(scopes: ["teamleaders"])
 
     ticket(id: ID @eq, number: String @eq): Ticket @find
 
@@ -181,7 +181,7 @@ type Ticket {
     status: TicketStatus!
     teamleader: User
     maintenance_processes: [MaintenanceProcess!]! @hasMany
-    by_client: Boolean
+    by_client: Boolean!
     created_by: User!
     updated_by: User!
 }

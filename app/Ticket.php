@@ -358,7 +358,11 @@ class Ticket extends Model
 
     public function assign($input)
     {
-        $input['status_id'] = TicketStatus::where("key", "waiting_for_access")->first()->id;
+        if (TicketType::find($input['type_id'])->key == "job") {
+            $input['status_id'] = TicketStatus::where("key", "transfer_to_job")->first()->id;
+        } else {
+            $input['status_id'] = TicketStatus::where("key", "waiting_for_access")->first()->id;
+        }
         $input['updated_by_id'] = Auth::id();
 
         if ($this->update($input)) {

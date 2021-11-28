@@ -45,17 +45,12 @@ Route::get('/test', function () {
 
 
 Auth::routes();
-Route::resource('/Client', 'ClientController')->middleware('auth');
-Route::resource('/Admin', 'AdminController')->middleware('auth');
-Route::resource('/Supervisor', 'SupervisorController')->middleware('auth');
-Route::resource('/Teamleader', 'TeamleaderController')->middleware('auth');
-Route::resource('/Report', 'ReportController')->middleware('auth');
-Route::resource('/Dealer', 'DealerController')->middleware('auth');
-Route::get('/ticket/{id}', 'TicketController@index')->middleware('auth')->name('ticket');
+Route::resource('/breakdown', 'BreakdownController')->middleware('auth');
+Route::resource('/link', 'LinkController')->middleware('auth');
+Route::resource('/report', 'ReportController')->middleware('auth');
 Route::get('/report/breakdown', 'ReportController@breakdown')->middleware('auth')->name('breakdown-report');
 Route::get('/report/maintenance', 'ReportController@maintenance')->middleware('auth')->name('maintenance-report');
 Route::get('/report/pm', 'ReportController@pm')->middleware('auth')->name('pm-report');
 Route::get('/report/pm-fireexting', 'ReportController@pm_fireexting')->middleware('auth')->name('pm-fireexting-report');
 Route::get('/home', 'HomeController@index')->middleware('auth')->name('Home');
-Route::resource('/link', 'LinkController')->middleware('auth');
 Route::get('ajax_fetch_data/{table}/{id}','ajax_data\FetchController@getdata');

@@ -559,23 +559,7 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="
-                                          @if (Auth::user()->isAdmin())
-                                        {{ route('Admin.index') }}
-                                        @endif
-                                        @if (Auth::user()->isSupervisor())
-                                            {{ route('Supervisor.index') }}
-                                        @endif
-                                        @if (Auth::user()->isTeamleader())
-                                            {{ route('Teamleader.index') }}
-                                        @endif
-                                        @if (Auth::user()->isDealer())
-                                            {{ route('Dealer.index') }}
-                                        @endif
-                                        @if (Auth::user()->isClient())
-                                            {{ route('Client.index') }}
-                                        @endif
-                                        " class="nav-link">
+                                    <a href="{{ route('breakdown.index') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Breakdowns</p>
                                     </a>

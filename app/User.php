@@ -74,25 +74,24 @@ class User extends Authenticatable
         return User::constList(User::LEVELS);
     }
 
-    static public function teamleaders()
+    public function scopeTeamleaders($query)
     {
         $levelID = array_search('teamleader', self::LEVELS);
-        return User::where('level_id', $levelID)->get();
+        return $query->where('level_id', $levelID);
     }
 
-    static public function supervisors()
+    public function scopeSupervisors($query)
     {
         $levelID = array_search('supervisor', self::LEVELS);
-        return User::where('level_id', $levelID)->get();
+        return $query->where('level_id', $levelID);
     }
 
-    static public function clients()
+    public function scopeClients($query)
     {
         $levelID = array_search('client', self::LEVELS);
-        return User::where('level_id', $levelID)->get();
+        return $query->where('level_id', $levelID);
     }
-
-
+    
     public function updated_by(): BelongsTo
     {
         return $this->belongsTo('App\User');
