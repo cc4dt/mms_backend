@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Team;
+use App\Policies\TeamPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -13,6 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
+        Team::class => TeamPolicy::class,
         // 'App\Model' => 'App\Policies\ModelPolicy',
     ];
 
@@ -44,7 +47,7 @@ class AuthServiceProvider extends ServiceProvider
         });
         
         Gate::define('view-reports', function ($user) {
-            return $user->isSupervisor() or $user->isClient();
+            return $user->isSupervisor() or $user->isDealer();
         });
     }
 }

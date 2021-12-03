@@ -2,9 +2,9 @@
 
 namespace App\GraphQL\Queries;
 
-use App\Breakdown;
-use App\Station;
-use App\Ticket;
+use App\Models\Breakdown;
+use App\Models\Station;
+use App\Models\Ticket;
 
 class DashQuery
 {

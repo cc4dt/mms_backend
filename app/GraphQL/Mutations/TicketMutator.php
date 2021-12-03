@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\Ticket;
+use App\Models\Ticket;
 
 class TicketMutator
 {

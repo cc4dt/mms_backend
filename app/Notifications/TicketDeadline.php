@@ -13,7 +13,7 @@ use NotificationChannels\Fcm\Resources\AndroidFcmOptions;
 use NotificationChannels\Fcm\Resources\AndroidNotification;
 use NotificationChannels\Fcm\Resources\ApnsConfig;
 use NotificationChannels\Fcm\Resources\ApnsFcmOptions;
-use App\Ticket;
+use App\Models\Ticket;
 
 class TicketDeadline extends Notification
 {

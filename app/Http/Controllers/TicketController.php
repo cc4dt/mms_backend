@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\TicketAssigned;
 use App\Notifications\TicketOpened;
-use App\Breakdown;
-use App\Equipment;
-use App\Station;
-use App\Company;
-use App\Ticket;
-use App\State;
-use App\User;
+use App\Models\Breakdown;
+use App\Models\Equipment;
+use App\Models\Station;
+use App\Models\Company;
+use App\Models\Ticket;
+use App\Models\State;
+use App\Models\User;
 use DB;
 
 

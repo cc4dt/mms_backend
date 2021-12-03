@@ -1,12 +1,23 @@
 <?php
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HseController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BreakdownController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LinkController;
+use App\Http\Controllers\ajax_data\FetchController;
+
 use Illuminate\Support\Collection;
-use App\User;
-use App\Ticket;
-use App\Part;
-use App\MaintenanceProcess;
-use App\MasterEquipment;
+use App\Models\User;
+use App\Models\Ticket;
+use App\Models\Part;
+use App\Models\MaintenanceProcess;
+use App\Models\MasterEquipment;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,39 +29,30 @@ use App\MasterEquipment;
 |
 */
 
-Route::get('/', function () {
-    return view('auth/login');
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
+
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/home', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+    Route::resource('users', UserController::class);
+    Route::resource('hse', HseController::class);
+    Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('Home');
+    Route::resource('/breakdown', BreakdownController::class)->middleware('auth');
+    Route::resource('/link', LinkController::class)->middleware('auth');
+    Route::resource('/Report', ReportController::class)->middleware('auth');
+    Route::get('/report/breakdown', [ReportController::class, 'breakdown'])->middleware('auth')->name('breakdown-report');
+    Route::get('/report/maintenance', [ReportController::class, 'maintenance'])->middleware('auth')->name('maintenance-report');
+    Route::get('/report/pm', [ReportController::class, 'pm'])->middleware('auth')->name('pm-report');
+    Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->middleware('auth')->name('pm-fireexting-report');
+    Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
 });
-
-Route::get('/login', function () {
-    return view('auth/login');
-});
-
-Route::get('/test', function () {
-    
-    // $timelines = Timeline::whereHas('status', function (Builder $query) {
-    //     $query->where('key', 'transfer_to_job');
-    // });
-
-    $tickets = Ticket::whereHas('timelines', function ($query) {
-        $query->whereHas('status', function ($query) {
-            $query->where('key', 'transfer_to_job');
-        });
-    });
-    echo $tickets->toRawSql() . "<br>";
-    foreach ($tickets->get() as $value) {
-        echo "id: ".$value->id."<br>";
-    }
-});
-
-
-Auth::routes();
-Route::resource('/breakdown', 'BreakdownController')->middleware('auth');
-Route::resource('/link', 'LinkController')->middleware('auth');
-Route::resource('/report', 'ReportController')->middleware('auth');
-Route::get('/report/breakdown', 'ReportController@breakdown')->middleware('auth')->name('breakdown-report');
-Route::get('/report/maintenance', 'ReportController@maintenance')->middleware('auth')->name('maintenance-report');
-Route::get('/report/pm', 'ReportController@pm')->middleware('auth')->name('pm-report');
-Route::get('/report/pm-fireexting', 'ReportController@pm_fireexting')->middleware('auth')->name('pm-fireexting-report');
-Route::get('/home', 'HomeController@index')->middleware('auth')->name('Home');
-Route::get('ajax_fetch_data/{table}/{id}','ajax_data\FetchController@getdata');

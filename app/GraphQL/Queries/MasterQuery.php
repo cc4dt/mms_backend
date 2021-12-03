@@ -2,11 +2,11 @@
 
 namespace App\GraphQL\Queries;
 
-use App\User;
-use App\Ticket;
-use App\MasterEquipment;
-use App\Part;
-use App\Equipment;
+use App\Models\User;
+use App\Models\Ticket;
+use App\Models\MasterEquipment;
+use App\Models\Part;
+use App\Models\Equipment;
 
 class MasterQuery
 {

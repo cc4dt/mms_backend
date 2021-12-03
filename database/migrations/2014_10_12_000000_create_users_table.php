@@ -29,6 +29,8 @@ class CreateUsersTable extends Migration
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->foreignId('created_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->foreignId('updated_by_id')->nullable()->constrained("users")->onDelete('cascade');
+            $table->foreignId('current_team_id')->nullable();
+            $table->string('profile_photo_path', 2048)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

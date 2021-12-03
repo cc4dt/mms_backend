@@ -46,7 +46,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('LTR/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('LTR/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('LTR/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.jssss') }}"></script>
+    <script src="{{ asset('LTR/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
     <script src="{{ asset('LTR/dist/js/adminlte.js') }}"></script>
     <script src="{{ asset('LTR/dist/js/demo.js') }}"></script>
     <script src="{{ asset('LTR/plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
@@ -305,10 +305,10 @@
                         <i class="fa fa-comments"></i>
                         <span class="badge badge-danger navbar-badge">
                             @if (Auth::user()->level_id == 1)@endif
-                            @if (Auth::user()->level_id == 2) {{ \App\Ticket::count() }} @endif
-                            @if (Auth::user()->level_id == 3) {{ \App\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }} @endif
-                            @if (Auth::user()->level_id == 4) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
-                            @if (Auth::user()->level_id == 5) {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+                            @if (Auth::user()->level_id == 2) {{ \App\Models\Ticket::count() }} @endif
+                            @if (Auth::user()->level_id == 3) {{ \App\Models\Ticket::where(['teamleader_id' => Auth::user()->id])->get()->count() }} @endif
+                            @if (Auth::user()->level_id == 4) {{ \App\Models\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
+                            @if (Auth::user()->level_id == 5) {{ \App\Models\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }} @endif
                         </span> </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 
@@ -325,25 +325,25 @@
 
                                                 @endif
                                                 @if (Auth::user()->level_id == 2)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->get()->count() }} :
+                                                    {{ \App\Models\Ticket::where(['status_id' => $i])->get()->count() }} :
                                                     Tickets
                                                 @endif
                                                 @if (Auth::user()->level_id == 3)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                                    {{ \App\Models\Ticket::where(['status_id' => $i])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
                                                     : Tickets
                                                 @endif
                                                 @if (Auth::user()->level_id == 4)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                                    {{ \App\Models\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
                                                     : Tickets
                                                 @endif
                                                 @if (Auth::user()->level_id == 5)
-                                                    {{ \App\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                                    {{ \App\Models\Ticket::where(['status_id' => $i])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
                                                     : Tickets
                                                 @endif
 
                                             </span>
                                         </h3>
-                                        <p class="text-sm">{{ \App\TicketStatus::find($i)->name }}</p>
+                                        <p class="text-sm">{{ \App\Models\TicketStatus::find($i)->name }}</p>
                                     </div>
                                 </div>
                                 <!-- Message End -->
@@ -365,16 +365,16 @@
 
                             @endif
                             @if (Auth::user()->level_id == 2)
-                                {{ \App\Ticket::count() }}
+                                {{ \App\Models\Ticket::count() }}
                             @endif
                             @if (Auth::user()->level_id == 3)
-                                {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
                             @endif
                             @if (Auth::user()->level_id == 4)
-                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
                             @endif
                             @if (Auth::user()->level_id == 5)
-                                {{ \App\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['created_by_id' => Auth::user()->id])->get()->count() }}
                             @endif
 
                         </span> </a>
@@ -387,19 +387,19 @@
 
                             @endif
                             @if (Auth::user()->level_id == 2)
-                                {{ \App\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['status_id' => 1])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
                                 New Tickets
                             @endif
                             @if (Auth::user()->level_id == 3)
-                                {{ \App\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['status_id' => 6])->where(['teamleader_id' => Auth::user()->id])->get()->count() }}
                                 New Tickets
                             @endif
                             @if (Auth::user()->level_id == 4)
-                                {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
                                 New Tickets
                             @endif
                             @if (Auth::user()->level_id == 5)
-                                {{ \App\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
+                                {{ \App\Models\Ticket::where(['status_id' => 1])->where(['created_by_id' => Auth::user()->id])->get()->count() }}
                                 New Tickets
                             @endif
 
@@ -562,6 +562,12 @@
                                     <a href="{{ route('breakdown.index') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Breakdowns</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('hse.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>HSE</p>
                                     </a>
                                 </li>
 

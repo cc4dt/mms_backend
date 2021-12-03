@@ -42,7 +42,7 @@ extend type Query @guard {
      @orderBy(column: "updated_at", direction: DESC)
 
     jobs: [Ticket!]!
-     @paginate(defaultCount: 10, builder: "App\\Ticket@jobs")
+     @paginate(defaultCount: 10, builder: "App\\Models\\Ticket@jobs")
      @orderBy(column: "updated_at", direction: DESC)
      
     state: [State!]! @find

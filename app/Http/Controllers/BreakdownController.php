@@ -5,13 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use App\Equipment;
-use App\Breakdown;
-use App\State;
-use App\Company;
-use App\Station;
-use App\Ticket;
-use App\User;
+use App\Models\Equipment;
+use App\Models\Breakdown;
+use App\Models\State;
+use App\Models\Company;
+use App\Models\Station;
+use App\Models\Ticket;
+use App\Models\User;
 use DB;
 
 

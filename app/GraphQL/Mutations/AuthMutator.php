@@ -8,8 +8,8 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Facades\Auth;
 
-use App\User;
-use App\FcmToken;
+use App\Models\User;
+use App\Models\FcmToken;
 
 class AuthMutator
 {

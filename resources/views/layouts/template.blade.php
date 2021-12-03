@@ -120,7 +120,7 @@
 
 <script src="{{ asset('LTR/plugins/jquery/jquery.min.js')}}"></script>
 <script src="{{ asset('LTR/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-<script src="{{ asset('LTR/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.jssss')}}"></script>
+<script src="{{ asset('LTR/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 <script src="{{ asset('LTR/dist/js/adminlte.js')}}"></script>
 <script src="{{ asset('LTR/dist/js/demo.js')}}"></script>
 <script src="{{ asset('LTR/plugins/jquery-mousewheel/jquery.mousewheel.js')}}"></script>

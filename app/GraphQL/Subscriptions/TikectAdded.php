@@ -3,8 +3,8 @@
 namespace App\GraphQL\Subscriptions;
 
 
-// use App\User;
-// use App\Tikect;
+// use App\Models\User;
+// use App\Models\Tikect;
 
 // use Illuminate\Http\Request;
 // use Nuwave\Lighthouse\Schema\Types\GraphQLSubscription;

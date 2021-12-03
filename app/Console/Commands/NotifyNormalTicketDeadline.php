@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
-use App\User;
-use App\Ticket;
+use App\Models\User;
+use App\Models\Ticket;
 use App\Notifications\TicketDeadline;
 use Illuminate\Support\Facades\Notification;
 

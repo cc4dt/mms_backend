@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Subscriptions;
 
-use App\User;
+use App\Models\User;
 
 use Illuminate\Http\Request;
 use Nuwave\Lighthouse\Schema\Types\GraphQLSubscription;
