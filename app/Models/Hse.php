@@ -34,4 +34,9 @@ class Hse extends Model
     {
         $this->{'name_' . app()->getlocale()} = $value;
     }
+
+    public function processes(): HasMany
+    {
+        return $this->hasMany(HseProcess::class);
+    }
 }

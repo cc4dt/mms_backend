@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+
+use Redirect;
 
 class UserController extends Controller
 {
@@ -68,7 +71,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Users/Create', [
+            'levels' => User::levels(),
+        ]);
     }
 
     /**
@@ -79,7 +84,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'level' => ['required', 'string'],
+        ]);
+        
+        $form =  $request->all();
+        // dd($request->all());
+        $def = "12345678";
+        User::create([
+            'name' => $form['name'],
+            'email' => $form['email'],
+            'level' => $form['level'],
+            'company_id' => 1,
+            'password' => Hash::make($def),
+        ]);
+        
+        return Redirect::route('users.index');
     }
 
     /**

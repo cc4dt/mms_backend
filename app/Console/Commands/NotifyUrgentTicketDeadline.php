@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
-use App\Ticket;
+use App\Models\Ticket;
 
 class NotifyUrgentTicketDeadline extends Command
 {

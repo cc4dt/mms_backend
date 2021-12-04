@@ -9,6 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class HseDetail extends Model
 {
+    protected $fillable = [
+        'process_id',
+        'spare_sub_part_id',
+        'procedure_id',
+        'option_id',
+        'value',
+    ];
+
     protected $appends = [
         'name',
     ];

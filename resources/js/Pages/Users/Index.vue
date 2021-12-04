@@ -8,10 +8,33 @@
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
           <div class="p-6 sm:px-6 bg-white border-b border-gray-200">
-            <!-- <inertia-link class="btn-indigo" :href="route('users.create')">
-              <span>Create</span>
-              <span class="hidden md:inline">User</span>
-            </inertia-link> -->
+            <Link
+              :href="route('users.create')"
+              class="
+                mb-4
+                inline-flex
+                items-center
+                px-4
+                py-2
+                bg-gray-800
+                border border-transparent
+                rounded-md
+                font-semibold
+                text-xs text-white
+                uppercase
+                tracking-widest
+                hover:bg-gray-700
+                active:bg-gray-900
+                focus:outline-none
+                focus:border-gray-900
+                focus:ring
+                focus:ring-gray-300
+                disabled:opacity-25
+                transition
+              "
+            >
+              Create User
+            </Link>
             <Table
               :filters="queryBuilderProps.filters"
               :search="queryBuilderProps.search"
@@ -54,6 +77,7 @@
 <script>
 import { defineComponent } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { Link } from "@inertiajs/inertia-vue3";
 
 import {
   InteractsWithQueryBuilder,
@@ -65,13 +89,12 @@ export default defineComponent({
 
   components: {
     AppLayout,
+    Link,
     Table: Tailwind2.Table,
   },
   props: {
     data: Object,
   },
-  data() {
-    
-  }
+  data() {},
 });
 </script>
