@@ -348,7 +348,7 @@ class Ticket extends Model
         if($ticket) {
             $ticket->timelines()->create($input);
             try {
-                Notification::send(User::supervisors(), new TicketOpened($ticket));
+                Notification::send(User::supervisors()->get(), new TicketOpened($ticket));
             } catch (\Throwable $th) {
                 //throw $th;
             }
@@ -414,7 +414,7 @@ class Ticket extends Model
             }
 
             try {
-                // $users = User::supervisors()->merge(User::clients());
+                // $users = User::supervisors()->get()->merge(User::clients()->get());
                 // foreach ($users as $key => $value) {
                 //     if($value->id == Auth::id())
                 //         $users->forget($key);
@@ -440,12 +440,12 @@ class Ticket extends Model
             $this->timelines()->create($input);
 
             try {
-                // $users = User::supervisors()->merge(User::clients());
+                // $users = User::supervisors()->get()->merge(User::clients()->get());
                 // foreach ($users as $key => $value) {
                 //     if($value->id == Auth::id())
                 //         $users->forget($key);
                 // }
-                // Notification::send(User::supervisors(), new TicketClosed($this));
+                // Notification::send(User::supervisors()->get(), new TicketClosed($this));
             } catch (\Throwable $th) {
                 //throw $th;
             }
@@ -463,12 +463,12 @@ class Ticket extends Model
             $this->timelines()->create($input);
 
             try {
-                // $users = User::supervisors()->merge(User::clients());
+                // $users = User::supervisors()->get()->merge(User::clients()->get());
                 // foreach ($users as $key => $value) {
                 //     if($value->id == Auth::id())
                 //         $users->forget($key);
                 // }
-                // Notification::send(User::supervisors(), new TicketClosed($this));
+                // Notification::send(User::supervisors()->get(), new TicketClosed($this));
             } catch (\Throwable $th) {
                 //throw $th;
             }

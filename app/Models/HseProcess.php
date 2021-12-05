@@ -12,7 +12,7 @@ class HseProcess extends Model
     protected $fillable = [
         'hse_id',
         'station_id',
-        'master_equipment_id',
+        'equipment_id',
         'timestamp',
         'created_by_id',
         'updated_by_id',

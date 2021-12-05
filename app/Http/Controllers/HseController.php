@@ -107,7 +107,7 @@ class HseController extends Controller
         $hse = Hse::find($form['hse']['id']);
         $process = $hse->processes()->create([
             'station_id' => $form['station']['id'],
-            'master_equipment_id'=> $form['equipment']['id'],
+            'equipment_id' => $form['equipment'] ? $form['equipment']['id'] : null,
             'timestamp' => $form['date'],
             'created_by_id' => Auth::id(),
             'updated_by_id' => Auth::id(),

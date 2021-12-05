@@ -55,7 +55,7 @@ class NotifyNormalTicketDeadline extends Command
                 $leftTime = floor($totalDuration / 3600) . gmdate(":i", $totalDuration % 3600);
 
                 try {
-                    Notification::send(User::supervisors()->merge(User::clients()), new TicketDeadline($ticket, $leftTime));
+                    Notification::send(User::supervisors()->get()->merge(User::clients()->get()), new TicketDeadline($ticket, $leftTime));
                 } catch (\Throwable $th) {
                     //throw $
                 }
