@@ -624,6 +624,17 @@
                         </a>
 
                     </li>
+
+                    <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+                    <li class="nav-item">
+                        <a href="{{ route('users.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>
+                                Users
+                            </p>
+                        </a>
+
+                    </li>
                     </ul>
 
                 </nav>

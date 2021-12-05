@@ -28,7 +28,7 @@ class HseProcess extends Model
         return $this->belongsTo(Station::class);
     }
 
-    public function master_equipment(): BelongsTo
+    public function equipment(): BelongsTo
     {
         return $this->belongsTo(MasterEquipment::class);
     }

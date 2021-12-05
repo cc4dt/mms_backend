@@ -35,19 +35,19 @@ class AuthServiceProvider extends ServiceProvider
         });
         
         Gate::define('open-ticket', function ($user) {
-            return $user->isSupervisor() or $user->isClient();
+            return $user->isSupervisor() or $user->isAdmin() or $user->isClient();
         });
         
         Gate::define('assign-ticket', function ($user) {
-            return $user->isSupervisor();
+            return $user->isSupervisor() or $user->isAdmin();
         });
         
         Gate::define('close-ticket', function ($user, $ticket) {
-            return $user->isSupervisor() or ($user->isTeamleader() and $user->id == $ticket->teamleader_id);
+            return $user->isSupervisor() or $user->isAdmin() or ($user->isTeamleader() and $user->id == $ticket->teamleader_id);
         });
         
         Gate::define('view-reports', function ($user) {
-            return $user->isSupervisor() or $user->isDealer();
+            return $user->isSupervisor() or $user->isDealer() or $user->isAdmin();
         });
     }
 }

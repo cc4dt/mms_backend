@@ -41,12 +41,12 @@ use App\Models\MasterEquipment;
 
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return Inertia::render('Dashboard');
+    // })->name('dashboard');
     Route::resource('users', UserController::class);
     Route::resource('hse', HseController::class);
-    Route::get('/home', [HomeController::class, 'index'])->middleware('auth')->name('home');
+    Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
     Route::resource('/breakdown', BreakdownController::class)->middleware('auth');
     Route::resource('/link', LinkController::class)->middleware('auth');
     Route::resource('/Report', ReportController::class)->middleware('auth');

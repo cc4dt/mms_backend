@@ -90,7 +90,8 @@
                         remember: this.form.remember ? 'on' : ''
                     }))
                     .post(this.route('login'), {
-                        onFinish: () => this.form.reset('password'),
+                        onError: () => this.form.reset('password'),
+                        onFinish: () => window.location.href = '/',
                     })
             }
         }

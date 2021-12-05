@@ -117,7 +117,7 @@ class HseController extends Controller
                 $process->details()->create([
                     'procedure_id' => $key,
                     'option_id' => $value['option']['id'],
-                    'spare_sub_part_id' => $value['spare']['id'],
+                    'spare_sub_part_id' => $value['spare'] ? $value['spare']['id'] : null,
                     'value' => $value['val'],
                 ]);
             } 

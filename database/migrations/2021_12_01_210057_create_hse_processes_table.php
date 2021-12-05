@@ -17,7 +17,7 @@ class CreateHseProcessesTable extends Migration
             $table->id();
             $table->foreignId('hse_id')->constrained()->onDelete('cascade');
             $table->foreignId('station_id')->constrained()->onDelete('cascade');
-            $table->foreignId('master_equipment_id')->nullable()->constrained('master_equipment')->onDelete('cascade');
+            $table->foreignId('equipment_id')->nullable()->constrained('master_equipment')->onDelete('cascade');
             $table->timestamp('timestamp');
             $table->foreignId('created_by_id')->constrained("users")->onDelete('cascade');
             $table->foreignId('updated_by_id')->constrained("users")->onDelete('cascade');

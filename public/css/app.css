@@ -2520,10 +2520,6 @@ select {
 		margin-top: 0px;
 	}
 
-	.md\:inline {
-		display: inline;
-	}
-
 	.md\:grid {
 		display: grid;
 	}
