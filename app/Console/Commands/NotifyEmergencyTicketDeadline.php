@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
 use App\Models\Ticket;
+use App\Models\User;
 
 class NotifyEmergencyTicketDeadline extends Command
 {
@@ -53,8 +54,8 @@ class NotifyEmergencyTicketDeadline extends Command
 
                 try {
                     Notification::send(User::supervisors()->get()->merge(User::clients()->get()), new TicketDeadline($ticket, $leftTime));
-                } catch (\Throwable $th) {
-                    //throw $
+                } catch (Exception $e) {
+                    Log::error($e->getMessage());
                 }
             }
         }

@@ -349,8 +349,8 @@ class Ticket extends Model
             $ticket->timelines()->create($input);
             try {
                 Notification::send(User::supervisors()->get(), new TicketOpened($ticket));
-            } catch (\Throwable $th) {
-                //throw $th;
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
             }
             return $ticket;
         }
@@ -371,8 +371,8 @@ class Ticket extends Model
 
             try {
                 $this->teamleader->notify(new TicketAssigned($this));
-            } catch (\Throwable $th) {
-                //throw $th;
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
             }
             // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
             return $this;
@@ -420,8 +420,8 @@ class Ticket extends Model
                 //         $users->forget($key);
                 // }
                 // Notification::send($users, new TicketClosed($this));
-            } catch (\Throwable $th) {
-                //throw $th;
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
             }
             return $this;
         }
@@ -446,8 +446,8 @@ class Ticket extends Model
                 //         $users->forget($key);
                 // }
                 // Notification::send(User::supervisors()->get(), new TicketClosed($this));
-            } catch (\Throwable $th) {
-                //throw $th;
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
             }
             // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
             return $this;
@@ -469,8 +469,8 @@ class Ticket extends Model
                 //         $users->forget($key);
                 // }
                 // Notification::send(User::supervisors()->get(), new TicketClosed($this));
-            } catch (\Throwable $th) {
-                //throw $th;
+            } catch (Exception $e) {
+                Log::error($e->getMessage());
             }
             // \Nuwave\Lighthouse\Execution\Utils\Subscription::broadcast('NewTicketOpened', $this);
             return $this;

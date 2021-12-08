@@ -56,8 +56,8 @@ class NotifyNormalTicketDeadline extends Command
 
                 try {
                     Notification::send(User::supervisors()->get()->merge(User::clients()->get()), new TicketDeadline($ticket, $leftTime));
-                } catch (\Throwable $th) {
-                    //throw $
+                } catch (Exception $e) {
+                    Log::error($e->getMessage());
                 }
             }
         }
