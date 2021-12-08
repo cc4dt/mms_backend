@@ -19,7 +19,8 @@ class CreateMaintenanceProceduresTable extends Migration
             $table->string('name_ar');
             $table->integer('type_id');
             $table->integer('sequence')->default(1);
-            $table->foreignId('spare_part_id')->constrained('spare_parts')->onDelete('cascade');
+            $table->integer('cat_id')->default(1);
+            $table->foreignId('spare_part_id')->nullable()->constrained('spare_parts')->onDelete('cascade');
             $table->timestamps();
         });
     }

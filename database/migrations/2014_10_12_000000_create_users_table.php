@@ -25,8 +25,8 @@ class CreateUsersTable extends Migration
             $table->integer('extension')->default('0');
             $table->integer('hide_cost')->default('-1');
             $table->string('work_phone')->nullable();
-            $table->integer('level_id');
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->integer('level_id')->default('5');
+            $table->foreignId('company_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('created_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->foreignId('updated_by_id')->nullable()->constrained("users")->onDelete('cascade');
             $table->foreignId('current_team_id')->nullable();

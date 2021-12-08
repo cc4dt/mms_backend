@@ -56,3 +56,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->middleware('auth')->name('pm-fireexting-report');
     Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
 });
+
+
+Route::group(['prefix' => 'admin'], function () {
+    Voyager::routes();
+});
