@@ -73,6 +73,7 @@
                                 <th>Equipment</th>
                                 <th>Breakdown</th>
                                 <th>Recieved Time</th>
+                                <th>Created By</th>
                                 <th>Description</th>
                                 <th>Operations</th>
                             </tr>
@@ -90,6 +91,7 @@
                                 <th>{{ $show->equipment->name ?? '' }}</th>
                                 <th>{{ $show->breakdown->name ?? '' }}</th>
                                 <th>{{ $show->created_at ?? '' }}</th>
+                                <th>{{ $show->created_by->name ?? '' }}</th>
                                 <th>{{ $show->timeline->description ?? '' }}</th>
                                 <th>
                                     @if($show->timeline->status_id==1)

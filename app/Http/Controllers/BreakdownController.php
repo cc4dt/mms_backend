@@ -24,8 +24,8 @@ class BreakdownController extends Controller
      */
     public function index()
     {
-        $arr['showdata'] = Ticket::all()->sortDesc();
-        $arr['shownew'] = Ticket::onStatus('open')->orderBy('id','DESC')->limit(10)->get();
+        $arr['showdata'] = Ticket::onType('breakdown')->orderBy('id','DESC')->get();
+        $arr['shownew'] = Ticket::onType('breakdown')->onStatus('open')->orderBy('id','DESC')->limit(10)->get();
         $arr['statedata'] = State::all();
         $arr['equipmentdata'] = Equipment::all();
         $arr['showteamleader'] = User::teamleaders()->orderBy('name')->get();
@@ -98,14 +98,14 @@ class BreakdownController extends Controller
      */
     public function edit($id)
     {
-        $arr['showdata'] = Ticket::where('created_by_id', Auth::user()->id)->orderBy('id','DESC')->get();
+        $arr['showdata'] = Ticket::onType('breakdown')->where('created_by_id', Auth::user()->id)->orderBy('id','DESC')->get();
         $arr['statedata'] = State::all();
         $arr['equipmentdata'] = Equipment::all();
         $arr['showupdate'] = Ticket::find($id);
         $tickets = Ticket::find($id);
         $arr['stationdata']= Station::where('state_id',$tickets->state_id)->get();
         $arr['breakdowndata']=Breakdown::where('equipment_id',$tickets->equipment_id)->get();
-        $arr['shownew'] = Ticket::onStatus('open')
+        $arr['shownew'] = Ticket::onType('breakdown')->onStatus('open')
         ->where('created_by_id', Auth::user()->id)
         ->orderBy('id','DESC')
         ->limit(10)
