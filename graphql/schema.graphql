@@ -19,6 +19,7 @@ type Query {
     ticketTypes: [TicketType!]! @all
     ticketTrades: [TicketTrade!]! @all
     ticketPriorities: [TicketPriority!]! @all
+    checkUpdate(version: String!): UpdateDetails! @field(resolver: "CheckUpdateQuery")
 }
 
 extend type Query @guard {
@@ -64,6 +65,13 @@ enum TicketTypes {
     Breakdown @enum(value: "breakdown")
     Job @enum(value: "job")
     Corrective @enum(value: "corrective")
+}
+
+type UpdateDetails {
+    available: Boolean!
+    required: Boolean!
+    latest: String
+    url: String
 }
 
 type SLA {

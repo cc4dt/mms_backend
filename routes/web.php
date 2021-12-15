@@ -55,6 +55,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/report/pm', [ReportController::class, 'pm'])->middleware('auth')->name('pm-report');
     Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->middleware('auth')->name('pm-fireexting-report');
     Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
+    Route::get('/app/download', function () {
+        return Inertia::render('App/Index');
+    })->name('app.download');
 });
 
 
