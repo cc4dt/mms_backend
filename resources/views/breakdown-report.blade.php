@@ -92,7 +92,7 @@
                         </select>
                     </div>
 
-                    <div class="p-3 col-md-3">
+                    <!-- <div class="p-3 col-md-3">
                         <select id="type_id" name="type_id"
                             class="select2bs4 form-control @error('type_id') is-invalid @enderror" data-vldtr="required">
                             <option value="">-Select Type-</option>
@@ -102,7 +102,7 @@
                                 @endforeach
                             @endif
                         </select>
-                    </div>
+                    </div> -->
 
                     <div class="p-3 col-md-3">
                         <select id="duration" name="duration"
@@ -128,7 +128,7 @@
         </div>
     </div>
     <script>
-        var station = "", status = "", equipment = "", breakdown = "", type = "", from = "", duration = "";
+        var station = "", status = "", equipment = "", breakdown = "", from = "", duration = "";
 
         var tickets = @json($tickets);
         
@@ -145,7 +145,10 @@
                 title: "Breakdown"
             },
             {
-                title: "Type"
+                title: "Note"
+            },
+            {
+                title: "Open By"
             },
             {
                 title: "SLA"
@@ -176,14 +179,15 @@
                 e.station?.name ?? "",
                 e.equipment?.name ?? "",
                 e.breakdown?.name ?? "",
-                e.type?.name ?? "",
+                e.timeline?.description ?? "",
+                e.created_by?.name ?? "",
                 e.sla,
                 e.in_sla ? 'IN' : 'OUT',
                 e.actions.join(', '),
                 new Date(e.created_at).toLocaleString(),
                 new Date(e.updated_at).toLocaleString(),
                 e.led_time,
-                e.status.name
+                e.timeline.status.name
             ]);
         });
 
@@ -233,7 +237,7 @@
                 return (moment(new Date(o.created_at), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
                     (o.station_id == station || !station) &&
                     (o.status_id == status || !status) &&
-                    (o.type_id == type || !type) &&
+                    // (o.type_id == type || !type) &&
                     (o.breakdown_id == breakdown || !breakdown) &&
                     (o.equipment_id == equipment || !equipment);
                 });
@@ -244,14 +248,15 @@
                     e.station?.name ?? "",
                     e.equipment?.name ?? "",
                     e.breakdown?.name ?? "",
-                    e.type?.name ?? "",
+                    e.timeline?.description ?? "",
+                    e.created_by?.name ?? "",
                     e.sla,
                     e.in_sla ? 'IN' : 'OUT',
                     e.actions.join(', '),
                     new Date(e.created_at).toLocaleString(),
                     new Date(e.updated_at).toLocaleString(),
                     e.led_time,
-                    e.status.name
+                    e.timeline.status.name
                 ]).draw(false);
             });
         }
@@ -277,12 +282,12 @@
             });
         });
 
-        jQuery(document).ready(function() {
-            jQuery('select[name="type_id"]').on('change', function() {
-                type = jQuery(this).val();
-                filterReport();
-            });
-        });
+        // jQuery(document).ready(function() {
+        //     jQuery('select[name="type_id"]').on('change', function() {
+        //         type = jQuery(this).val();
+        //         filterReport();
+        //     });
+        // });
 
         jQuery(document).ready(function() {
             jQuery('select[name="equipment_id"]').on('change', function() {

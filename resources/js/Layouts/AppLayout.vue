@@ -39,12 +39,6 @@
                   Home
                 </a>
                 <jet-nav-link
-                  :href="route('users.index')"
-                  :active="route().current('users.index')"
-                >
-                  Users
-                </jet-nav-link>
-                <jet-nav-link
                   :href="route('hse.index')"
                   :active="route().current('hse.index')"
                 >
@@ -334,12 +328,6 @@
             >
               Home
             </a>
-            <jet-responsive-nav-link
-              :href="route('users.index')"
-              :active="route().current('users.index')"
-            >
-              Users
-            </jet-responsive-nav-link>
             <jet-responsive-nav-link
               :href="route('hse.index')"
               :active="route().current('hse.index')"

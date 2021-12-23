@@ -73,7 +73,7 @@
                                 <th>Equipment</th>
                                 <th>Breakdown</th>
                                 <th>Recieved Time</th>
-                                <th>Created By</th>
+                                <th>Open By</th>
                                 <th>Description</th>
                                 <th>Operations</th>
                             </tr>

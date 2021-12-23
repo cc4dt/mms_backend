@@ -44,7 +44,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');
     // })->name('dashboard');
-    Route::resource('users', UserController::class);
+    // Route::resource('users', UserController::class);
     Route::resource('hse', HseController::class);
     Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
     Route::resource('/breakdown', BreakdownController::class)->middleware('auth');

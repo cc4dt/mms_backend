@@ -273,11 +273,15 @@ class Ticket extends Model
     public function getActionsAttribute($value)
     {
         $actions = [];
-        foreach ($this->maintenance_processes as $process) {
-            foreach ($process->details as $detail) {
-                if($detail->procedure->type->key != "other")
-                    $actions[] = $detail->procedure->name;
+        try {
+            foreach ($this->maintenance_processes as $process) {
+                foreach ($process->details as $detail) {
+                    if($detail->procedure && $detail->procedure->type->key != "other")
+                        $actions[] = $detail->procedure->name;
+                }
             }
+        } catch (\Throwable $th) {
+            //throw $th;
         }
         return $actions;
     }

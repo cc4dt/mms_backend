@@ -264,17 +264,18 @@ class ReportController extends Controller
         // whereHas('status', function($q) {
         //     $q->where("key", "closed");
         //  })->get()
-        $arr['tickets'] = Ticket::all()->loadMissing(
+        $arr['tickets'] = Ticket::onType('breakdown')->orderBy('id','DESC')->get()->loadMissing(
             "equipment",
             "breakdown",
             "station",
-            "status",
+            "timeline",
+            "timeline.status",
+            "created_by",
             "type",
         );
         $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
         $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
         $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
-        $arr['types'] = TicketType::all('id', 'name_ar', 'name_en');
         $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
         
         return view('breakdown-report')->with($arr);

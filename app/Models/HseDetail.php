@@ -11,7 +11,7 @@ class HseDetail extends Model
 {
     protected $fillable = [
         'process_id',
-        'spare_sub_part_id',
+        'spare_part_id',
         'procedure_id',
         'option_id',
         'value',
@@ -26,7 +26,7 @@ class HseDetail extends Model
         return $this->belongsTo(HseProcess::class, 'process_id', 'hse_processes');
     }
 
-    public function spare_sub_part(): BelongsTo
+    public function spare_part(): BelongsTo
     {
         return $this->belongsTo(SpareSubPart::class);
     }

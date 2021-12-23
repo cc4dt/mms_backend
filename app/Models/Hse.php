@@ -14,11 +14,6 @@ class Hse extends Model
     protected $appends = [
         'name',
     ];
-    
-    public function procedures(): BelongsToMany
-    {
-        return $this->belongsToMany(MaintenanceProcedure::class, 'hse_procedure', 'hse_id', 'procedure_id');
-    }
 
     public function equipment(): BelongsTo
     {
@@ -38,5 +33,10 @@ class Hse extends Model
     public function processes(): HasMany
     {
         return $this->hasMany(HseProcess::class);
+    }
+    
+    public function procedures(): BelongsToMany
+    {
+        return $this->belongsToMany(MaintenanceProcedure::class, 'hse_procedure', 'hse_id', 'procedure_id');
     }
 }

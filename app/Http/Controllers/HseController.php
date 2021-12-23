@@ -12,6 +12,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 use App\Models\User;
 use App\Models\Hse;
+use App\Models\MasterHse;
 use App\Models\HseProcess;
 use App\Models\HseDetail;
 use App\Models\Station;
@@ -27,7 +28,7 @@ class HseController extends Controller
      */
     public function index()
     {
-        $columns = ['hse' => 'HSE', 'station' => 'Station', 'serial' => 'Serial', 'created_by' => 'Created By', 'timestamp' => 'Created At'];
+        $columns = ['station' => 'Station', 'created_by' => 'Created By', 'timestamp' => 'Created At'];
 
         $globalSearch = AllowedFilter::callback('global', function ($query, $value) use($columns) {
             $query->where(function ($query) use ($value, $columns) {
@@ -44,12 +45,11 @@ class HseController extends Controller
             });
         });
 
-        $data = QueryBuilder::for(HseProcess::class)
+        $data = QueryBuilder::for(MasterHse::class)
             ->defaultSort('timestamp')
             ->allowedSorts(array_keys($columns))
             ->allowedFilters(array_merge(array_keys($columns), [
                 $globalSearch,
-                AllowedFilter::exact('hse_id'),
                 AllowedFilter::exact('station_id'),
                 AllowedFilter::exact('created_by_id'),
                 
@@ -60,9 +60,7 @@ class HseController extends Controller
 
         $data->getCollection()->transform(function ($item) {
             return [
-                'hse' => $item->hse->name,
                 'station' => $item->station->name,
-                'serial' => $item->equipment ? $item->equipment->serial : null,
                 'created_by' => $item->created_by->name,
                 'timestamp' => $item->timestamp,
             ];
@@ -73,7 +71,6 @@ class HseController extends Controller
         ])->table(function (InertiaTable $table) use($columns) {
             $table->addSearchRows($columns)
                 ->addColumns($columns)
-                ->addFilter('hse_id', 'HSE', Hse::all()->pluck('name', 'id')->all())
                 ->addFilter('station_id', 'Station', Station::all()->pluck('name', 'id')->all())
                 ->addFilter('created_by_id', 'Created By', User::all()->pluck('name', 'id')->all());
         });
@@ -86,11 +83,15 @@ class HseController extends Controller
      */
     public function create()
     {
-        $hses = Hse::all();
-
+        $hses = Hse::all()->loadMissing(
+                            'equipment',
+                            'procedures',
+                            'procedures.spare_part.sub_parts',
+                            'procedures.options');
         return Inertia::render('Hse/Create', [
-            'hses' => Hse::all()->loadMissing('equipment', 'procedures', 'procedures.spare_part.sub_parts', 'procedures.options'),
-            'stations' => Station::all('id', 'name_ar', 'name_en')->loadMissing('equipment'),
+            'stations' => Station::all('id', 'name_ar', 'name_en')
+                ->loadMissing('equipment'),
+            'hses' => $hses,
         ]);
     }
 
@@ -104,23 +105,32 @@ class HseController extends Controller
     {
         $form =  $request->all();
         // dd($form);
-        $hse = Hse::find($form['hse']['id']);
-        $process = $hse->processes()->create([
+        $hse = MasterHse::create([
             'station_id' => $form['station']['id'],
-            'equipment_id' => $form['equipment'] ? $form['equipment']['id'] : null,
             'timestamp' => $form['date'],
             'created_by_id' => Auth::id(),
             'updated_by_id' => Auth::id(),
         ]);
-        foreach ($form['procedures'] as $key => $value) {
-            if($value && $value['option']) {
-                $process->details()->create([
-                    'procedure_id' => $key,
-                    'option_id' => $value['option']['id'],
-                    'spare_sub_part_id' => $value['spare'] ? $value['spare']['id'] : null,
-                    'value' => $value['val'],
+        if($hse) {
+            foreach ($form['processes'] as $processKey => $processItem) {
+                $process = $hse->processes()->create([
+                    'hse_id' => $processItem['hse'] ? $processItem['hse']['id'] : null,
+                    'equipment_id' => $processItem['equipment'] ? $processItem['equipment']['id'] : null,
+                    'description' => $processItem['description'],
                 ]);
-            } 
+                if($process) {
+                    foreach ($processItem['procedures'] as $key => $value) {
+                        if($value && $value['option']) {
+                            $process->details()->create([
+                                'procedure_id' => $key,
+                                'option_id' => $value['option']['id'],
+                                'spare_part_id' => $value['spare'] ? $value['spare']['id'] : null,
+                                'value' => $value['val'],
+                            ]);
+                        } 
+                    }
+                }
+            }
         }
         // HseProcess::create(
         //     // Request::validate([
