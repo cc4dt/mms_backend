@@ -3,7 +3,7 @@
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">HSE</h2>
     </template>
-    <div class="mt-10 sm:mt-0">
+    <div class="m-0 sm:m-10">
       <div class="mt-5 md:mt-0">
         <form @submit.prevent="submit">
           <div class="shadow overflow-hidden sm:rounded-md">
@@ -84,17 +84,42 @@
                       :key="index"
                     >
                       <li
-                        class="py-2 px-6"
+                        class="flex py-2 px-6"
                         :class="
                           processIndex === index ? 'bg-white' : 'text-gray-500'
                         "
                         @click="processIndex = index"
                       >
-                        <span v-text="process?.hse?.name ?? 'New'"></span>
-                        <span
-                          v-if="process?.equipment?.serial"
-                          v-text="' - ' + process?.equipment?.serial"
-                        ></span>
+                        <details>
+                          <summary
+                            v-text="process?.hse?.name ?? 'New'"
+                          ></summary>
+                          <p
+                            v-if="process?.equipment?.serial"
+                            v-text="process?.equipment?.serial"
+                          ></p>
+                        </details>
+                        <button
+                          v-if="form.processes.length > 1"
+                          type="button"
+                          @click="deleteProcess(index)"
+                          class="text-red-500 ms-auto"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
                       </li>
                     </template>
                   </ul>
@@ -213,16 +238,14 @@
                           </label>
                         </div>
                       </div>
-                      <div class="grid grid-cols-2 gap-4">
-                        <div
-                          class="p-3 col-span-2 sm:col-span-1"
-                          v-if="
-                            (currentProcess.procedures[procedure.id]?.option
-                              ?.spare ??
-                              false) &&
-                            procedure?.spare_part?.sub_parts
-                          "
-                        >
+                      <div
+                        class="grid grid-cols-2 gap-4 space-x-1"
+                        v-if="
+                          currentProcess.procedures[procedure.id]?.option
+                            ?.replace ?? false
+                        "
+                      >
+                        <div v-if="procedure?.spare_part?.sub_parts.length > 0" class="col-span-1">
                           <select
                             id="spare"
                             name="spare"
@@ -251,16 +274,12 @@
                             </option>
                           </select>
                         </div>
-                        <div class="p-3 col-span-2 sm:col-span-1">
+                        <div class="col-span-1">
                           <input
                             type="text"
                             id="val"
                             v-model.trim="
                               currentProcess.procedures[procedure.id].val
-                            "
-                            v-if="
-                              currentProcess.procedures[procedure.id]?.option
-                                ?.val ?? false
                             "
                             class="
                               bg-gray-50
@@ -273,8 +292,7 @@
                               w-full
                               p-2.5
                             "
-                            placeholder=""
-                            required
+                            placeholder="Note ..."
                           />
                         </div>
                       </div>
@@ -290,7 +308,7 @@
                       <div class="mt-1">
                         <textarea
                           id="note"
-                        v-model="currentProcess.description"
+                          v-model="currentProcess.description"
                           rows="3"
                           class="
                             shadow-sm
@@ -379,10 +397,12 @@
 import { reactive, defineComponent } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import Button from "@/Jetstream/Button.vue";
 
 export default defineComponent({
   components: {
     AppLayout,
+    Button,
   },
   props: {
     hses: Array,
@@ -399,6 +419,8 @@ export default defineComponent({
     currentProcess: function () {
       if (this.form.processes && this.processIndex != null)
         return this.form.processes[this.processIndex];
+      else if (this.form.processes.find((e) => true))
+        return this.form.processes.find((e) => true);
       else return {};
     },
   },
@@ -411,6 +433,11 @@ export default defineComponent({
         procedures: {},
       });
 
+      this.processIndex = this.form.processes.length - 1;
+    },
+    deleteProcess(index) {
+      if (this.form.processes.length > 1 && this.form.processes[index])
+        this.form.processes.splice(index, 1);
       this.processIndex = this.form.processes.length - 1;
     },
     initProcedure(hse) {
@@ -448,7 +475,6 @@ export default defineComponent({
     });
 
     function submit(event) {
-      console.log(form);
       if (event.submitter.id == "add") this.addProcesses();
       else Inertia.post("/hse", form);
     }

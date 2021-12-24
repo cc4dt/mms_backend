@@ -1108,6 +1108,34 @@ select {
 .prose > :last-child {
 	margin-bottom: 0;
 }
+.btn-primary {
+	border-radius: 0.5rem;
+	--tw-bg-opacity: 1;
+	background-color: rgba(59, 130, 246, var(--tw-bg-opacity));
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	font-weight: 600;
+	--tw-text-opacity: 1;
+	color: rgba(255, 255, 255, var(--tw-text-opacity));
+	--tw-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.btn-primary:hover {
+	--tw-bg-opacity: 1;
+	background-color: rgba(29, 78, 216, var(--tw-bg-opacity));
+}
+.btn-primary:focus {
+	outline: 2px solid transparent;
+	outline-offset: 2px;
+	--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+	--tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+	box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+	--tw-ring-opacity: 1;
+	--tw-ring-color: rgba(96, 165, 250, var(--tw-ring-opacity));
+	--tw-ring-opacity: 0.75;
+}
 .sr-only {
 	position: absolute;
 	width: 1px;
@@ -1174,6 +1202,9 @@ select {
 .col-span-2 {
 	grid-column: span 2 / span 2;
 }
+.col-span-1 {
+	grid-column: span 1 / span 1;
+}
 .float-right {
 	float: right;
 }
@@ -1182,6 +1213,9 @@ select {
 }
 .m-0 {
 	margin: 0px;
+}
+.m-10 {
+	margin: 2.5rem;
 }
 .mx-auto {
 	margin-left: auto;
@@ -1555,6 +1589,11 @@ select {
 	--tw-space-x-reverse: 0;
 	margin-right: calc(1rem * var(--tw-space-x-reverse));
 	margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+.space-x-1 > :not([hidden]) ~ :not([hidden]) {
+	--tw-space-x-reverse: 0;
+	margin-right: calc(0.25rem * var(--tw-space-x-reverse));
+	margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .divide-y > :not([hidden]) ~ :not([hidden]) {
 	--tw-divide-y-reverse: 0;
@@ -2115,6 +2154,10 @@ select {
 .ease-in {
 	transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
+.ms-auto {
+	-webkit-margin-start: auto;
+	        margin-inline-start: auto;
+}
 .hover\:border-gray-300:hover {
 	--tw-border-opacity: 1;
 	border-color: rgba(209, 213, 219, var(--tw-border-opacity));
@@ -2329,6 +2372,14 @@ select {
 
 	.sm\:col-span-1 {
 		grid-column: span 1 / span 1;
+	}
+
+	.sm\:m-10 {
+		margin: 2.5rem;
+	}
+
+	.sm\:m-0 {
+		margin: 0px;
 	}
 
 	.sm\:mx-0 {
@@ -2590,4 +2641,3 @@ select {
 		padding-right: 2rem;
 	}
 }
-

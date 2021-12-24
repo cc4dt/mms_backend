@@ -113,21 +113,23 @@ class HseController extends Controller
         ]);
         if($hse) {
             foreach ($form['processes'] as $processKey => $processItem) {
-                $process = $hse->processes()->create([
-                    'hse_id' => $processItem['hse'] ? $processItem['hse']['id'] : null,
-                    'equipment_id' => $processItem['equipment'] ? $processItem['equipment']['id'] : null,
-                    'description' => $processItem['description'],
-                ]);
-                if($process) {
-                    foreach ($processItem['procedures'] as $key => $value) {
-                        if($value && $value['option']) {
-                            $process->details()->create([
-                                'procedure_id' => $key,
-                                'option_id' => $value['option']['id'],
-                                'spare_part_id' => $value['spare'] ? $value['spare']['id'] : null,
-                                'value' => $value['val'],
-                            ]);
-                        } 
+                if ($processItem['hse']) {
+                    $process = $hse->processes()->create([
+                        'hse_id' => $processItem['hse']['id'],
+                        'equipment_id' => $processItem['equipment'] ? $processItem['equipment']['id'] : null,
+                        'description' => $processItem['description'],
+                    ]);
+                    if($process) {
+                        foreach ($processItem['procedures'] as $key => $value) {
+                            if($value && $value['option']) {
+                                $process->details()->create([
+                                    'procedure_id' => $key,
+                                    'option_id' => $value['option']['id'],
+                                    'spare_part_id' => $value['spare'] ? $value['spare']['id'] : null,
+                                    'value' => $value['val'],
+                                ]);
+                            } 
+                        }
                     }
                 }
             }

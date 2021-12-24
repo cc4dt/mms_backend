@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SparePart extends Model
 {
+    protected $fillable = [
+        "name_en",
+        "name_ar",
+    ];
+    
     protected $appends = [
         'name',
     ];

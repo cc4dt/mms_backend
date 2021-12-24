@@ -17,9 +17,7 @@ class CreateOptionsTable extends Migration
             $table->id();
             $table->string('name_en');
             $table->string('name_ar');
-            $table->boolean('qty')->default(0);
-            $table->boolean('spare')->default(1);
-            $table->boolean('val')->default(0);
+            $table->boolean('replace')->default(0);
             $table->timestamps();
         });
     }
