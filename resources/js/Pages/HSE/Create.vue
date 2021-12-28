@@ -197,18 +197,22 @@
                         </select>
                       </div>
                     </div>
-                    <fieldset
-                      class="col-span-6 sm:col-span-3"
-                      v-for="procedure in currentProcess?.hse?.procedures ?? {}"
-                      :key="procedure.id"
-                    >
-                      <div v-if="procedure.input_type.name == 'radio'">
-                        <div>
-                          <legend class="text-base font-medium text-gray-900">
-                            {{ procedure.name }}
-                          </legend>
-                        </div>
-                        <div class="mt-4 space-y-4">
+                    <div class="col-span-6 mt-6 grid grid-cols-6 gap-6">
+                      <fieldset
+                        class="col-span-6 sm:col-span-3"
+                        v-for="procedure in currentProcess?.hse?.procedures ??
+                        {}"
+                        :key="procedure.id"
+                      >
+                        <div
+                          v-if="procedure.input_type.name == 'radio'"
+                          class="space-y-4"
+                        >
+                          <div>
+                            <legend class="text-base font-medium text-gray-900">
+                              {{ procedure.name }}
+                            </legend>
+                          </div>
                           <div
                             v-for="option in procedure.options"
                             :key="option.id"
@@ -216,7 +220,6 @@
                           >
                             <input
                               :id="procedure.id"
-                              :name="procedure.id"
                               type="radio"
                               :value="option"
                               v-model="
@@ -244,50 +247,120 @@
                               {{ option.name }}
                             </label>
                           </div>
+                          <div
+                            class="grid grid-cols-2 gap-4 space-x-1"
+                            v-if="
+                              currentProcess.procedures[procedure.id]?.option
+                                ?.replace ?? false
+                            "
+                          >
+                            <div
+                              v-if="procedure?.spare_part?.sub_parts.length > 0"
+                              class="col-span-1"
+                            >
+                              <select
+                                id="spare"
+                                name="spare"
+                                v-model="
+                                  currentProcess.procedures[procedure.id].spare
+                                "
+                                class="
+                                  bg-gray-50
+                                  border border-gray-300
+                                  text-gray-900
+                                  sm:text-sm
+                                  rounded-lg
+                                  focus:ring-blue-500 focus:border-blue-500
+                                  block
+                                  w-full
+                                  p-2.5
+                                "
+                                required
+                              >
+                                <option
+                                  v-for="item in procedure?.spare_part
+                                    ?.sub_parts"
+                                  :key="item.id"
+                                  :value="item"
+                                >
+                                  {{ item.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-span-1">
+                              <input
+                                type="text"
+                                id="val"
+                                v-model.trim="
+                                  currentProcess.procedures[procedure.id].val
+                                "
+                                class="
+                                  bg-gray-50
+                                  border border-gray-300
+                                  text-gray-900
+                                  sm:text-sm
+                                  rounded-lg
+                                  focus:ring-blue-500 focus:border-blue-500
+                                  block
+                                  w-full
+                                  p-2.5
+                                "
+                                placeholder="Note ..."
+                              />
+                            </div>
+                          </div>
                         </div>
                         <div
-                          class="grid grid-cols-2 gap-4 space-x-1"
-                          v-if="
-                            currentProcess.procedures[procedure.id]?.option
-                              ?.replace ?? false
-                          "
+                          v-else-if="procedure.input_type.name == 'dropdown'"
+                          class="space-y-4"
                         >
-                          <div
-                            v-if="procedure?.spare_part?.sub_parts.length > 0"
-                            class="col-span-1"
-                          >
-                            <select
-                              id="spare"
-                              name="spare"
-                              v-model="
-                                currentProcess.procedures[procedure.id].spare
-                              "
-                              class="
-                                bg-gray-50
-                                border border-gray-300
-                                text-gray-900
-                                sm:text-sm
-                                rounded-lg
-                                focus:ring-blue-500 focus:border-blue-500
-                                block
-                                w-full
-                                p-2.5
-                              "
-                              required
-                            >
-                              <option
-                                v-for="item in procedure?.spare_part?.sub_parts"
-                                :key="item.id"
-                                :value="item"
-                              >
-                                {{ item.name }}
-                              </option>
-                            </select>
+                          <div>
+                            <legend class="text-base font-medium text-gray-900">
+                              <label :for="procedure.id">
+                                {{ procedure.name }}
+                              </label>
+                            </legend>
                           </div>
-                          <div class="col-span-1">
+                          <select
+                            :id="procedure.id"
+                            v-model="
+                              currentProcess.procedures[procedure.id].option
+                            "
+                            class="
+                              bg-gray-50
+                              border border-gray-300
+                              text-gray-900
+                              sm:text-sm
+                              rounded-lg
+                              focus:ring-blue-500 focus:border-blue-500
+                              block
+                              w-full
+                              p-2.5
+                            "
+                            required
+                          >
+                            <option
+                              v-for="option in procedure.options"
+                              :key="option.id"
+                              :value="option"
+                            >
+                              {{ option.name }}
+                            </option>
+                          </select>
+                        </div>
+                        <div v-else>
+                          <div class="space-y-4">
+                            <div>
+                              <legend
+                                class="text-base font-medium text-gray-900"
+                              >
+                                <label :for="procedure.id">
+                                  {{ procedure.name }}
+                                </label>
+                              </legend>
+                            </div>
                             <input
-                              type="text"
-                              id="val"
+                              :id="procedure.id"
                               v-model.trim="
                                 currentProcess.procedures[procedure.id].val
                               "
@@ -301,46 +374,15 @@
                                 block
                                 w-full
                                 p-2.5
+                                mt-4
                               "
-                              placeholder="Note ..."
+                              required
+                              :placeholder="procedure.name"
                             />
                           </div>
                         </div>
-                      </div>
-                      <div v-else>
-                        <div class="items-center p-2">
-                          <div>
-                            <legend class="text-base font-medium text-gray-900">
-                              <label :for="procedure.id">
-                                {{ procedure.name }}
-                              </label>
-                            </legend>
-                          </div>
-                          <input
-                            :id="procedure.id"
-                            :name="procedure.id"
-                            v-model.trim="
-                              currentProcess.procedures[procedure.id].val
-                            "
-                            class="
-                              bg-gray-50
-                              border border-gray-300
-                              text-gray-900
-                              sm:text-sm
-                              rounded-lg
-                              focus:ring-blue-500 focus:border-blue-500
-                              block
-                              w-full
-                              p-2.5
-                              mt-4
-                            "
-                            required
-                            :placeholder="procedure.name"
-                          />
-                        </div>
-                      </div>
-                    </fieldset>
-
+                      </fieldset>
+                    </div>
                     <div class="col-span-6">
                       <label
                         for="note"
