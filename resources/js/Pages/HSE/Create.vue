@@ -75,16 +75,16 @@
                   />
                 </div>
                 <div
-                  class="col-span-6 sm:col-span-2 bg-gray-200 rounded-lg"
+                  class="col-span-6 sm:col-span-2"
                   style="border-bottom: 2px solid #eaeaea"
                 >
-                  <ul class="cursor-pointer my-3">
+                  <ul class="cursor-pointer my-3 space-y-2">
                     <template
                       v-for="(process, index) in form.processes ?? []"
                       :key="index"
                     >
                       <li
-                        class="flex py-2 px-6"
+                        class="flex py-2 px-6 bg-gray-200 rounded-lg"
                         :class="
                           processIndex === index ? 'bg-white' : 'text-gray-500'
                         "
@@ -202,82 +202,123 @@
                       v-for="procedure in currentProcess?.hse?.procedures ?? {}"
                       :key="procedure.id"
                     >
-                      <div>
-                        <legend class="text-base font-medium text-gray-900">
-                          {{ procedure.name }}
-                        </legend>
-                      </div>
-                      <div class="mt-4 space-y-4">
+                      <div v-if="procedure.input_type.name == 'radio'">
+                        <div>
+                          <legend class="text-base font-medium text-gray-900">
+                            {{ procedure.name }}
+                          </legend>
+                        </div>
+                        <div class="mt-4 space-y-4">
+                          <div
+                            v-for="option in procedure.options"
+                            :key="option.id"
+                            class="inline-flex items-center p-2"
+                          >
+                            <input
+                              :id="procedure.id"
+                              :name="procedure.id"
+                              type="radio"
+                              :value="option"
+                              v-model="
+                                currentProcess.procedures[procedure.id].option
+                              "
+                              class="
+                                focus:ring-indigo-500
+                                h-4
+                                w-4
+                                text-indigo-600
+                                border-gray-300
+                              "
+                              required
+                            />
+                            <label
+                              :for="procedure.id"
+                              class="
+                                ml-3
+                                block
+                                text-sm
+                                font-medium
+                                text-gray-700
+                              "
+                            >
+                              {{ option.name }}
+                            </label>
+                          </div>
+                        </div>
                         <div
-                          v-for="option in procedure.options"
-                          :key="option.id"
-                          class="inline-flex items-center p-2"
+                          class="grid grid-cols-2 gap-4 space-x-1"
+                          v-if="
+                            currentProcess.procedures[procedure.id]?.option
+                              ?.replace ?? false
+                          "
                         >
+                          <div
+                            v-if="procedure?.spare_part?.sub_parts.length > 0"
+                            class="col-span-1"
+                          >
+                            <select
+                              id="spare"
+                              name="spare"
+                              v-model="
+                                currentProcess.procedures[procedure.id].spare
+                              "
+                              class="
+                                bg-gray-50
+                                border border-gray-300
+                                text-gray-900
+                                sm:text-sm
+                                rounded-lg
+                                focus:ring-blue-500 focus:border-blue-500
+                                block
+                                w-full
+                                p-2.5
+                              "
+                              required
+                            >
+                              <option
+                                v-for="item in procedure?.spare_part?.sub_parts"
+                                :key="item.id"
+                                :value="item"
+                              >
+                                {{ item.name }}
+                              </option>
+                            </select>
+                          </div>
+                          <div class="col-span-1">
+                            <input
+                              type="text"
+                              id="val"
+                              v-model.trim="
+                                currentProcess.procedures[procedure.id].val
+                              "
+                              class="
+                                bg-gray-50
+                                border border-gray-300
+                                text-gray-900
+                                sm:text-sm
+                                rounded-lg
+                                focus:ring-blue-500 focus:border-blue-500
+                                block
+                                w-full
+                                p-2.5
+                              "
+                              placeholder="Note ..."
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div v-else>
+                        <div class="items-center p-2">
+                          <div>
+                            <legend class="text-base font-medium text-gray-900">
+                              <label :for="procedure.id">
+                                {{ procedure.name }}
+                              </label>
+                            </legend>
+                          </div>
                           <input
                             :id="procedure.id"
                             :name="procedure.id"
-                            type="radio"
-                            :value="option"
-                            v-model="
-                              currentProcess.procedures[procedure.id].option
-                            "
-                            class="
-                              focus:ring-indigo-500
-                              h-4
-                              w-4
-                              text-indigo-600
-                              border-gray-300
-                            "
-                            required
-                          />
-                          <label
-                            for="push-everything"
-                            class="ml-3 block text-sm font-medium text-gray-700"
-                          >
-                            {{ option.name }}
-                          </label>
-                        </div>
-                      </div>
-                      <div
-                        class="grid grid-cols-2 gap-4 space-x-1"
-                        v-if="
-                          currentProcess.procedures[procedure.id]?.option
-                            ?.replace ?? false
-                        "
-                      >
-                        <div v-if="procedure?.spare_part?.sub_parts.length > 0" class="col-span-1">
-                          <select
-                            id="spare"
-                            name="spare"
-                            v-model="
-                              currentProcess.procedures[procedure.id].spare
-                            "
-                            class="
-                              bg-gray-50
-                              border border-gray-300
-                              text-gray-900
-                              sm:text-sm
-                              rounded-lg
-                              focus:ring-blue-500 focus:border-blue-500
-                              block
-                              w-full
-                              p-2.5
-                            "
-                            required
-                          >
-                            <option
-                              v-for="item in procedure?.spare_part?.sub_parts"
-                              :key="item.id"
-                              :value="item"
-                            >
-                              {{ item.name }}
-                            </option>
-                          </select>
-                        </div>
-                        <div class="col-span-1">
-                          <input
-                            type="text"
-                            id="val"
                             v-model.trim="
                               currentProcess.procedures[procedure.id].val
                             "
@@ -291,8 +332,10 @@
                               block
                               w-full
                               p-2.5
+                              mt-4
                             "
-                            placeholder="Note ..."
+                            required
+                            :placeholder="procedure.name"
                           />
                         </div>
                       </div>

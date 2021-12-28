@@ -1199,9 +1199,6 @@ select {
 .col-auto {
 	grid-column: auto;
 }
-.col-span-2 {
-	grid-column: span 2 / span 2;
-}
 .col-span-1 {
 	grid-column: span 1 / span 1;
 }
@@ -1213,9 +1210,6 @@ select {
 }
 .m-0 {
 	margin: 0px;
-}
-.m-10 {
-	margin: 2.5rem;
 }
 .mx-auto {
 	margin-left: auto;
@@ -1575,10 +1569,20 @@ select {
 	margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
 	margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+	--tw-space-y-reverse: 0;
+	margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+	margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
 .space-y-4 > :not([hidden]) ~ :not([hidden]) {
 	--tw-space-y-reverse: 0;
 	margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
 	margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+.space-x-1 > :not([hidden]) ~ :not([hidden]) {
+	--tw-space-x-reverse: 0;
+	margin-right: calc(0.25rem * var(--tw-space-x-reverse));
+	margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .-space-x-px > :not([hidden]) ~ :not([hidden]) {
 	--tw-space-x-reverse: 0;
@@ -1589,11 +1593,6 @@ select {
 	--tw-space-x-reverse: 0;
 	margin-right: calc(1rem * var(--tw-space-x-reverse));
 	margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
-}
-.space-x-1 > :not([hidden]) ~ :not([hidden]) {
-	--tw-space-x-reverse: 0;
-	margin-right: calc(0.25rem * var(--tw-space-x-reverse));
-	margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .divide-y > :not([hidden]) ~ :not([hidden]) {
 	--tw-divide-y-reverse: 0;
@@ -2370,16 +2369,8 @@ select {
 		grid-column: span 3 / span 3;
 	}
 
-	.sm\:col-span-1 {
-		grid-column: span 1 / span 1;
-	}
-
 	.sm\:m-10 {
 		margin: 2.5rem;
-	}
-
-	.sm\:m-0 {
-		margin: 0px;
 	}
 
 	.sm\:mx-0 {

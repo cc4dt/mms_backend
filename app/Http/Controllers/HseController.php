@@ -86,11 +86,13 @@ class HseController extends Controller
         $hses = Hse::all()->loadMissing(
                             'equipment',
                             'procedures',
+                            'procedures.input_type',
                             'procedures.spare_part.sub_parts',
                             'procedures.options');
+        $stations = Station::all('id', 'name_ar', 'name_en')
+                ->loadMissing('equipment');
         return Inertia::render('Hse/Create', [
-            'stations' => Station::all('id', 'name_ar', 'name_en')
-                ->loadMissing('equipment'),
+            'stations' => $stations,
             'hses' => $hses,
         ]);
     }
@@ -121,10 +123,10 @@ class HseController extends Controller
                     ]);
                     if($process) {
                         foreach ($processItem['procedures'] as $key => $value) {
-                            if($value && $value['option']) {
+                            if($value) {
                                 $process->details()->create([
                                     'procedure_id' => $key,
-                                    'option_id' => $value['option']['id'],
+                                    'option_id' => $value['option'] ? $value['option']['id'] : null,
                                     'spare_part_id' => $value['spare'] ? $value['spare']['id'] : null,
                                     'value' => $value['val'],
                                 ]);

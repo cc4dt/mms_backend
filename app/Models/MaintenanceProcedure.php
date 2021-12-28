@@ -44,6 +44,12 @@ class MaintenanceProcedure extends Model
         return $this->belongsTo(SparePart::class);
     }
 
+    
+    public function input_type(): BelongsTo
+    {
+        return $this->belongsTo(Enum::class);
+    }
+
     public function options(): BelongsToMany
     {
         return $this->belongsToMany(Option::class, 'option_procedure', 'procedure_id', 'option_id');

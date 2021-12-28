@@ -18,6 +18,7 @@ class CreateMaintenanceProceduresTable extends Migration
             $table->string('name_en');
             $table->string('name_ar');
             $table->integer('type_id');
+            $table->foreignId('input_type_id')->default(1)->constrained('enums')->onDelete('cascade');
             $table->integer('sequence')->default(1);
             $table->integer('cat_id')->default(1);
             $table->foreignId('spare_part_id')->nullable()->constrained('spare_parts')->onDelete('cascade');
