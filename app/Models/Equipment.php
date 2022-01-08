@@ -17,6 +17,11 @@ class Equipment extends Model
         return $this->belongsToMany(Part::class);
     }
 
+    public function pm_procedures(): BelongsToMany
+    {   
+        return $this->belongsToMany(MaintenanceProcedure::class, 'pm_procedure', 'equipment_id', 'procedure_id');
+    }
+
     public function breakdowns(): HasMany
     {
         return $this->hasMany(Breakdown::class);

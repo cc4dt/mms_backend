@@ -6,6 +6,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HseController;
+use App\Http\Controllers\PmController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BreakdownController;
 use App\Http\Controllers\ReportController;
@@ -46,6 +47,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // })->name('dashboard');
     // Route::resource('users', UserController::class);
     Route::resource('hse', HseController::class);
+    Route::resource('pm', PmController::class);
     Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
     Route::resource('/breakdown', BreakdownController::class)->middleware('auth');
     Route::resource('/link', LinkController::class)->middleware('auth');

@@ -39,6 +39,12 @@
                   Home
                 </a>
                 <jet-nav-link
+                  :href="route('pm.index')"
+                  :active="route().current('pm.index')"
+                >
+                  PM
+                </jet-nav-link>
+                <jet-nav-link
                   :href="route('hse.index')"
                   :active="route().current('hse.index')"
                 >
@@ -328,6 +334,12 @@
             >
               Home
             </a>
+            <jet-responsive-nav-link
+              :href="route('pm.index')"
+              :active="route().current('pm.index')"
+            >
+              PM
+            </jet-responsive-nav-link>
             <jet-responsive-nav-link
               :href="route('hse.index')"
               :active="route().current('hse.index')"

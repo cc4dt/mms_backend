@@ -1,13 +1,13 @@
 <template>
-  <app-layout title="HSE">
+  <app-layout title="PM">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">HSE</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">PM</h2>
     </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <Link
-          :href="route('hse.create')"
+          :href="route('pm.create')"
           class="
             mb-4
             inline-flex
@@ -68,7 +68,6 @@
           </Table>
         </div>
       </div>
-      <!-- </div> -->
     </div>
   </app-layout>
 </template>
