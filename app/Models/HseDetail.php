@@ -31,6 +31,11 @@ class HseDetail extends Model
         return $this->belongsTo(SpareSubPart::class);
     }
 
+    public function procedure(): BelongsTo
+    {
+        return $this->belongsTo(MaintenanceProcedure::class);
+    }
+
     public function option(): BelongsTo
     {
         return $this->belongsTo(Option::class);

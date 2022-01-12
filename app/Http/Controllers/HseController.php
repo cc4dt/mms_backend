@@ -60,6 +60,7 @@ class HseController extends Controller
 
         $data->getCollection()->transform(function ($item) {
             return [
+                'id' => $item->id,
                 'station' => $item->station->name,
                 'created_by' => $item->created_by->name,
                 'timestamp' => $item->timestamp,
@@ -153,9 +154,21 @@ class HseController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(MasterHse $hse)
     {
-        //
+        $hse->loadMissing(
+            'station',
+            'created_by',
+            'processes',
+            'processes.hse',
+            'processes.equipment',
+            'processes.details',
+            'processes.details.procedure',
+            'processes.details.spare_part',
+            'processes.details.option');
+        return Inertia::render('Hse/View', [
+            'hse' => $hse,
+        ]);
     }
 
     /**
