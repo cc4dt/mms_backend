@@ -23,6 +23,11 @@ use App\Models\MaintenanceProcedure;
 use App\Models\TicketStatus;
 use App\Models\TicketType;
 use App\Models\SparePart;
+use App\Models\MasterHse;
+use App\Models\Hse;
+use App\Models\HseProcess;
+use App\Models\HseDetail;
+
 use DB;
 
 
@@ -391,4 +396,71 @@ class ReportController extends Controller
         return view('pm-fireexting-report')->with($arr);
     }
     
+    
+    public function hse()
+    {
+        // $procedures = [];
+        
+        // $maintenanceProcedure = MaintenanceProcedure::where("type_id", MaintenanceProcedure::getTypeId("replace"));
+        // foreach ($maintenanceProcedure as $procedure) {
+        //     $procedureDetails = MaintenanceDetail::where('procedure_id', $procedure->id);
+            
+        //     if ($procedure->spare_part->sub_parts) {
+        //         foreach ($procedure->spare_part->sub_parts as $sub_part) {
+        //             $row = [
+        //                 $sub_part->name,
+
+        //             ];
+        //         }
+        //     } else {
+        //         $row = [
+        //             $procedure->spare_part ? $procedure->spare_part->name : $procedure->name,
+        //             $procedureDetails->where()->count
+        //         ];
+        //     }
+        //     $procedures[] = $row;
+        // }
+        // $arr['procedures'] = MaintenanceDetail::whereHas('procedure', function($q) {
+        //     $q->where("type_id", MaintenanceProcedure::getTypeId("replace"));
+        //  })->get()
+        //  ->loadMissing(
+        //     "spare_sub_part",
+        //     "procedure", 
+        //     "procedure.spare_part",
+        //     "process.equipment",
+        //     "process.ticket.equipment",
+        //     "process.ticket.station",
+        //     "process.ticket.type",
+        //     "process.ticket.teamleader",
+        // );
+        
+        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['hse'] = Hse::all('id', 'name_ar', 'name_en');
+        // $arr['master_hse'] = MasterHse::all()->loadMissing(
+        //     'station',
+        //     'created_by',
+        //     'processes',
+        //     'processes.hse',
+        //     'processes.equipment',
+        //     'processes.details',
+        //     'processes.details.procedure',
+        //     'processes.details.spare_part',
+        //     'processes.details.option');
+
+        $arr['details'] = HseDetail::all()->loadMissing(
+            'procedure',
+            'spare_part',
+            'option',
+            'process');
+
+        $arr['master_hses'] = MasterHse::all()->loadMissing(
+            'station',
+            'created_by');
+
+        $arr['processes'] = HseProcess::all()->loadMissing(
+            'hse',
+            'equipment');
+
+        return view('hse-report')->with($arr);
+    }
 }

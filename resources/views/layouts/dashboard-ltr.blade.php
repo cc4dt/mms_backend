@@ -40,6 +40,7 @@
     <link href="{{ asset('Inline-Valideater/jquerysctipttop_ltr.css') }}" rel="stylesheet" type="text/css">
 
     <link rel="stylesheet" href="{{ asset('LTR/plugins/datatables/buttons.dataTables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('LTR/plugins/datatables/rowGroup.dataTables.min.css') }}">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
     <script src="{{ asset('Inline-Valideater/js/jquery.valideater-0.2.2_en.js') }}"></script>
@@ -87,6 +88,8 @@
     <script src="{{ asset('LTR/plugins/datatables/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('LTR/plugins/datatables/buttons.print.min.js') }}"></script>
     <script src="{{ asset('LTR/plugins/datatables/buttons.colVis.min.js') }}"></script>
+    <script src="{{ asset('LTR/plugins/datatables/buttons.colVis.min.js') }}"></script>
+    <script src="{{ asset('LTR/plugins/datatables/dataTables.rowGroup.min.js') }}"></script>
 
     <script>
         $("#ConfirmPassword").change(function() {
@@ -608,6 +611,12 @@
                                         <a href="{{ route('pm-fireexting-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Fireexting</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('hse-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>HSE</p>
                                         </a>
                                     </li>
                         @endif

@@ -23,7 +23,7 @@ class HseDetail extends Model
 
     public function process(): BelongsTo
     {
-        return $this->belongsTo(HseProcess::class, 'process_id', 'hse_processes');
+        return $this->belongsTo(HseProcess::class, 'process_id');
     }
 
     public function spare_part(): BelongsTo
