@@ -188,8 +188,8 @@
                 e.sla,
                 e.in_sla ? 'IN' : 'OUT',
                 e.actions.join(', '),
-                new Date(e.created_at).toLocaleString(),
-                new Date(e.updated_at).toLocaleString(),
+                e.openline ? new Date(e.openline.timestamp).toLocaleString() : '',
+                e.closeline ? new Date(e.closeline.timestamp).toLocaleString() : '',
                 e.led_time,
                 e.timeline.status.name
             ]);
@@ -241,9 +241,10 @@
             var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
             
             let result = tickets.filter((o) => {
+                console.log(moment(new Date(o.openline.timestamp), 'YYYY-MM-DD'));
                 var inDay = true;
                 if(startDate && endDate) {
-                    var date = moment(new Date(o.created_at), 'YYYY-MM-DD');
+                    var date = moment(new Date(o.openline.timestamp), 'YYYY-MM-DD');
                     inDay = date.isBetween(startDate, endDate);
                 }
 
@@ -265,8 +266,8 @@
                     e.sla,
                     e.in_sla ? 'IN' : 'OUT',
                     e.actions.join(', '),
-                    new Date(e.created_at).toLocaleString(),
-                    new Date(e.updated_at).toLocaleString(),
+                    e.openline ? new Date(e.openline.timestamp).toLocaleString() : '',
+                    e.closeline ? new Date(e.closeline.timestamp).toLocaleString() : '',
                     e.led_time,
                     e.timeline.status.name
                 ]).draw(false);

@@ -291,6 +291,10 @@ class ReportController extends Controller
             "station",
             "timeline",
             "timeline.status",
+            "openline",
+            "openline.status",
+            "closeline",
+            "closeline.status",
             "created_by",
             "type",
         );

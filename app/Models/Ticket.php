@@ -181,7 +181,21 @@ class Ticket extends Model
     {
         return $this->hasOne(TicketTimeline::class)->latest();
     }
-    
+
+    public function openline(): HasOne
+    {
+        return $this->hasOne(TicketTimeline::class)->whereHas('status',  function ($query) {
+            $query->where('key', 'opened');
+        });
+    }
+
+    public function closeline(): HasOne
+    {
+        return $this->hasOne(TicketTimeline::class)->whereHas('status',  function ($query) {
+            $query->where('key', 'closed');
+        });
+    }
+
     public function state(): BelongsTo
     {
         return $this->belongsTo(State::class);
