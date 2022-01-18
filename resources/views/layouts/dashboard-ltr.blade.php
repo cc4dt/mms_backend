@@ -595,6 +595,14 @@
                                             <p>Breakdown Tickets</p>
                                         </a>
                                     </li>
+
+                                    <li class="nav-item">
+                                        <a href="{{ route('corrective-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Corrective Tickets</p>
+                                        </a>
+                                    </li>
+                                    
                                     <li class="nav-item">
                                         <a href="{{ route('maintenance-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>

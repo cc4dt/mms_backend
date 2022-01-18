@@ -41,6 +41,9 @@ use App\Models\MasterEquipment;
 
 
 
+Route::get('/test', function () {
+    return Inertia::render('Test');
+})->name('test');
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');
@@ -52,7 +55,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('/breakdown', BreakdownController::class)->middleware('auth');
     Route::resource('/link', LinkController::class)->middleware('auth');
     Route::resource('/Report', ReportController::class)->middleware('auth');
+    
     Route::get('/report/breakdown', [ReportController::class, 'breakdown'])->middleware('auth')->name('breakdown-report');
+    Route::get('/report/corrective', [ReportController::class, 'corrective'])->middleware('auth')->name('corrective-report');
     Route::get('/report/maintenance', [ReportController::class, 'maintenance'])->middleware('auth')->name('maintenance-report');
     Route::get('/report/pm', [ReportController::class, 'pm'])->middleware('auth')->name('pm-report');
     Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->middleware('auth')->name('pm-fireexting-report');

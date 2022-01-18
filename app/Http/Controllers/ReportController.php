@@ -266,9 +266,6 @@ class ReportController extends Controller
     
     public function breakdown()
     {
-        // whereHas('status', function($q) {
-        //     $q->where("key", "closed");
-        //  })->get()
         $arr['tickets'] = Ticket::onType('breakdown')->orderBy('id','DESC')->get()->loadMissing(
             "equipment",
             "breakdown",
@@ -284,6 +281,25 @@ class ReportController extends Controller
         $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
         
         return view('breakdown-report')->with($arr);
+    }
+    
+    public function corrective()
+    {
+        $arr['tickets'] = Ticket::onType('corrective')->orderBy('id','DESC')->get()->loadMissing(
+            "equipment",
+            "breakdown",
+            "station",
+            "timeline",
+            "timeline.status",
+            "created_by",
+            "type",
+        );
+        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
+        $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
+        $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
+        
+        return view('corrective-report')->with($arr);
     }
     
     public function maintenance()
@@ -399,53 +415,8 @@ class ReportController extends Controller
     
     public function hse()
     {
-        // $procedures = [];
-        
-        // $maintenanceProcedure = MaintenanceProcedure::where("type_id", MaintenanceProcedure::getTypeId("replace"));
-        // foreach ($maintenanceProcedure as $procedure) {
-        //     $procedureDetails = MaintenanceDetail::where('procedure_id', $procedure->id);
-            
-        //     if ($procedure->spare_part->sub_parts) {
-        //         foreach ($procedure->spare_part->sub_parts as $sub_part) {
-        //             $row = [
-        //                 $sub_part->name,
-
-        //             ];
-        //         }
-        //     } else {
-        //         $row = [
-        //             $procedure->spare_part ? $procedure->spare_part->name : $procedure->name,
-        //             $procedureDetails->where()->count
-        //         ];
-        //     }
-        //     $procedures[] = $row;
-        // }
-        // $arr['procedures'] = MaintenanceDetail::whereHas('procedure', function($q) {
-        //     $q->where("type_id", MaintenanceProcedure::getTypeId("replace"));
-        //  })->get()
-        //  ->loadMissing(
-        //     "spare_sub_part",
-        //     "procedure", 
-        //     "procedure.spare_part",
-        //     "process.equipment",
-        //     "process.ticket.equipment",
-        //     "process.ticket.station",
-        //     "process.ticket.type",
-        //     "process.ticket.teamleader",
-        // );
-        
         $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
         $arr['hse'] = Hse::all('id', 'name_ar', 'name_en');
-        // $arr['master_hse'] = MasterHse::all()->loadMissing(
-        //     'station',
-        //     'created_by',
-        //     'processes',
-        //     'processes.hse',
-        //     'processes.equipment',
-        //     'processes.details',
-        //     'processes.details.procedure',
-        //     'processes.details.spare_part',
-        //     'processes.details.option');
 
         $arr['details'] = HseDetail::all()->loadMissing(
             'procedure',

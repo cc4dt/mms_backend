@@ -132,10 +132,10 @@
                 title: "Option"
             },
             {
-                title: "Note"
+                title: "Sparepart"
             },
             {
-                title: "Sparepart"
+                title: "Note"
             },
         ];
 
@@ -154,8 +154,8 @@
                 c?.description ?? "",
                 e.procedure?.name ?? "",
                 e.option?.name ?? "",
-                e.value ?? "",
                 e.spare_part?.name ?? "",
+                e.value ?? "",
                 // new Date(e.timestamp).toLocaleString(),  
             ]);
         });
@@ -208,17 +208,17 @@
                     if(level == 0) {
                         var d = masterHses.filter((o) => o.id == group)[0];
                         return $('<tr/>')
-                            .append( '<td colspan="2">'+ d.station.name +'</td>' )
-                            .append( '<td>'+ d.created_by.name +'</td>' )
+                            .append( '<td colspan="2">'+ (d.station?.name ?? '') +'</td>' )
+                            .append( '<td>'+ (d.created_by?.name ?? '') +'</td>' )
                             // .append( '<td/>' )
-                            .append( '<td>'+d.timestamp+'</td>' );
+                            .append( '<td>'+ (d.timestamp ?? '') +'</td>' );
                     } else if (level == 1) {
                         var d = processes.filter((o) => o.id == group)[0];
                         return $('<tr/>')
-                            .append( '<td colspan="2">'+ d.hse?.name ?? "" +'</td>' )
-                            .append( '<td>'+ d.equipment?.serial ?? "" +'</td>' )
+                            .append( '<td colspan="2" style="background-color: darkslategrey; color: white">'+ (d.hse?.name ?? "") +'</td>' )
+                            .append( '<td style="background-color: darkslategrey; color: white">'+ (d.equipment?.serial ?? "") +'</td>' )
                             // .append( '<td/>' )
-                            .append( '<td>'+d.description ?? ""+'</td>' );
+                            .append( '<td style="background-color: darkslategrey; color: white">'+ (d.description ?? "") +'</td>' );
                     }
                 },
                 dataSrc: [ 1, 0 ]
@@ -325,8 +325,8 @@
                     c?.description ?? "",
                     e.procedure?.name ?? "",
                     e.option?.name ?? "",
-                    e.value ?? "",
                     e.spare_part?.name ?? "",
+                    e.value ?? "",
                     // new Date(e.timestamp).toLocaleString(),
                 ]).draw(false);
             });
