@@ -10,7 +10,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                            <li class="breadcrumb-item active">Preventive Maintenace</li>
+                            <li class="breadcrumb-item active">HSE</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -19,7 +19,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Preventive Maintenace</h3>
+                <h3 class="card-title">HSE Procedures</h3>
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -30,7 +30,6 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
                             <a href="#" class="dropdown-item">Action</a>
-
                         </div>
                     </div>
                     <button type="button" class="btn btn-tool" data-card-widget="remove">
@@ -53,15 +52,14 @@
                             @endif
                         </select>
                     </div>
-                    
+
                     <div class="p-3 col-md-3">
-                        <select id="equipment" name="equipment"
-                            class="select2bs4 form-control @error('equipment') is-invalid @enderror"
-                            data-vldtr="required">
-                            <option value="">-Select Equipment-</option>
-                            @if (isset($equipment))
-                                @foreach ($equipment as $data)
-                                    <option value="{{ $data ?? '' }}">{{ $data ?? '' }}</option>
+                        <select id="hse_id" name="hse_id"
+                            class="select2bs4 form-control @error('hse_id') is-invalid @enderror" data-vldtr="required">
+                            <option value="">-Select HSE-</option>
+                            @if (isset($hse))
+                                @foreach ($hse as $data)
+                                    <option value="{{ $data->id ?? '' }}">{{ $data->name ?? '' }}</option>
                                 @endforeach
                             @endif
                         </select>
@@ -75,7 +73,6 @@
                         <input type="date" id="toDate" name="toDate" class="form-control">
                     </div>
                 </div>
-
                 <div class="p-3 table-responsive">
                     <table id="example" class="table table-bordered table-striped" width="100%"></table>
                 </div>
@@ -84,33 +81,55 @@
     </div>
 
     <script>
-        var station = "", equipment = "", fromDate = "", toDate = "";
-        var pms = @json($pms);
+        var station = "",
+            hse = "",
+            fromDate = "",
+            toDate = "";
+
+        var details = @json($details);
+
         const columns = [{
                 title: "Station"
             },
             {
-                title: "Equipment"
-            },
-            {
-                title: "Serial / No"
+                title: "Created By"
             },
             {
                 title: "Date"
             },
             {
+                title: "HSE"
+            },
+            {
+                title: "Serial"
+            },
+            {
+                title: "Procedure"
+            },
+            {
+                title: "Option"
+            },
+            {
+                title: "Sparepart"
+            },
+            {
                 title: "Note"
-            }
-        ]
+            },
+        ];
+
         var dataSet = [];
-        pms.forEach(e => {
+        details.forEach(e => {
             dataSet.push([
-                e.station,
-                e.equipment,
-                e.serial,
-                // e.actions.join(', '),
-                new Date(e.date).toLocaleString(),
-                e.note,
+                e.process?.master_hse?.station?.name ?? "",
+                e.process?.master_hse?.created_by?.name ?? "",
+                e.process?.master_hse?.timestamp ?? "",
+                e.process?.hse?.name ?? "",
+                e.process?.equipment?.serial ?? "",
+                e.procedure?.name ?? "",
+                e.option?.name ?? "",
+                e.spare_part?.name ?? "",
+                e.value ?? "",
+                // new Date(e.timestamp).toLocaleString(),  
             ]);
         });
 
@@ -149,33 +168,45 @@
                 },
                 'colvis',
                 'pageLength'
-            ]
+            ],
+
         });
 
         function filterReport() {
-            var startDate = fromDate ? moment(new Date(fromDate), 'YYYY-MM-DD') : null; 
+            example.rows().remove().draw(false);
+
+            // var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
+            // var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            // let result = details.filter((o) => {
+            //     return (moment(new Date(o.timestamp), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
+
+            var startDate = fromDate ? moment(new Date(fromDate), 'YYYY-MM-DD') : null;
             var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
-            let result = pms.filter((o) => {
+            let result = details.filter((o) => {
                 var inDay = true;
-                
-                if(startDate && endDate) {
-                    var date = moment(new Date(o.date), 'YYYY-MM-DD');
+
+                if (startDate && endDate) {
+                    var date = moment(new Date(o.process.master_hse.timestamp), 'YYYY-MM-DD');
                     inDay = date.isBetween(startDate, endDate);
                 }
-                
-                return inDay &&
-                    (o.station_id == station || !station) &&
-                    (o.equipment == equipment || !equipment);
-                });
 
-            example.rows().remove().draw(false);
+                return inDay &&
+                    (o.process?.hse_id == hse || !hse) &&
+                    (o.process?.master_hse.station_id == station || !station);
+            });
+
             result.forEach(e => {
                 example.row.add([
-                    e.station,
-                    e.equipment,
-                    e.serial,
-                    new Date(e.date).toLocaleString(),
-                    e.note,
+                    e.process?.master_hse?.station?.name ?? "",
+                    e.process?.master_hse?.created_by?.name ?? "",
+                    e.process?.master_hse?.timestamp ?? "",
+                    e.process?.hse?.name ?? "",
+                    e.process?.equipment?.serial ?? "",
+                    e.procedure?.name ?? "",
+                    e.option?.name ?? "",
+                    e.spare_part?.name ?? "",
+                    e.value ?? "",
+                    // new Date(e.timestamp).toLocaleString(),
                 ]).draw(false);
             });
         }
@@ -188,12 +219,11 @@
         });
 
         jQuery(document).ready(function() {
-            jQuery('select[name="equipment"]').on('change', function() {
-                equipment = jQuery(this).val();
+            jQuery('select[name="hse_id"]').on('change', function() {
+                hse = jQuery(this).val();
                 filterReport();
             });
         });
-
         jQuery(document).ready(function() {
             jQuery('input[name="fromDate"]').on('change', function() {
                 fromDate = jQuery(this).val();

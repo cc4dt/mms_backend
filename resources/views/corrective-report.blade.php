@@ -104,18 +104,6 @@
                         </select>
                     </div> -->
 
-                    {{-- <div class="p-3 col-md-3">
-                        <select id="duration" name="duration"
-                            class="select2bs4 form-control" data-vldtr="required">
-                            <option value="">-Select Duration-</option>
-                            <option value="1">1 month</option>
-                            <option value="2">2 month</option>
-                            <option value="3">3 months</option>
-                            <option value="6">6 months</option>
-                            <option value="12">12 months</option>
-                        </select>
-                    </div> --}}
-
                     <div class="p-3 col-md-3">
                         <input type="date" id="fromDate" name="fromDate" class="form-control">
                     </div>
@@ -241,11 +229,10 @@
             var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
             
             let result = tickets.filter((o) => {
-                console.log(moment(new Date(o.openline.timestamp), 'YYYY-MM-DD'));
                 var inDay = true;
                 if(startDate && endDate) {
                     var date = moment(new Date(o.openline.timestamp), 'YYYY-MM-DD');
-                    inDay = date.isBetween(startDate, endDate);
+                    inDay = date.isBetween(startDate, endDate.add(1, 'd'));
                 }
 
                 return inDay &&

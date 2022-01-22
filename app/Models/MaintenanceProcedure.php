@@ -12,6 +12,7 @@ class MaintenanceProcedure extends Model
     protected $appends = [
         'name',
         'type',
+        'price',
     ];
     
     public const TYPES = [
@@ -53,6 +54,11 @@ class MaintenanceProcedure extends Model
     public function options(): BelongsToMany
     {
         return $this->belongsToMany(Option::class, 'option_procedure', 'procedure_id', 'option_id');
+    }
+
+    public function getPriceAttribute($value)
+    {
+        return $this->spare_part->price ?? 0;
     }
 
     public function getNameAttribute($value)

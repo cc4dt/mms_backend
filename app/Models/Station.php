@@ -35,6 +35,11 @@ class Station extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+    
+    public function hses(): HasMany
+    {
+        return $this->hasMany(MasterHse::class);
+    }
 
     public function getNameAttribute($value)
     {

@@ -55,18 +55,11 @@
                     </div>
 
                     <div class="p-3 col-md-3">
-                        <select id="duration" name="duration"
-                            class="select2bs4 form-control" data-vldtr="required">
-                            <option value="">-Select Duration-</option>
-                            <option value="1">1 month</option>
-                            <option value="3">3 months</option>
-                            <option value="6">6 months</option>
-                            <option value="12">12 months</option>
-                        </select>
+                        <input type="date" id="fromDate" name="fromDate" class="form-control">
                     </div>
 
                     <div class="p-3 col-md-3">
-                        <input type="date" id="from" name="from" class="form-control">
+                        <input type="date" id="toDate" name="toDate" class="form-control">
                     </div>
                 </div>
 
@@ -78,7 +71,7 @@
     </div>
 
     <script>
-        var station = "", equipment = "", from = "", duration = "";
+        var station = "", equipment = "", fromDate = "", toDate = "";
         var fires = @json($fires);
         const columns = [{
                 title: "Station"
@@ -159,10 +152,17 @@
         });
 
         function filterReport() {
-            var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
-            var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            var startDate = fromDate ? moment(new Date(fromDate), 'YYYY-MM-DD') : null; 
+            var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
             let result = fires.filter((o) => {
-                return (moment(new Date(o.date), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
+                var inDay = true;
+                
+                if(startDate && endDate) {
+                    var date = moment(new Date(o.date), 'YYYY-MM-DD');
+                    inDay = date.isBetween(startDate, endDate);
+                }
+                
+                return inDay &&
                     (o.station_id == station || !station) &&
                     (o.equipment == equipment || !equipment);
                 });
@@ -198,15 +198,14 @@
         });
 
         jQuery(document).ready(function() {
-            jQuery('select[name="duration"]').on('change', function() {
-                duration = jQuery(this).val();
+            jQuery('input[name="fromDate"]').on('change', function() {
+                fromDate = jQuery(this).val();
                 filterReport();
             });
-        });
-
-        jQuery(document).ready(function() {
-            jQuery('input[name="from"]').on('change', function() {
-                from = jQuery(this).val();
+            var to = jQuery('input[name="toDate"]');
+            to.val(moment().format('YYYY-MM-DD'));
+            to.on('change', function() {
+                toDate = jQuery(this).val();
                 filterReport();
             });
         });

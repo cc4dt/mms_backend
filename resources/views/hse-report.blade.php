@@ -55,8 +55,7 @@
 
                     <div class="p-3 col-md-3">
                         <select id="hse_id" name="hse_id"
-                            class="select2bs4 form-control @error('hse_id') is-invalid @enderror"
-                            data-vldtr="required">
+                            class="select2bs4 form-control @error('hse_id') is-invalid @enderror" data-vldtr="required">
                             <option value="">-Select HSE-</option>
                             @if (isset($hse))
                                 @foreach ($hse as $data)
@@ -67,26 +66,13 @@
                     </div>
 
                     <div class="p-3 col-md-3">
-                        <select id="duration" name="duration"
-                            class="select2bs4 form-control" data-vldtr="required">
-                            <option value="">-Select Duration-</option>
-                            <option value="1">1 month</option>
-                            <option value="2">2 months</option>
-                            <option value="3">3 months</option>
-                            <option value="6">6 months</option>
-                            <option value="12">12 months</option>
-                        </select>
+                        <input type="date" id="fromDate" name="fromDate" class="form-control">
                     </div>
 
                     <div class="p-3 col-md-3">
-                        <input type="date" id="from" name="from" class="form-control">
+                        <input type="date" id="toDate" name="toDate" class="form-control">
                     </div>
                 </div>
-
-                {{-- <div class="p-3 table-responsive">
-                    <table id="qty" class="table table-bordered table-striped" width="100%"></table>
-                </div>
-                <hr> --}}
                 <div class="p-3 table-responsive">
                     <table id="example" class="table table-bordered table-striped" width="100%"></table>
                 </div>
@@ -95,7 +81,10 @@
     </div>
 
     <script>
-        var station = "", hse = "", from = "", duration = "";
+        var station = "",
+            hse = "",
+            fromDate = "",
+            toDate = "";
 
         var details = @json($details);
         var masterHses = @json($master_hses);
@@ -196,111 +185,58 @@
                 'colvis',
                 'pageLength'
             ],
-            
-            order: [[1, 'asc'], [0, 'asc']],
-            columnDefs: [ {
-                targets: [ 0, 1, 2, 3 , 4 , 5 , 6 , 7 ],
+
+            order: [
+                [1, 'asc'],
+                [0, 'asc']
+            ],
+            columnDefs: [{
+                targets: [0, 1, 2, 3, 4, 5, 6, 7],
                 visible: false
-            } ],
+            }],
             rowGroup: {
                 endRender: null,
-                startRender: function ( rows, group , level ) {
-                    if(level == 0) {
+                startRender: function(rows, group, level) {
+                    if (level == 0) {
                         var d = masterHses.filter((o) => o.id == group)[0];
                         return $('<tr/>')
-                            .append( '<td colspan="2">'+ (d.station?.name ?? '') +'</td>' )
-                            .append( '<td>'+ (d.created_by?.name ?? '') +'</td>' )
+                            .append('<td colspan="2">' + (d.station?.name ?? '') + '</td>')
+                            .append('<td>' + (d.created_by?.name ?? '') + '</td>')
                             // .append( '<td/>' )
-                            .append( '<td>'+ (d.timestamp ?? '') +'</td>' );
+                            .append('<td>' + (d.timestamp ?? '') + '</td>');
                     } else if (level == 1) {
                         var d = processes.filter((o) => o.id == group)[0];
                         return $('<tr/>')
-                            .append( '<td colspan="2" style="background-color: darkslategrey; color: white">'+ (d.hse?.name ?? "") +'</td>' )
-                            .append( '<td style="background-color: darkslategrey; color: white">'+ (d.equipment?.serial ?? "") +'</td>' )
+                            .append('<td colspan="2" style="background-color: darkslategrey; color: white">' + (
+                                d.hse?.name ?? "") + '</td>')
+                            .append('<td style="background-color: darkslategrey; color: white">' + (d.equipment
+                                ?.serial ?? "") + '</td>')
                             // .append( '<td/>' )
-                            .append( '<td style="background-color: darkslategrey; color: white">'+ (d.description ?? "") +'</td>' );
+                            .append('<td style="background-color: darkslategrey; color: white">' + (d
+                                .description ?? "") + '</td>');
                     }
                 },
-                dataSrc: [ 1, 0 ]
+                dataSrc: [1, 0]
             }
         });
 
-        // const qtyColumns = [{
-        //         title: "Sparepart"
-        //     },
-        //     {
-        //         title: "Qty"
-        //     },
-        //     // {
-        //     //     title: "Used"
-        //     // },
-        //     // {
-        //     //     title: "Waiting"
-        //     // }
-        // ];
-        // var spareParts = getSpareParts(maintenanceDetails);
-
-        // var qtyDataSet = [];
-        // spareParts['keys'].forEach(e => {
-        //     qtyDataSet.push([
-        //         spareParts['data'][e]['spare'],
-        //         spareParts['data'][e]['qty'] ?? 0,
-        //         // spareParts[e]['used'] ?? 0,
-        //         // spareParts[e]['waiting'] ?? 0,
-        //     ]);
-        // });
-        
-        // var qtyDateTable = jQuery('#qty').DataTable({
-        //     data: qtyDataSet,
-        //     columns: qtyColumns,
-        //     dom: 'Bfrtip',
-        //     lengthMenu: [
-        //         [10, 25, 50, 100, 250],
-        //         ['10', '25', '50', '100', '250']
-        //     ],
-        //     buttons: [
-        //         'copy',
-        //         {
-        //             extend: 'print',
-        //             charset: 'UTF-8',
-        //             orientation: 'landscape',
-        //             pageSize: 'LEGAL',
-        //             exportOptions: {
-        //                 columns: ':visible'
-        //             },
-        //         },
-        //         {
-        //             extend: 'excel',
-        //             charset: 'UTF-8',
-        //             exportOptions: {
-        //                 columns: ':visible'
-        //             },
-        //         },
-        //         {
-        //             extend: 'csv',
-        //             charset: 'UTF-8',
-        //             exportOptions: {
-        //                 columns: ':visible'
-        //             },
-        //         },
-        //         'colvis',
-        //         'pageLength'
-        //     ]
-        // });
-
         function filterReport() {
             example.rows().remove().draw(false);
-            // qtyDateTable.rows().remove().draw(false);
-
-            var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
-            var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            var startDate = fromDate ? moment(new Date(fromDate), 'YYYY-MM-DD') : null;
+            var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
             let result = details.filter((o) => {
                 var d = masterHses.filter((p) => p.id == o.process?.master_hse_id)[0];
-                // var c = processes.filter((p) => p.id == e.process_id)[0];
-                return (moment(new Date(o.timestamp), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
-                (o.process?.hse_id == hse || !hse) &&
-                (d.station_id == station || !station);
-                });
+                var inDay = true;
+
+                if (startDate && endDate) {
+                    var date = moment(new Date(d.timestamp), 'YYYY-MM-DD');
+                    inDay = date.isBetween(startDate, endDate);
+                }
+
+                return inDay &&
+                    (o.process?.hse_id == hse || !hse) &&
+                    (d.station_id == station || !station);
+            });
 
             // var spareParts = getSpareParts(result);
 
@@ -383,18 +319,16 @@
         });
 
         jQuery(document).ready(function() {
-            jQuery('select[name="duration"]').on('change', function() {
-                duration = jQuery(this).val();
+            jQuery('input[name="fromDate"]').on('change', function() {
+                fromDate = jQuery(this).val();
+                filterReport();
+            });
+            var to = jQuery('input[name="toDate"]');
+            to.val(moment().format('YYYY-MM-DD'));
+            to.on('change', function() {
+                toDate = jQuery(this).val();
                 filterReport();
             });
         });
-
-        jQuery(document).ready(function() {
-            jQuery('input[name="from"]').on('change', function() {
-                from = jQuery(this).val();
-                filterReport();
-            });
-        });
-
     </script>
 @endsection

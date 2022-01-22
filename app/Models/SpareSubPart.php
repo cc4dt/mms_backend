@@ -17,6 +17,7 @@ class SpareSubPart extends Model
     
     protected $appends = [
         'name',
+        'price',
     ];
 
     public function getNameAttribute($value)
@@ -32,5 +33,10 @@ class SpareSubPart extends Model
     public function part(): BelongsTo
     {
         return $this->belongsTo(SparePart::class, 'spare_part_id');
+    }
+
+    public function getPriceAttribute($value)
+    {
+        return $this->price ?? $this->part->price;
     }
 }

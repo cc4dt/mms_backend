@@ -91,19 +91,11 @@
                     </div>
 
                     <div class="p-3 col-md-3">
-                        <select id="duration" name="duration"
-                            class="select2bs4 form-control" data-vldtr="required">
-                            <option value="">-Select Duration-</option>
-                            <option value="1">1 month</option>
-                            <option value="2">2 months</option>
-                            <option value="3">3 months</option>
-                            <option value="6">6 months</option>
-                            <option value="12">12 months</option>
-                        </select>
+                        <input type="date" id="fromDate" name="fromDate" class="form-control">
                     </div>
 
                     <div class="p-3 col-md-3">
-                        <input type="date" id="from" name="from" class="form-control">
+                        <input type="date" id="toDate" name="toDate" class="form-control">
                     </div>
                 </div>
 
@@ -119,7 +111,7 @@
     </div>
 
     <script>
-        var station = "", equipment = "", type = "", spare = "", from = "", duration = "";
+        var station = "", equipment = "", type = "", spare = "", fromDate = "", toDate = "";
 
         var maintenanceDetails = @json($maintenance_details);
 
@@ -159,7 +151,7 @@
                 e.spare_sub_part?.name ?? e.procedure.spare_part?.name ?? e.procedure.name,
                 e.process.ticket.teamleader.name,
                 e.process.ticket.type.name,
-                new Date(e.created_at).toLocaleString(),
+                new Date(e.process.ticket.openline.timestamp).toLocaleString(),
             ]);
         });
 
@@ -268,10 +260,17 @@
             example.rows().remove().draw(false);
             qtyDateTable.rows().remove().draw(false);
 
-            var start = from ? moment(new Date(from)) : moment().subtract(duration, 'months'); 
-            var end = from ? moment(new Date(from)).add(duration, 'months') : moment(); 
+            var startDate = fromDate ? moment(new Date(fromDate), 'YYYY-MM-DD') : null; 
+            var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
             let result = maintenanceDetails.filter((o) => {
-                return (moment(new Date(o.created_at), 'YYYY-MM-DD').isBetween(start, end, undefined, '[]') || !duration) &&
+                var inDay = true;
+                
+                if(startDate && endDate) {
+                    var date = moment(new Date(o.process.ticket.openline.timestamp), 'YYYY-MM-DD');
+                    inDay = date.isBetween(startDate, endDate);
+                }
+                
+                return inDay &&
                     (o.process.ticket.station_id == station || !station) &&
                     (o.procedure.spare_part_id == spare || !spare) &&
                     (o.process.ticket.type_id == type || !type) &&
@@ -296,7 +295,7 @@
                     e.spare_sub_part?.name ?? e.procedure.spare_part?.name ?? e.procedure.name,
                     e.process.ticket.teamleader.name,
                     e.process.ticket.type.name,
-                    new Date(e.created_at).toLocaleString(),
+                    new Date(e.process.ticket.openline.timestamp).toLocaleString(),
                 ]).draw(false);
             });
         }
@@ -366,15 +365,14 @@
         });
 
         jQuery(document).ready(function() {
-            jQuery('select[name="duration"]').on('change', function() {
-                duration = jQuery(this).val();
+            jQuery('input[name="fromDate"]').on('change', function() {
+                fromDate = jQuery(this).val();
                 filterReport();
             });
-        });
-
-        jQuery(document).ready(function() {
-            jQuery('input[name="from"]').on('change', function() {
-                from = jQuery(this).val();
+            var to = jQuery('input[name="toDate"]');
+            to.val(moment().format('YYYY-MM-DD'));
+            to.on('change', function() {
+                toDate = jQuery(this).val();
                 filterReport();
             });
         });

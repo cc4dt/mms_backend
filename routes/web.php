@@ -62,12 +62,25 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/report/pm', [ReportController::class, 'pm'])->middleware('auth')->name('pm-report');
     Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->middleware('auth')->name('pm-fireexting-report');
     Route::get('/report/hse', [ReportController::class, 'hse'])->middleware('auth')->name('hse-report');
+    Route::get('/report/hse-costs', [ReportController::class, 'hse_costs'])->middleware('auth')->name('hse-costs-report');
+    Route::get('/report/hse-procedures', [ReportController::class, 'hse_procedures'])->middleware('auth')->name('hse-procedures-report');
     Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
-    Route::get('/app/download', function () {
-        return Inertia::render('App/Index');
-    })->name('app.download');
+    Route::get('/app', function () {
+        return Inertia::render('App/Index', [
+            'version' =>  setting('app.latest_app_version'),
+        ]);
+    })->name('app');
 });
 
+Route::get('/app/download/android', function () {
+    if(setting('app.download')) {
+        $file = json_decode(setting('app.download'))[0]->download_link;
+        $path  = Storage::disk(config('voyager.storage.disk'))->path($file);
+        return response()->download($path, 'MMS.apk');
+    } else {
+        return abort(404); 
+    }
+})->name('app.download.android');
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();

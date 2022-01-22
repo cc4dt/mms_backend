@@ -438,4 +438,120 @@ class ReportController extends Controller
 
         return view('hse-report')->with($arr);
     }
+
+    public function hse_procedures()
+    {
+        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['hse'] = Hse::all('id', 'name_ar', 'name_en');
+
+        $arr['details'] = HseDetail::all()->loadMissing(
+            'procedure',
+            'spare_part',
+            'option',
+            'process',
+            'process.hse',
+            'process.equipment',
+            'process.master_hse',
+            'process.master_hse.station',
+            'process.master_hse.created_by');
+
+        return view('hse-procedures-report')->with($arr);
+    }
+    
+    public function hse_costs()
+    {
+        $columns = (object) [
+            'hses' => [],
+            'procedures' => [],
+            'spares' => [],
+        ];
+        $rows = [];
+        $sumRow = [];
+        $totalRow = [];
+        $priceRow = [];
+        
+        foreach (Station::all() as $station) {
+            $rows[] = (object) [
+                'id' => $station->id,
+                'name' => $station->name,
+                'items' => [],
+                'total' => 0,
+            ];
+        }
+
+        $replacedHse = HseDetail::whereHas('option',  function ($query) {
+            $query->where('replace', true);
+        });
+
+        foreach (Hse::all() as $hse) {
+            $procedures = [];
+            $procedure_count = 0;
+            foreach ($hse->procedures as $procedure) {
+                $spares = [];
+                $spares_count = 1;
+                $sub_price = 0;
+
+                if($procedure->spare_part && $procedure->spare_part->sub_parts->count() > 0) {
+                    foreach ($procedure->spare_part->sub_parts as $spare) {
+                        
+                        $total_items = HseDetail::where('spare_part_id', $spare->id)->get();
+                        $subSum = 0;
+                        foreach ($rows as $key => $row) {
+                            $items = $total_items->filter(function($item) use($row) {
+                                return $item->process->master_hse->station_id == $row->id;
+                             })->count();
+                            $rows[$key]->total += $spare->price * $items;
+                            $rows[$key]->items[] = $items;
+                            $subSum += $items;
+                        }
+
+                        $spares_count = $procedure->spare_part->sub_parts->count();
+                        $columns->spares[] = (object) [
+                            'name' => $spare->name
+                        ];
+                        $sumRow[] = $subSum;
+                        $priceRow[] = $spare->price ? $spare->price : 1;
+                        $totalRow[] = $subSum * ($spare->price ? $spare->price : 1);
+                    }
+                } else {
+                    $total_items = HseDetail::where('procedure_id', $procedure->id)->get();
+                    $subSum = 0;
+                    foreach ($rows as $key => $row) {
+                        $items = $total_items->filter(function($item) use($row) {
+                            return $item->process->master_hse->station_id == $row->id;
+                         })->count();
+                        $rows[$key]->items[] = $items;
+                        $rows[$key]->total += $procedure->price * $items;
+                        $subSum += $items;
+                    }
+                    $sumRow[] = $subSum;
+                    $priceRow[] = $procedure->price ? $procedure->price : 1;
+                    $totalRow[] = $subSum * ($procedure->price ? $procedure->price : 1);
+                    
+                }
+                
+                $procedure_count += $spares_count;
+            
+                $columns->procedures[] = (object) [
+                    'name' => $procedure->name,
+                    'count' => $spares_count
+                ];
+            }
+            
+            $columns->hses[] = (object) [
+                'name' => $hse->name,
+                'count' => $procedure_count
+            ];
+        }
+
+        $arr = [
+            'columns' => (object) $columns,
+            'rows' => $rows,
+            'sumRow' => $sumRow,
+            'priceRow' => $priceRow,
+            'totalRow' => $totalRow,
+        ];
+
+        return view('hse-costs-report')->with($arr);
+    }
 }

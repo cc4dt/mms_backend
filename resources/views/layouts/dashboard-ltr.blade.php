@@ -88,7 +88,6 @@
     <script src="{{ asset('LTR/plugins/datatables/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('LTR/plugins/datatables/buttons.print.min.js') }}"></script>
     <script src="{{ asset('LTR/plugins/datatables/buttons.colVis.min.js') }}"></script>
-    <script src="{{ asset('LTR/plugins/datatables/buttons.colVis.min.js') }}"></script>
     <script src="{{ asset('LTR/plugins/datatables/dataTables.rowGroup.min.js') }}"></script>
 
     <script>
@@ -627,6 +626,19 @@
                                             <p>HSE</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('hse-procedures-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>HSE Procedures</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('hse-costs-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>HSE Costs</p>
+                                        </a>
+                                    </li>
+                                    
                         @endif
                     </ul>
                     </li>
