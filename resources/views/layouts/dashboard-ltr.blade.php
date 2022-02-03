@@ -573,6 +573,12 @@
                                     </a>
                                 </li>
 
+                                <li class="nav-item">
+                                    <a href="{{ route('pm.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>PM</p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 
@@ -620,12 +626,12 @@
                                             <p>Fireexting</p>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
+                                    {{-- <li class="nav-item">
                                         <a href="{{ route('hse-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>HSE</p>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                     <li class="nav-item">
                                         <a href="{{ route('hse-procedures-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>

@@ -32,7 +32,18 @@
           <jet-label for="level" value="Level" />
           <select
             id="level"
-            class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 block w-full"
+            class="
+              border-gray-300
+              focus:border-indigo-300
+              focus:ring
+              focus:ring-indigo-200
+              focus:ring-opacity-50
+              rounded-md
+              shadow-sm
+              mt-1
+              block
+              w-full
+            "
             v-model="form.level"
             required
           >
@@ -90,13 +101,12 @@ export default defineComponent({
     levels: Array,
   },
 
-
   setup() {
     const form = reactive({
-        name: "",
-        email: "",
-        level: "",
-      });
+      name: "",
+      email: "",
+      level: "",
+    });
 
     function submit() {
       console.log(form);
@@ -106,22 +116,22 @@ export default defineComponent({
     return { form, submit };
   },
 
-//   data() {
-//     return {
-//       form: this.$inertia.form({
-//         name: "",
-//         email: "",
-//         level: "",
-//         terms: false,
-//       }),
-//     };
-//   },
+  //   data() {
+  //     return {
+  //       form: this.$inertia.form({
+  //         name: "",
+  //         email: "",
+  //         level: "",
+  //         terms: false,
+  //       }),
+  //     };
+  //   },
 
-//   methods: {
-//     submit() {
-//       Inertia.post("/users", this.form);
-//     //   this.form.post(this.route("users.create"));
-//     },
-//   },
+  //   methods: {
+  //     submit() {
+  //       Inertia.post("/users", this.form);
+  //     //   this.form.post(this.route("users.create"));
+  //     },
+  //   },
 });
 </script>

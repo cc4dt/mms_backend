@@ -272,6 +272,8 @@ class ReportController extends Controller
             "station",
             "timeline",
             "timeline.status",
+            "openline",
+            "closeline",
             "created_by",
             "type",
         );
@@ -292,9 +294,7 @@ class ReportController extends Controller
             "timeline",
             "timeline.status",
             "openline",
-            "openline.status",
             "closeline",
-            "closeline.status",
             "created_by",
             "type",
         );
@@ -321,6 +321,8 @@ class ReportController extends Controller
             "process.ticket.station",
             "process.ticket.type",
             "process.ticket.teamleader",
+            "process.ticket.openline",
+            "process.ticket.closeline",
         );
         
         $arr['stations'] = Station::all();
@@ -510,8 +512,8 @@ class ReportController extends Controller
                             'name' => $spare->name
                         ];
                         $sumRow[] = $subSum;
-                        $priceRow[] = $spare->price ? $spare->price : 1;
-                        $totalRow[] = $subSum * ($spare->price ? $spare->price : 1);
+                        $priceRow[] = $spare->price;
+                        $totalRow[] = $subSum * $spare->price;
                     }
                 } else {
                     $total_items = HseDetail::where('procedure_id', $procedure->id)->get();
@@ -525,8 +527,8 @@ class ReportController extends Controller
                         $subSum += $items;
                     }
                     $sumRow[] = $subSum;
-                    $priceRow[] = $procedure->price ? $procedure->price : 1;
-                    $totalRow[] = $subSum * ($procedure->price ? $procedure->price : 1);
+                    $priceRow[] = $procedure->price;
+                    $totalRow[] = $subSum * $procedure->price;
                     
                 }
                 
