@@ -20,7 +20,7 @@ class MasterEquipment extends Model
     
     public function processes(): HasMany
     {
-        return $this->hasMany(MaintenanceProcess::class, 'equipment_id');
+        return $this->hasMany(MaintenanceProcess::class, 'master_equipment_id');
     }
     
     public function details(): HasMany

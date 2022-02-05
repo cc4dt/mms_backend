@@ -24,7 +24,7 @@ class CheckUpdateQuery
             'available' => $isAvailable,
             'required' => $isRequired,
             'latest' => setting('app.latest_app_version'),
-            'url' => route('app.download'),
+            'url' => route('app'),
         ];
     }
 }

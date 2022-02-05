@@ -268,7 +268,7 @@ class HseController extends Controller
                                         'procedure_id' => $key,
                                         'option_id' => isset($value['option']) ? $value['option']['id'] : null,
                                         'spare_part_id' => isset($value['spare']) ? $value['spare']['id'] : null,
-                                        'value' => $value['val'],
+                                        'value' =>  isset($value['val']) ? $value['val'] : null,
                                     ];
                                     if(isset($value['id']) && $detail = HseDetail::find($value['id']))
                                         $detail->update($data);

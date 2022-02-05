@@ -104,6 +104,12 @@ class User extends \TCG\Voyager\Models\User
         return $query->where('created_at', '>=', Carbon::parse($from))->where('created_at', '<=', Carbon::parse($to));
     }
     
+    public function scopeAdmins($query)
+    {
+        $levelID = array_search('admin', self::LEVELS);
+        return $query->where('level_id', $levelID);
+    }
+    
     public function scopeTeamleaders($query)
     {
         $levelID = array_search('teamleader', self::LEVELS);
@@ -119,6 +125,12 @@ class User extends \TCG\Voyager\Models\User
     public function scopeClients($query)
     {
         $levelID = array_search('client', self::LEVELS);
+        return $query->where('level_id', $levelID);
+    }
+
+    public function scopeDealers($query)
+    {
+        $levelID = array_search('dealer', self::LEVELS);
         return $query->where('level_id', $levelID);
     }
     

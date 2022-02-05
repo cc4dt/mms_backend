@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class MaintenanceProcedure extends Model
 {
+    protected $fillable = [
+        'name_en',
+        'name_ar',
+        'spare_part_id',
+        'input_type_id',
+        'type_id',
+    ];
 
     protected $appends = [
         'name',

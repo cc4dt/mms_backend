@@ -37,7 +37,7 @@
                 w-full
               "
             >
-              <a
+              <!-- <a
                 :href="route('home')"
                 class="
                   inline-flex
@@ -67,7 +67,7 @@
                 :active="route().current('hse.index')"
               >
                 HSE
-              </jet-nav-link>
+              </jet-nav-link> -->
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -475,39 +475,37 @@
         </div>
       </nav>
       <!-- Side Nav -->
-        <div
-          @click="showingNavigationDropdown = !showingNavigationDropdown"
-          class="fixed z-30 inset-x-0 inset-y-0 bg-gray-800/25 sm:hidden"
-          :class="{
-            hidden: !showingNavigationDropdown,
-            flex: showingNavigationDropdown,
-          }"
+      <div
+        @click="showingNavigationDropdown = !showingNavigationDropdown"
+        class="fixed z-30 inset-x-0 inset-y-0 bg-gray-800/25 sm:hidden"
+        :class="{
+          hidden: !showingNavigationDropdown,
+          flex: showingNavigationDropdown,
+        }"
+      ></div>
+      <div
+        class="fixed h-full z-40 top-0 pt-16 sm:flex sm:pt-0 sm:w-64 sm:!static"
+        :class="{
+          hidden: !showingNavigationDropdown,
+          flex: showingNavigationDropdown,
+        }"
+      >
+        <aside
+          class="
+            flex flex-col
+            z-40
+            w-64
+            shadow
+            min-h-full
+            bg-white
+            dark:bg-gray-800 dark:shadow-gray-600
+            overflow-x-hidden overflow-y-auto
+          "
         >
-        </div>
-        <div
-          class="fixed h-full z-40 top-0 pt-16 sm:flex sm:pt-0 sm:w-64 sm:!static"
-          :class="{
-            hidden: !showingNavigationDropdown,
-            flex: showingNavigationDropdown,
-          }"
-        >
-          <aside
-            class="
-              flex flex-col
-              z-40
-              w-64
-              shadow
-              min-h-full
-              bg-white
-              dark:bg-gray-800 dark:shadow-gray-600
-              overflow-x-hidden overflow-y-auto
-            "
-          >
-            <div class="flex flex-col h-full justify-between flex-1">
-              <nav class="px-4 py-8 space-y-1">
-                
-                <div class="pt-2 pb-3 space-y-1">
-                  <a
+          <div class="flex flex-col h-full justify-between flex-1">
+            <nav class="px-4 py-8 space-y-1">
+              <div class="pt-2 pb-3 space-y-1">
+                <!-- <a
                     :href="route('home')"
                     class="
                       flex
@@ -542,11 +540,12 @@
                       />
                     </svg>
                     <span> Dashboard </span>
-                  </a>
+                  </a> -->
 
-                <!-- <jet-responsive-nav-link
-                  :href="route('dashboard')"
-                  :active="route().current('dashbord')"
+                <jet-responsive-nav-link
+                  :href="route('home')"
+                  :active="route().current('home')"
+                  as="url"
                 >
                   <svg
                     class="w-5 h-5"
@@ -563,137 +562,135 @@
                     />
                   </svg>
                   <span> Dashboard </span>
-                </jet-responsive-nav-link> -->
+                </jet-responsive-nav-link>
 
-                  <hr class="my-6 border-gray-200 dark:border-gray-600" />
+                <hr class="my-6 border-gray-200 dark:border-gray-600" />
 
+                <jet-responsive-nav-link
+                  :href="route('pm.index')"
+                  :active="route().current('pm.index')"
+                  as="url"
+                >
+                  PM
+                </jet-responsive-nav-link>
+
+                <jet-responsive-nav-link
+                  :href="route('hse.index')"
+                  :active="route().current('hse.index')"
+                  as="url"
+                >
+                  HSE
+                </jet-responsive-nav-link>
+              </div>
+
+              <!-- Responsive Settings Options -->
+              <div class="pt-4 pb-1 border-t border-gray-200">
+                <div class="pt-3 space-y-1">
                   <jet-responsive-nav-link
-                    :href="route('pm.index')"
-                    :active="route().current('pm.index')"
+                    :href="route('profile.show')"
+                    :active="route().current('profile.show')"
                   >
-                    PM
-                  </jet-responsive-nav-link>
-                  <jet-responsive-nav-link
-                    :href="route('hse.index')"
-                    :active="route().current('hse.index')"
-                  >
-                    HSE
-                  </jet-responsive-nav-link>
-                </div>
-
-                <!-- Responsive Settings Options -->
-                <div class="pt-4 pb-1 border-t border-gray-200">
-
-                  <div class="pt-3 space-y-1">
-                    <jet-responsive-nav-link
-                      :href="route('profile.show')"
-                      :active="route().current('profile.show')"
+                    <svg
+                      class="w-5 h-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        class="w-5 h-5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                        <path
-                          d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                      <span> Profile </span>
+                      <path
+                        d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    <span> Profile </span>
+                  </jet-responsive-nav-link>
+
+                  <jet-responsive-nav-link
+                    :href="route('api-tokens.index')"
+                    :active="route().current('api-tokens.index')"
+                    v-if="$page.props.jetstream.hasApiFeatures"
+                  >
+                    API Tokens
+                  </jet-responsive-nav-link>
+
+                  <!-- Authentication -->
+                  <form method="POST" @submit.prevent="logout">
+                    <jet-responsive-nav-link as="button">
+                      Log Out
+                    </jet-responsive-nav-link>
+                  </form>
+
+                  <!-- Team Management -->
+                  <template v-if="$page.props.jetstream.hasTeamFeatures">
+                    <div class="border-t border-gray-200"></div>
+
+                    <div class="block px-4 py-2 text-xs text-gray-400">
+                      Manage Team
+                    </div>
+
+                    <!-- Team Settings -->
+                    <jet-responsive-nav-link
+                      :href="route('teams.show', $page.props.user.current_team)"
+                      :active="route().current('teams.show')"
+                    >
+                      Team Settings
                     </jet-responsive-nav-link>
 
                     <jet-responsive-nav-link
-                      :href="route('api-tokens.index')"
-                      :active="route().current('api-tokens.index')"
-                      v-if="$page.props.jetstream.hasApiFeatures"
+                      :href="route('teams.create')"
+                      :active="route().current('teams.create')"
+                      v-if="$page.props.jetstream.canCreateTeams"
                     >
-                      API Tokens
+                      Create New Team
                     </jet-responsive-nav-link>
 
-                    <!-- Authentication -->
-                    <form method="POST" @submit.prevent="logout">
-                      <jet-responsive-nav-link as="button">
-                        Log Out
-                      </jet-responsive-nav-link>
-                    </form>
+                    <div class="border-t border-gray-200"></div>
 
-                    <!-- Team Management -->
-                    <template v-if="$page.props.jetstream.hasTeamFeatures">
-                      <div class="border-t border-gray-200"></div>
+                    <!-- Team Switcher -->
+                    <div class="block px-4 py-2 text-xs text-gray-400">
+                      Switch Teams
+                    </div>
 
-                      <div class="block px-4 py-2 text-xs text-gray-400">
-                        Manage Team
-                      </div>
-
-                      <!-- Team Settings -->
-                      <jet-responsive-nav-link
-                        :href="
-                          route('teams.show', $page.props.user.current_team)
-                        "
-                        :active="route().current('teams.show')"
-                      >
-                        Team Settings
-                      </jet-responsive-nav-link>
-
-                      <jet-responsive-nav-link
-                        :href="route('teams.create')"
-                        :active="route().current('teams.create')"
-                        v-if="$page.props.jetstream.canCreateTeams"
-                      >
-                        Create New Team
-                      </jet-responsive-nav-link>
-
-                      <div class="border-t border-gray-200"></div>
-
-                      <!-- Team Switcher -->
-                      <div class="block px-4 py-2 text-xs text-gray-400">
-                        Switch Teams
-                      </div>
-
-                      <template
-                        v-for="team in $page.props.user.all_teams"
-                        :key="team.id"
-                      >
-                        <form @submit.prevent="switchToTeam(team)">
-                          <jet-responsive-nav-link as="button">
-                            <div class="flex items-center">
-                              <svg
-                                v-if="
-                                  team.id == $page.props.user.current_team_id
-                                "
-                                class="mr-2 h-5 w-5 text-green-400"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                ></path>
-                              </svg>
-                              <div>{{ team.name }}</div>
-                            </div>
-                          </jet-responsive-nav-link>
-                        </form>
-                      </template>
+                    <template
+                      v-for="team in $page.props.user.all_teams"
+                      :key="team.id"
+                    >
+                      <form @submit.prevent="switchToTeam(team)">
+                        <jet-responsive-nav-link as="button">
+                          <div class="flex items-center">
+                            <svg
+                              v-if="team.id == $page.props.user.current_team_id"
+                              class="mr-2 h-5 w-5 text-green-400"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              ></path>
+                            </svg>
+                            <div>{{ team.name }}</div>
+                          </div>
+                        </jet-responsive-nav-link>
+                      </form>
                     </template>
-                  </div>
+                  </template>
                 </div>
-              </nav>
-<!-- 
+              </div>
+            </nav>
+            <!-- 
               <div class="flex items-center py-4 px-4 mt-auto">
                 <img
                   class="object-cover mx-2 rounded-full h-9 w-9"
@@ -712,31 +709,31 @@
                   John Doe
                 </h4>
               </div> -->
-              
-              <div class="flex items-center p-4 mt-auto">
-                <div
-                  v-if="$page.props.jetstream.managesProfilePhotos"
-                  class="flex-shrink-0 mr-3"
-                >
-                  <img
-                    class="h-10 w-10 rounded-full object-cover"
-                    :src="$page.props.user.profile_photo_url"
-                    :alt="$page.props.user.name"
-                  />
-                </div>
 
-                <div>
-                  <div class="font-medium text-base text-gray-800">
-                    {{ $page.props.user.name }}
-                  </div>
-                  <div class="font-medium text-sm text-gray-500">
-                    {{ $page.props.user.email }}
-                  </div>
+            <div class="flex items-center p-4 mt-auto">
+              <div
+                v-if="$page.props.jetstream.managesProfilePhotos"
+                class="flex-shrink-0 mr-3"
+              >
+                <img
+                  class="h-10 w-10 rounded-full object-cover"
+                  :src="$page.props.user.profile_photo_url"
+                  :alt="$page.props.user.name"
+                />
+              </div>
+
+              <div>
+                <div class="font-medium text-base text-gray-800">
+                  {{ $page.props.user.name }}
+                </div>
+                <div class="font-medium text-sm text-gray-500">
+                  {{ $page.props.user.email }}
                 </div>
               </div>
             </div>
-          </aside>
-        </div>
+          </div>
+        </aside>
+      </div>
       <!-- Page -->
       <div class="flex flex-col w-full max-h-full overflow-auto">
         <!-- Page Heading -->

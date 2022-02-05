@@ -9,4 +9,6 @@ return  [
     'ticket_closed_body' => ':username closed ticket number :ticket_no, :station station',
     'ticket_deadline_title' => 'Ticket deadline',
     'ticket_deadline_body' => ':time left to close ticket No. :ticket_no, :station Station',
+    'ticket_received_title' => 'Ticket received',
+    'ticket_received_body' => 'Work has been received on Ticket No. :ticket_no of :station Station'
 ];

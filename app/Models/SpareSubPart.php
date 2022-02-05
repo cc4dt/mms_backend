@@ -13,6 +13,7 @@ class SpareSubPart extends Model
         "name_en",
         "name_ar",
         "spare_part_id",
+        "price",
     ];
     
     protected $appends = [

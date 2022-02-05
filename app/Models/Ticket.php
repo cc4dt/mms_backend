@@ -399,7 +399,6 @@ class Ticket extends Model
 
     public function receive($input)
     {
-        
         if(isset($input['status_id'])) {
             $input['status_id'] = $input['status_id'];
         }
@@ -432,12 +431,17 @@ class Ticket extends Model
             }
 
             try {
-                // $users = User::supervisors()->get()->merge(User::clients()->get());
-                // foreach ($users as $key => $value) {
-                //     if($value->id == Auth::id())
-                //         $users->forget($key);
-                // }
-                // Notification::send($users, new TicketClosed($this));
+                $users = User::where("id", "!=", Auth::id())
+                    ->where(function($q) {
+                        $q->orWhere(fn($q) => $q->supervisors())
+                        ->orWhere(fn($q) => $q->clients())
+                        ->orWhere(fn($q) => $q->dealers());
+                    })
+                    ->get();
+                if(TicketStatus::find($input['status_id'])->key == "colsed")
+                    Notification::send($users, new TicketClosed($this));
+                elseif(TicketStatus::find($input['status_id'])->key == "waiting_for_client_approval")
+                    Notification::send($users, new TicketReceived($this));
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -463,7 +467,7 @@ class Ticket extends Model
                 //     if($value->id == Auth::id())
                 //         $users->forget($key);
                 // }
-                // Notification::send(User::supervisors()->get(), new TicketClosed($this));
+                // Notification::send(User::supervisors()->get(), new TicketClientFeedback($this));
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
