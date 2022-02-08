@@ -33,4 +33,9 @@ class SparePart extends Model
     {   
         return $this->hasMany(SpareSubPart::class, 'spare_part_id');
     }
+
+    public function procedures(): HasMany
+    {   
+        return $this->hasMany(MaintenanceProcedure::class);
+    }
 }

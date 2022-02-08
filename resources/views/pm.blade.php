@@ -22,7 +22,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">HSE</h3>
+                <h3 class="card-title">PM</h3>
 
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -52,7 +52,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <a href="{{asset(route('hse.create'))}}">
+                                    <a href="{{asset(route('pm.create'))}}">
                                         <button type="button" class="btn btn-primary mb-3">
                                             Add New
                                         </button>
@@ -68,7 +68,7 @@
                     <table id="example2" class="table table-striped">
                         <thead>
                             <tr>
-                                <th>HSE NO</th>
+                                <th>PM NO</th>
                                 <th>STATION</th>
                                 <th>CREATED BY</th>
                                 <th>Date</th>
@@ -76,8 +76,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if(isset($hses))
-                            @foreach($hses as $show)
+                            @if(isset($pms))
+                            @foreach($pms as $show)
                                 <tr>
                                     <td>{{$show->id}}</td>
                                     <td>{{$show->station->name}}</td>
@@ -85,12 +85,12 @@
                                     <td>{{$show->timestamp}}</td>
                                     <td>
                                         @if(true)
-                                            <a href="{{asset(route('hse.edit',$show->id))}}">
+                                            <a href="{{asset(route('pm.edit',$show->id))}}">
                                                 <li class="fa fa-edit"></li>
                                             </a>
                                             {{" - "}}
                                         @endif
-                                        <a href="{{asset(route('hse.show', $show->id))}}">
+                                        <a href="{{asset(route('pm.show', $show->id))}}">
                                             <li class="fa fa-eye" data-backdrop="static" data-keyboard="false"
                                                 data-toggle="modal" data-target="#" style="color: rgb(0,0,0);"></li>
                                         </a>
@@ -333,7 +333,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content bg-danger">
                             <div class="modal-header">
-                                <h4 class="modal-title">Delete HSE</h4>
+                                <h4 class="modal-title">Delete PM</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -342,7 +342,7 @@
                             <div class="modal-body"></div>
 
                             <div class="modal-footer justify-content-between">
-                                <form method="POST" action="{{route('hse.destroy','delete')}}">
+                                <form method="POST" action="{{route('pm.destroy','delete')}}">
                                     {{method_field('delete')}}
                                     @csrf
 
@@ -2051,7 +2051,7 @@ $('#modal-delete2').on('show.bs.modal', function(event) {
 
     modal.find('.modal-footer #id').val(id_val)
 
-    modal.find('.modal-body').text('Are you soure you want to delete HSE No  :[ ' + name_val + ']')
+    modal.find('.modal-body').text('Are you soure you want to delete PM No  :[ ' + name_val + ']')
 })
 
 

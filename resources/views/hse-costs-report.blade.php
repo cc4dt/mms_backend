@@ -41,38 +41,39 @@
             <!-- /.card-header -->
             <div class="card-body">
                 <div class="p-3">
-                    <table id="example" class="table table-bordered table-striped table-responsive text-center" width="100%">
+                    <table id="example" class="table table-bordered table-striped table-responsive text-center"
+                        width="100%">
                         <thead>
                             <tr>
                                 <th rowspan="3">Station</th>
                                 @foreach ($columns->hses as $hse)
-                                    <th colspan="{{$hse->count}}">{{$hse->name}}</th>
+                                    <th colspan="{{ $hse->count }}">{{ $hse->name }}</th>
                                 @endforeach
                                 <th rowspan="3">Total</th>
                             </tr>
                             <tr>
                                 @foreach ($columns->procedures as $item)
                                     @if ($item->count > 1)
-                                            <th colspan="{{$item->count}}">{{$item->name}}</th>
+                                        <th colspan="{{ $item->count }}">{{ $item->name }}</th>
                                     @else
-                                        <th rowspan="2">{{$item->name}}</th>
+                                        <th rowspan="2">{{ $item->name }}</th>
                                     @endif
                                 @endforeach
                             </tr>
                             <tr>
                                 @foreach ($columns->spares as $item)
-                                    <th>{{$item->name}}</th>
+                                    <th>{{ $item->name }}</th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($rows as $row)
                                 <tr>
-                                    <th>{{$row->name}}</th>
+                                    <th>{{ $row->name }}</th>
                                     @foreach ($row->items as $item)
-                                        <td>{{$item ? $item : ''}}</td>
+                                        <td>{{ $item ? $item : '' }}</td>
                                     @endforeach
-                                    <th>{{$row->total}}</th>
+                                    <th>{{ $row->total }}</th>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -80,23 +81,23 @@
                             <tr>
                                 <th>SUM</th>
                                 @foreach ($sumRow as $item)
-                                    <th>{{$item}}</th>
+                                    <th>{{ $item }}</th>
                                 @endforeach
-                                <th>{{array_sum($sumRow)}}</th>
+                                <th>{{ array_sum($sumRow) }}</th>
                             </tr>
                             <tr>
                                 <th>Price</th>
                                 @foreach ($priceRow as $item)
-                                    <th>{{$item}}</th>
+                                    <th>{{ $item }}</th>
                                 @endforeach
-                                <th>{{array_sum($priceRow)}}</th>
+                                <th>{{ array_sum($priceRow) }}</th>
                             </tr>
                             <tr>
                                 <th>Total</th>
                                 @foreach ($totalRow as $item)
-                                    <th>{{$item}}</th>
+                                    <th>{{ $item }}</th>
                                 @endforeach
-                                <th>{{array_sum($totalRow)}}</th>
+                                <th>{{ array_sum($totalRow) }}</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -119,6 +120,8 @@
                     charset: 'UTF-8',
                     orientation: 'landscape',
                     pageSize: 'LEGAL',
+                    title: "HSE Costs",
+                    footer: true,
                     exportOptions: {
                         columns: ':visible'
                     },
@@ -126,13 +129,60 @@
                 {
                     extend: 'excel',
                     charset: 'UTF-8',
+                    footer: true,
+                    title: "HSE Costs",
                     exportOptions: {
                         columns: ':visible'
+                    },
+                    customize: (xlsx, config, dataTable) => {
+                        let sheet = xlsx.xl.worksheets['hse costs.xml'];
+                        let footerIndex = $('sheetData row', sheet).length;
+                        let $footerRows = $('tr', dataTable.footer());
+
+                        // If there are more than one footer rows
+                        if ($footerRows.length > 1) {
+                            // First header row is already present, so we start from the second row (i = 1)
+                            for (let i = 1; i < $footerRows.length; i++) {
+                                // Get the current footer row
+                                let $footerRow = $footerRows[i];
+
+                                // Get footer row columns
+                                let $footerRowCols = $('th', $footerRow);
+
+                                // Increment the last row index
+                                footerIndex++;
+
+                                // Create the new header row XML using footerIndex and append it at sheetData
+                                console.log(`
+                                    <row r="${footerIndex}">
+                                    ${$footerRowCols.map((index, el) => `
+                                                    <c t="inlineStr" r="${String.fromCharCode(65 + index)}${footerIndex}" s="2">
+                                                    <is>
+                                                        <t xml:space="preserve">${$(el).text()}</t>
+                                                    </is>
+                                                    </c>
+                                                `).get().join('')}
+                                    </row>
+                                `);
+                                $('sheetData', sheet).append(`
+                                    <row r="${footerIndex}">
+                                    ${$footerRowCols.map((index, el) => `
+                                                    <c t="inlineStr" r="${String.fromCharCode(65 + index)}${footerIndex}" s="2">
+                                                    <is>
+                                                        <t xml:space="preserve">${$(el).text()}</t>
+                                                    </is>
+                                                    </c>
+                                                `).get().join('')}
+                                    </row>
+                                `);
+                            }
+                        }
                     },
                 },
                 {
                     extend: 'csv',
                     charset: 'UTF-8',
+                    footer: true,
                     exportOptions: {
                         columns: ':visible'
                     },

@@ -46,7 +46,12 @@ class MaintenanceProcedure extends Model
         return Attribute::constList(Attribute::TYPES);
     }
 
-    
+    public function scopeReplaces($query)
+    {
+        $typeId = array_search('replace', self::TYPES);
+        return $query->where('type_id', $typeId);
+    }
+
     public function spare_part(): BelongsTo
     {
         return $this->belongsTo(SparePart::class);

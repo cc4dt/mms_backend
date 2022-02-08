@@ -17,7 +17,6 @@
                   >
                   <select
                     id="station"
-                    name="station"
                     v-model="form.station"
                     class="
                       mt-1
@@ -53,7 +52,6 @@
                   >
                   <input
                     type="date"
-                    name="date"
                     id="date"
                     v-model="form.date"
                     class="
@@ -134,7 +132,6 @@
                       >
                       <select
                         id="hse"
-                        name="hse"
                         @change="hseChanged"
                         v-model="currentProcess.hse"
                         class="
@@ -168,7 +165,6 @@
                         >
                         <select
                           id="equipment"
-                          name="equipment"
                           v-model="currentProcess.equipment"
                           class="
                             mt-1
@@ -219,8 +215,9 @@
                             class="inline-flex items-center p-2"
                           >
                             <input
-                              :id="procedure.id"
+                              :id="procedure.id + '.' + option.id"
                               type="radio"
+                              :name="procedure.id"
                               :value="option"
                               v-model="
                                 currentProcess.procedures[procedure.id].option
@@ -235,7 +232,7 @@
                               required
                             />
                             <label
-                              :for="procedure.id"
+                              :for="procedure.id + '.' + option.id"
                               class="
                                 ml-3
                                 block
@@ -259,8 +256,7 @@
                               class="col-span-1"
                             >
                               <select
-                                id="spare"
-                                name="spare"
+                                :id="procedure.id"
                                 v-model="
                                   currentProcess.procedures[procedure.id].spare
                                 "

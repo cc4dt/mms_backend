@@ -483,8 +483,11 @@ class ReportController extends Controller
 
         $replacedHse = HseDetail::whereHas('option',  function ($query) {
             $query->where('replace', true);
+        })
+        ->whereHas('procedure',  function ($query) {
+            $query->replaces();
         });
-
+        
         foreach (Hse::all() as $hse) {
             $procedures = [];
             $procedure_count = 0;

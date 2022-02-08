@@ -17,7 +17,6 @@
                   >
                   <select
                     id="station"
-                    name="station"
                     v-model="form.station"
                     class="
                       mt-1
@@ -53,7 +52,6 @@
                   >
                   <input
                     type="date"
-                    name="date"
                     id="date"
                     v-model="form.date"
                     class="
@@ -134,7 +132,6 @@
                       >
                       <select
                         id="hse"
-                        name="hse"
                         @change="hseChanged"
                         v-model="currentProcess.hse"
                         class="
@@ -168,7 +165,6 @@
                         >
                         <select
                           id="equipment"
-                          name="equipment"
                           v-model="currentProcess.equipment"
                           class="
                             mt-1
@@ -220,7 +216,7 @@
                           >
                             <input
                               type="radio"
-                              :id="procedure.id + '-' + option.id"
+                              :id="procedure.id + '.' + option.id"
                               :name="procedure.id"
                               :value="option"
                               v-model="
@@ -236,7 +232,7 @@
                               required
                             />
                             <label
-                              :for="procedure.id + '-' +option.id"
+                              :for="procedure.id + '.' + option.id"
                               class="
                                 ml-3
                                 block
@@ -261,7 +257,6 @@
                             >
                               <select
                                 id="spare"
-                                name="spare"
                                 v-model="
                                   currentProcess.procedures[procedure.id].spare
                                 "

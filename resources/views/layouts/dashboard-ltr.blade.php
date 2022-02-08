@@ -635,7 +635,7 @@
                                     <li class="nav-item">
                                         <a href="{{ route('hse-procedures-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
-                                            <p>HSE Procedures</p>
+                                            <p>HSE</p>
                                         </a>
                                     </li>
                                     <li class="nav-item">

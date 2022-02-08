@@ -66,14 +66,17 @@ class PmController extends Controller
             ];
         });
 
-        return Inertia::render('Pm/Index', [
-            'data' => $data,
-        ])->table(function (InertiaTable $table) use($columns) {
-            $table->addSearchRows($columns)
-                ->addColumns($columns)
-                ->addFilter('station_id', 'Station', Station::all()->pluck('name', 'id')->all())
-                ->addFilter('created_by_id', 'Created By', User::all()->pluck('name', 'id')->all());
-        });
+        // return Inertia::render('Pm/Index', [
+        //     'data' => $data,
+        // ])->table(function (InertiaTable $table) use($columns) {
+        //     $table->addSearchRows($columns)
+        //         ->addColumns($columns)
+        //         ->addFilter('station_id', 'Station', Station::all()->pluck('name', 'id')->all())
+        //         ->addFilter('created_by_id', 'Created By', User::all()->pluck('name', 'id')->all());
+        // });
+        
+        $arr['pms'] = Pm::all();
+        return view('pm')->with($arr);
     }
 
     /**
