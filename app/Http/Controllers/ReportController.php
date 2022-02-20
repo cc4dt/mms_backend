@@ -23,10 +23,10 @@ use App\Models\MaintenanceProcedure;
 use App\Models\TicketStatus;
 use App\Models\TicketType;
 use App\Models\SparePart;
-use App\Models\MasterHse;
-use App\Models\Hse;
-use App\Models\HseProcess;
-use App\Models\HseDetail;
+use App\Models\Maintenance;
+use App\Models\Category;
+use App\Models\Process;
+use App\Models\Detail;
 
 use DB;
 
@@ -422,19 +422,19 @@ class ReportController extends Controller
     public function hse()
     {
         $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
-        $arr['hse'] = Hse::all('id', 'name_ar', 'name_en');
+        $arr['hse'] = Category::where('slug', 'hse')->get()->equipment;
 
-        $arr['details'] = HseDetail::all()->loadMissing(
+        $arr['details'] = Detail::all()->loadMissing(
             'procedure',
             'spare_part',
             'option',
             'process');
 
-        $arr['master_hses'] = MasterHse::all()->loadMissing(
+        $arr['master_hses'] = Maintenance::all()->loadMissing(
             'station',
             'created_by');
 
-        $arr['processes'] = HseProcess::all()->loadMissing(
+        $arr['processes'] = Process::all()->loadMissing(
             'hse',
             'equipment');
 
@@ -444,18 +444,18 @@ class ReportController extends Controller
     public function hse_procedures()
     {
         $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
-        $arr['hse'] = Hse::all('id', 'name_ar', 'name_en');
+        $arr['hse'] = Category::where('slug', 'hse')->first()->equipment;
 
-        $arr['details'] = HseDetail::all()->loadMissing(
+        $arr['details'] = Detail::all()->loadMissing(
             'procedure',
             'spare_part',
             'option',
             'process',
-            'process.hse',
             'process.equipment',
-            'process.master_hse',
-            'process.master_hse.station',
-            'process.master_hse.created_by');
+            'process.master_equipment',
+            'process.maintenance',
+            'process.maintenance.station',
+            'process.maintenance.created_by');
 
         return view('hse-procedures-report')->with($arr);
     }
@@ -481,16 +481,16 @@ class ReportController extends Controller
             ];
         }
 
-        $replacedHse = HseDetail::whereHas('option',  function ($query) {
+        $replacedHse = Detail::whereHas('option',  function ($query) {
             $query->replaces();
         });
         
         // dump($replacedHse->count());
-
-        foreach (Hse::all() as $hse) {
+        // dd(Category::where('slug', 'hse')->get());
+        foreach (Category::where('slug', 'hse')->first()->forms as $form) {
             $procedures = [];
             $procedure_count = 0;
-            foreach ($hse->procedures()->replaces()->get() as $procedure) {
+            foreach ($form->procedures()->replaces()->get() as $procedure) {
                 $spares = [];
                 $spares_count = 1;
                 $sub_price = 0;
@@ -508,7 +508,7 @@ class ReportController extends Controller
                         $subSum = 0;
                         foreach ($rows as $key => $row) {
                             $items = $total_items->filter(function($item) use($row) {
-                                return $item->process->master_hse->station_id == $row->id;
+                                return $item->process->maintenance->station_id == $row->id;
                              })->count();
                             $rows[$key]->total += $spare->price * $items;
                             $rows[$key]->items[] = $items;
@@ -528,7 +528,7 @@ class ReportController extends Controller
                     $subSum = 0;
                     foreach ($rows as $key => $row) {
                         $items = $total_items->filter(function($item) use($row) {
-                            return $item->process->master_hse->station_id == $row->id;
+                            return $item->process->maintenance->station_id == $row->id;
                          })->count();
                         $rows[$key]->items[] = $items;
                         $rows[$key]->total += $procedure->price * $items;
@@ -549,7 +549,7 @@ class ReportController extends Controller
             }
             
             $columns->hses[] = (object) [
-                'name' => $hse->name,
+                'name' => $form->equipment->name,
                 'count' => $procedure_count
             ];
         }

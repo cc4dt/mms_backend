@@ -98,7 +98,7 @@
                 title: "Date"
             },
             {
-                title: "HSE"
+                title: "Equipment"
             },
             {
                 title: "Serial"
@@ -123,11 +123,11 @@
         var dataSet = [];
         details.forEach(e => {
             dataSet.push([
-                e.process?.master_hse?.station?.name ?? "",
-                e.process?.master_hse?.created_by?.name ?? "",
-                e.process?.master_hse?.timestamp ?? "",
-                e.process?.hse?.name ?? "",
-                e.process?.equipment?.serial ?? "",
+                e.process?.maintenance?.station?.name ?? "",
+                e.process?.maintenance?.created_by?.name ?? "",
+                e.process?.maintenance?.date ?? "",
+                e.process?.equipment?.name ?? "",
+                e.process?.master_equipment?.serial ?? "",
                 e.procedure?.name ?? "",
                 e.option?.name ?? "",
                 e.option?.replace ? "True": "False",
@@ -190,22 +190,22 @@
                 var inDay = true;
 
                 if (startDate && endDate) {
-                    var date = moment(new Date(o.process.master_hse.timestamp), 'YYYY-MM-DD');
+                    var date = moment(new Date(o.process.maintenance.date), 'YYYY-MM-DD');
                     inDay = date.isBetween(startDate, endDate);
                 }
 
                 return inDay &&
-                    (o.process?.hse_id == hse || !hse) &&
-                    (o.process?.master_hse.station_id == station || !station);
+                    (o.process?.equipment_id == hse || !hse) &&
+                    (o.process?.maintenance.station_id == station || !station);
             });
 
             result.forEach(e => {
                 example.row.add([
-                    e.process?.master_hse?.station?.name ?? "",
-                    e.process?.master_hse?.created_by?.name ?? "",
-                    e.process?.master_hse?.timestamp ?? "",
-                    e.process?.hse?.name ?? "",
-                    e.process?.equipment?.serial ?? "",
+                    e.process?.maintenance?.station?.name ?? "",
+                    e.process?.maintenance?.created_by?.name ?? "",
+                    e.process?.maintenance?.date ?? "",
+                    e.process?.equipment?.name ?? "",
+                    e.process?.master_equipment?.serial ?? "",
                     e.procedure?.name ?? "",
                     e.option?.name ?? "",
                     e.option?.replace ? "True": "False",

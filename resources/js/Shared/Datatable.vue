@@ -11,7 +11,6 @@
 </template>
 
 <script>
-window.Popper = require("popper.js").default;
 var $ = (window.$ = window.jQuery = require("jquery"));
 window.JSZip = require("jszip");
 window.pdfMake = require("pdfmake/build/pdfmake");

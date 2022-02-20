@@ -4,10 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\HseController;
-use App\Http\Controllers\PmController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BreakdownController;
 use App\Http\Controllers\ReportController;
@@ -54,8 +50,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('users', UsersController::class);
     Route::resource('users2', UserController::class);
     
-    // Route::resource('hse', HseController::class);
-    
     try {
         $categories = Category::all();
         foreach ($categories as $value) {
@@ -65,11 +59,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"])->parameters([$value->slug => 'maintenance']);
         }
     } catch (\Throwable $th) {
-        throw $th;
     }
-    Route::resource('pm', PmController::class);
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::resource('/breakdown', BreakdownController::class);
+    Route::resource('breakdown', BreakdownController::class);
     Route::resource('/link', LinkController::class);
     Route::resource('/Report', ReportController::class);
     
