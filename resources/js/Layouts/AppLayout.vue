@@ -351,7 +351,7 @@
             >
               Home
             </a>
-            <jet-responsive-nav-link
+            <!-- <jet-responsive-nav-link
               :href="route('pm.index')"
               :active="route().current('pm.index')"
             >
@@ -362,7 +362,7 @@
               :active="route().current('hse.index')"
             >
               HSE
-            </jet-responsive-nav-link>
+            </jet-responsive-nav-link> -->
           </div>
 
           <!-- Responsive Settings Options -->
@@ -565,21 +565,13 @@
                 </jet-responsive-nav-link>
 
                 <hr class="my-6 border-gray-200 dark:border-gray-600" />
-
                 <jet-responsive-nav-link
-                  :href="route('pm.index')"
-                  :active="route().current('pm.index')"
-                  as="url"
+                  v-for="category in $page.props.menu.categories"
+                  :key="category"
+                  :href="route('maintenance.' + category.slug + '.index')"
+                  :active="route().current('maintenance.' + category.slug + '.index')"
                 >
-                  PM
-                </jet-responsive-nav-link>
-
-                <jet-responsive-nav-link
-                  :href="route('hse.index')"
-                  :active="route().current('hse.index')"
-                  as="url"
-                >
-                  HSE
+                  {{category.name}}
                 </jet-responsive-nav-link>
               </div>
 

@@ -19,4 +19,9 @@ class Option extends Model
     {
         $this->{'name_' . app()->getlocale()} = $value;
     }
+
+    public function scopeReplaces($query)
+    {
+        return $query->where('replace', 1);
+    }
 }

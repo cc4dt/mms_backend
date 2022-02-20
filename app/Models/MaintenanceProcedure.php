@@ -68,6 +68,16 @@ class MaintenanceProcedure extends Model
         return $this->belongsToMany(Option::class, 'option_procedure', 'procedure_id', 'option_id');
     }
 
+    public function equipment(): BelongsToMany
+    {
+        return $this->belongsToMany(Equipment::class, 'equipment_procedure', 'procedure_id', 'equipment_id');
+    }
+
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_procedure', 'procedure_id', 'category_id');
+    }
+
     public function getPriceAttribute($value)
     {
         return $this->spare_part->price ?? 0;

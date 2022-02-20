@@ -1,7 +1,9 @@
 <template>
   <app-layout title="HSE">
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">HSE Edit</h2>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        HSE Edit
+      </h2>
     </template>
     <div class="m-0 sm:m-10">
       <div class="mt-5 md:mt-0">
@@ -558,65 +560,66 @@ export default defineComponent({
       station: null,
       date: null,
       processes: [],
-      _method: "PUT"
+      _method: "PUT",
     });
 
     function submit(event) {
       if (event.submitter.id == "add") this.addProcesses();
-      else 
-            Inertia.put(route('hse.update', {'id': this.hse.id}), form, {
-                // forceFormData: true,
-                onError: (errors) => {
-                  alert(errors.update)
-                  // window.Toast.error(errors.create)
-                }
-            });
-      // Inertia.put("/hse/" + this.hse.id, form, {
-      //   onError: (errors) => {
-      //     alert(errors.update)
-      //     // window.Toast.error(errors.create)
-      //   }
-      // });
-      
+      else {
+        Inertia.put(route("hse.update", { id: this.hse.id }), form, {
+          // forceFormData: true,
+          onError: (errors) => {
+            alert(errors.update);
+            // window.Toast.error(errors.create)
+          },
+        });
+      }
     }
 
     return { form, submit };
   },
 
   created() {
-    var processes = []
-    this.hse?.processes?.forEach(process => {
-      var hse = this.hses.find((e) => { return e.id == process.hse_id } )
-      if(hse) {
+    var processes = [];
+    this.hse?.processes?.forEach((process) => {
+      var hse = this.hses.find((e) => {
+        return e.id == process.hse_id;
+      });
+      if (hse) {
         var procedures = {};
 
         hse.procedures.forEach((element) => {
-          var detail = process.details.find((e) => { return e.procedure_id == element.id } )
+          var detail = process.details.find((e) => {
+            return e.procedure_id == element.id;
+          });
           procedures[element.id] = {
             id: detail?.id,
-            option: element.options.find((e) => { return e.id == detail?.option?.id } ),
+            option: element.options.find((e) => {
+              return e.id == detail?.option?.id;
+            }),
             spare: detail?.spare_part,
             val: detail?.value,
           };
         });
-        
+
         processes.push({
           id: process?.id,
           hse: hse,
           equipment: process?.equipment,
           description: process?.description,
-          procedures: procedures
+          procedures: procedures,
         });
       }
     });
     this.form.id = this.hse.id;
-    this.form.station = this.stations?.find((e) => { return e.id == this.hse?.station_id } )
-    this.form.date =  new Date(this.hse?.timestamp).toISOString().slice(0,10)
-    this.form.processes = processes
-    if(this.form.processes.length)
+    this.form.station = this.stations?.find((e) => {
+      return e.id == this.hse?.station_id;
+    });
+    this.form.date = new Date(this.hse?.timestamp).toISOString().slice(0, 10);
+    this.form.processes = processes;
+    if (this.form.processes.length)
       this.processIndex = this.form.processes.length - 1;
-    else 
-      this.addProcesses();
+    else this.addProcesses();
   },
 });
 </script>

@@ -142,14 +142,14 @@ class HseController extends Controller
                                         'value' => $value['val'],
                                     ]);
                                 } else {
-                                    throw new Exception("Error Processing Request", 1);
+                                    throw new Exception("Error Processing Request", 3);
                                 } 
                             }
                         } else {
-                            throw new Exception("Error Processing Request", 1);
+                            throw new Exception("Error Processing Request", 3);
                         }
                     } else {
-                        throw new Exception("Error Processing Request", 1);
+                        throw new Exception("Error Processing Request", 2);
                     }
                 }
             } else {
@@ -244,6 +244,7 @@ class HseController extends Controller
             if(!$id = $form['id'])
                 throw new Exception("Error Processing Request", 1);
             $masterHse = MasterHse::find($id);
+            $currentProcesses = [];
             $hse = $masterHse->update([
                 'station_id' => $form['station']['id'],
                 'timestamp' => $form['date'],
@@ -257,10 +258,12 @@ class HseController extends Controller
                             'equipment_id' => isset($processItem['equipment']) ? $processItem['equipment']['id'] : null,
                             'description' => $processItem['description'],
                         ];
-                        if($process = HseProcess::find($processItem['id']))
+                        if(isset($processItem['id']) && $process = HseProcess::find($processItem['id']))
                             $process->update($data);
                         else
                             $process = $masterHse->processes()->create($data);
+                        
+                        $currentProcesses[] = $process->id;
                         if($process) {
                             foreach ($processItem['procedures'] as $key => $value) {
                                 if($key && $value) {
@@ -285,6 +288,7 @@ class HseController extends Controller
                         throw new Exception("Error Processing Request", 2);
                     }
                 }
+                $masterHse->processes()->whereNotIn('id', $currentProcesses)->delete();
             } else {
                 throw new Exception("Error Processing Request", 1);
             }
@@ -292,7 +296,6 @@ class HseController extends Controller
             return Redirect::route('hse.show', [$id]);
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th);
             return redirect()->back()->withErrors([
                'update' => 'ups, there was an error'
             ]);

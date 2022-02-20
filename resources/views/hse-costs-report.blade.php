@@ -88,16 +88,16 @@
                             <tr>
                                 <th>Price</th>
                                 @foreach ($priceRow as $item)
-                                    <th>{{ $item }}</th>
+                                    <th>{{ number_format($item) }}</th>
                                 @endforeach
-                                <th>{{ array_sum($priceRow) }}</th>
+                                <th>{{ number_format(array_sum($priceRow)) }}</th>
                             </tr>
                             <tr>
                                 <th>Total</th>
                                 @foreach ($totalRow as $item)
-                                    <th>{{ $item }}</th>
+                                    <th>{{ number_format($item) }}</th>
                                 @endforeach
-                                <th>{{ array_sum($totalRow) }}</th>
+                                <th>{{ number_format(array_sum($totalRow)) }}</th>
                             </tr>
                         </tfoot>
                     </table>

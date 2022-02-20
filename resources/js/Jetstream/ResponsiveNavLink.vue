@@ -1,10 +1,10 @@
 <template>
     <div>
-        <button :class="classes" class="w-full text-start" v-if="as == 'button'">
+        <button :class="classes" class="w-full text-start" v-if="`as` == 'button'">
             <slot></slot>
         </button>
 
-        <a class="flex space-s-3" :href="href" :class="classes" v-else-if="as == 'url'">
+        <a class="flex space-s-3" :href="href" :class="classes" v-else-if="`as` == 'url'">
             <slot />
         </a>
 

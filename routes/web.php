@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HseController;
 use App\Http\Controllers\PmController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BreakdownController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ajax_data\FetchController;
 
 use Illuminate\Support\Collection;
@@ -19,6 +21,7 @@ use App\Models\Ticket;
 use App\Models\Part;
 use App\Models\MaintenanceProcess;
 use App\Models\MasterEquipment;
+use App\Models\Category;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -48,22 +51,36 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Route::get('/dashboard', function () {
     //     return Inertia::render('Dashboard');
     // })->name('dashboard');
-    // Route::resource('users', UserController::class);
-    Route::resource('hse', HseController::class);
-    Route::resource('pm', PmController::class);
-    Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
-    Route::resource('/breakdown', BreakdownController::class)->middleware('auth');
-    Route::resource('/link', LinkController::class)->middleware('auth');
-    Route::resource('/Report', ReportController::class)->middleware('auth');
+    Route::resource('users', UsersController::class);
+    Route::resource('users2', UserController::class);
     
-    Route::get('/report/breakdown', [ReportController::class, 'breakdown'])->middleware('auth')->name('breakdown-report');
-    Route::get('/report/corrective', [ReportController::class, 'corrective'])->middleware('auth')->name('corrective-report');
-    Route::get('/report/maintenance', [ReportController::class, 'maintenance'])->middleware('auth')->name('maintenance-report');
-    Route::get('/report/pm', [ReportController::class, 'pm'])->middleware('auth')->name('pm-report');
-    Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->middleware('auth')->name('pm-fireexting-report');
-    Route::get('/report/hse', [ReportController::class, 'hse'])->middleware('auth')->name('hse-report');
-    Route::get('/report/hse-costs', [ReportController::class, 'hse_costs'])->middleware('auth')->name('hse-costs-report');
-    Route::get('/report/hse-procedures', [ReportController::class, 'hse_procedures'])->middleware('auth')->name('hse-procedures-report');
+    // Route::resource('hse', HseController::class);
+    
+    try {
+        $categories = Category::all();
+        foreach ($categories as $value) {
+            Route::get('maintenance/' . $value->slug . '/datatables', [
+                    MaintenanceController::class, 'datatables',
+                ])->name('maintenance.' . $value->slug . '.datatables');
+            Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"])->parameters([$value->slug => 'maintenance']);
+        }
+    } catch (\Throwable $th) {
+        throw $th;
+    }
+    Route::resource('pm', PmController::class);
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::resource('/breakdown', BreakdownController::class);
+    Route::resource('/link', LinkController::class);
+    Route::resource('/Report', ReportController::class);
+    
+    Route::get('/report/breakdown', [ReportController::class, 'breakdown'])->name('breakdown-report');
+    Route::get('/report/corrective', [ReportController::class, 'corrective'])->name('corrective-report');
+    Route::get('/report/maintenance', [ReportController::class, 'maintenance'])->name('maintenance-report');
+    Route::get('/report/pm', [ReportController::class, 'pm'])->name('pm-report');
+    Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->name('pm-fireexting-report');
+    Route::get('/report/hse', [ReportController::class, 'hse'])->name('hse-report');
+    Route::get('/report/hse-costs', [ReportController::class, 'hse_costs'])->name('hse-costs-report');
+    Route::get('/report/hse-procedures', [ReportController::class, 'hse_procedures'])->name('hse-procedures-report');
     Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
     Route::get('/app', function () {
         return Inertia::render('App/Index', [

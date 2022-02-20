@@ -482,16 +482,15 @@ class ReportController extends Controller
         }
 
         $replacedHse = HseDetail::whereHas('option',  function ($query) {
-            $query->where('replace', true);
-        })
-        ->whereHas('procedure',  function ($query) {
             $query->replaces();
         });
         
+        // dump($replacedHse->count());
+
         foreach (Hse::all() as $hse) {
             $procedures = [];
             $procedure_count = 0;
-            foreach ($hse->procedures as $procedure) {
+            foreach ($hse->procedures()->replaces()->get() as $procedure) {
                 $spares = [];
                 $spares_count = 1;
                 $sub_price = 0;
@@ -499,7 +498,13 @@ class ReportController extends Controller
                 if($procedure->spare_part && $procedure->spare_part->sub_parts->count() > 0) {
                     foreach ($procedure->spare_part->sub_parts as $spare) {
                         
-                        $total_items = HseDetail::where('spare_part_id', $spare->id)->get();
+                        $total_items = (clone $replacedHse)->where('spare_part_id', $spare->id)->get();
+                        
+                        // dump([
+                        //     "spare" => $spare->name,
+                        //     "count" => $total_items->count(),
+                        //     "query" => $total_items->toSql(),
+                        // ]);
                         $subSum = 0;
                         foreach ($rows as $key => $row) {
                             $items = $total_items->filter(function($item) use($row) {
@@ -519,7 +524,7 @@ class ReportController extends Controller
                         $totalRow[] = $subSum * $spare->price;
                     }
                 } else {
-                    $total_items = HseDetail::where('procedure_id', $procedure->id)->get();
+                    $total_items = ((clone $replacedHse))->where('procedure_id', $procedure->id)->get();
                     $subSum = 0;
                     foreach ($rows as $key => $row) {
                         $items = $total_items->filter(function($item) use($row) {
@@ -549,6 +554,9 @@ class ReportController extends Controller
             ];
         }
 
+        foreach ($rows as $key => $row) {
+            $rows[$key]->total = number_format($rows[$key]->total);
+        }
         $arr = [
             'columns' => (object) $columns,
             'rows' => $rows,

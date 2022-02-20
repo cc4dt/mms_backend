@@ -566,19 +566,21 @@
                                         <p>Breakdowns</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('hse.index') }}" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>HSE</p>
-                                    </a>
-                                </li>
-
+                                @foreach (\App\Models\Category::all() as $item)
+                                    <li class="nav-item">
+                                        <a href="{{ route('maintenance.' . $item->slug . '.index') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>{{$item->name}}</p>
+                                        </a>
+                                    </li>
+                                @endforeach
+{{-- 
                                 <li class="nav-item">
                                     <a href="{{ route('pm.index') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>PM</p>
                                     </a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </li>
 

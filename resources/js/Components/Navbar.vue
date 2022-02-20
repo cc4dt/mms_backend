@@ -47,7 +47,7 @@
         >
         
         <div class="flex items-center justify-center space-x-4 sm:space-x-6">
-            <jet-nav-link
+            <!-- <jet-nav-link
                 :href="route('pm.index')"
                 :active="route().current('pm.index')"
             >
@@ -58,7 +58,7 @@
                 :active="route().current('hse.index')"
             >
                 HSE
-            </jet-nav-link>
+            </jet-nav-link> -->
         </div>
       </div>
     </nav>

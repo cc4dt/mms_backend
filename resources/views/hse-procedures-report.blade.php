@@ -110,6 +110,9 @@
                 title: "Option"
             },
             {
+                title: "Replaced"
+            },
+            {
                 title: "Sparepart"
             },
             {
@@ -127,6 +130,7 @@
                 e.process?.equipment?.serial ?? "",
                 e.procedure?.name ?? "",
                 e.option?.name ?? "",
+                e.option?.replace ? "True": "False",
                 e.spare_part?.name ?? "",
                 e.value ?? "",
                 // new Date(e.timestamp).toLocaleString(),  
@@ -204,6 +208,7 @@
                     e.process?.equipment?.serial ?? "",
                     e.procedure?.name ?? "",
                     e.option?.name ?? "",
+                    e.option?.replace ? "True": "False",
                     e.spare_part?.name ?? "",
                     e.value ?? "",
                     // new Date(e.timestamp).toLocaleString(),
