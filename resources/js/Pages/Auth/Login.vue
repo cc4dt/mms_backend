@@ -91,7 +91,6 @@
                     }))
                     .post(this.route('login'), {
                         onError: () => this.form.reset('password'),
-                        onFinish: () => window.location.href = '/',
                     })
             }
         }

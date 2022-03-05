@@ -10,7 +10,6 @@ class Station extends Model
 {
 
     protected $appends = [
-        'name',
         'topCount',
     ];
 
@@ -39,15 +38,5 @@ class Station extends Model
     public function hses(): HasMany
     {
         return $this->hasMany(MasterHse::class);
-    }
-
-    public function getNameAttribute($value)
-    {
-        return $this->{'name_' . app()->getlocale()};
-    }
-
-    public function setNameAttribute($value)
-    {
-        $this->{'name_' . app()->getlocale()} = $value;
     }
 }

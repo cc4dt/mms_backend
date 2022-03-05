@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\BreakdownController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LinkController;
@@ -44,23 +46,39 @@ Route::get('/test', function () {
     return Inertia::render('Test');
 })->name('test');
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    // Route::get('/dashboard', function () {
-    //     return Inertia::render('Dashboard');
-    // })->name('dashboard');
-    Route::resource('users', UsersController::class);
-    Route::resource('users2', UserController::class);
+    
+    Route::get('/', DashboardController::class)->name('dashboard');
+
+    // Route::resource('users', UserController::class);
     
     try {
         $categories = Category::all();
         foreach ($categories as $value) {
+            Route::get('maintenance/' . $value->slug . '/export', [
+                MaintenanceController::class, 'export'
+            ])->name('maintenance.' . $value->slug . '.export.index');
+            Route::get('maintenance/' . $value->slug . '/report-costs', [
+                MaintenanceController::class, 'report_costs',
+            ])->name('maintenance.' . $value->slug . '.report.costs');
+
+            Route::get('maintenance/' . $value->slug . '/report-details', [
+                MaintenanceController::class, 'report_details',
+            ])->name('maintenance.' . $value->slug . '.report.details');
+
+            
+            Route::get('report/' . $value->slug . '/maintenance', [
+                MaintenanceController::class, 'report',
+            ])->name('maintenance.' . $value->slug . '.report');
+
             Route::get('maintenance/' . $value->slug . '/datatables', [
-                    MaintenanceController::class, 'datatables',
-                ])->name('maintenance.' . $value->slug . '.datatables');
+                MaintenanceController::class, 'datatables',
+            ])->name('maintenance.' . $value->slug . '.datatables');
+
             Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"])->parameters([$value->slug => 'maintenance']);
         }
     } catch (\Throwable $th) {
     }
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::resource('breakdown', BreakdownController::class);
     Route::resource('/link', LinkController::class);
     Route::resource('/Report', ReportController::class);

@@ -9,11 +9,16 @@ use App\Models\Equipment;
 use App\Models\Station;
 use App\Models\Process;
 use App\Models\Detail;
+use App\Models\User;
+
+use App\Exports\MaintenancesExport;
 
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
+use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 use Redirect;
 use Exception;
@@ -56,21 +61,6 @@ class MaintenanceController extends Controller
      */
     public function __construct(Request $request) {
         $this->slug = $this->getSlug($request);
-        
-        $this->datatableHeaders = [
-            'Station',
-            'Created By',
-            'Date',
-            '',
-        ];
-
-        $this->datatableColumns = [
-            ['title' => 'Station', 'data' => 'station.name'],
-            ['title' => 'Created By', 'data' => 'created_by'],
-            ['title' => 'Date', 'data' => 'date'],
-        ];
-
-        $this->datatableUrl = route('maintenance.' . $this->slug . '.datatables');
 
         $this->createRoute = 'maintenance.' . $this->slug . '.create';
         $this->viewRoute = 'maintenance.' . $this->slug . '.show';
@@ -78,25 +68,12 @@ class MaintenanceController extends Controller
         $this->deleteRoute = 'maintenance.' . $this->slug . '.destroy';
     }
     
-    public function datatables() {
-        
+    public function export() 
+    {
         $category = Category::where('slug', '=', $this->slug)->first();
-        
-        $maintenances = $category->maintenances();
-        return Datatables::of($maintenances)
-            ->addColumn('station.name', fn($maintenance) => $maintenance->station->name)
-            ->addColumn('created_by', fn($maintenance) => $maintenance->created_by->name)
-            // ->addColumn('action', function ($maintenance) use($category) {
-            //     $editRoute = route('maintenance.' . $category->slug . '.edit', $maintenance->id);                
-            //     $deleteRoute = route('maintenance.' . $category->slug . '.destroy', $maintenance->id);
-
-            //     return '<a href="'. $editRoute . '" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>';
-            // })
-            // ->editColumn('id', 'ID: {{$id}}')
-            // ->removeColumn('password')
-            ->make(true);
+        return Excel::download(new MaintenancesExport($this->slug), $this->slug . '.xlsx');
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -104,15 +81,56 @@ class MaintenanceController extends Controller
      */
     public function index(Request $request)
     {
-        return Inertia::render('Maintenance/Index', [
-            'datatableUrl' => $this->datatableUrl,
-            'createRoute' => $this->createRoute,
-            'viewRoute' => $this->viewRoute,
-            'editRoute' => $this->editRoute,
-            'deleteRoute' => $this->deleteRoute,
-            'datatableColumns' => $this->datatableColumns,
-            'datatableHeaders' => $this->datatableHeaders,
-        ]);
+        $category = Category::where('slug', '=', $this->slug)->first();
+        $maintenances = $category->maintenances()->with('station', 'created_by');
+
+        return Inertia::render('Maintenance/Index')->table($maintenances, function ($table) {
+            $table->transform(function($item) {
+                return $item;
+            });
+            
+            $table->queryBuilder
+            ->join('stations as station', 'station.id', 'maintenances.station_id')
+            ->join('users as created_by', 'created_by.id', 'maintenances.created_by_id')
+            ->select('maintenances.*', 'station.name as station_name', 'created_by.name as created_by_name');
+
+            $table->defaultSort('date', 'desc');
+            $table->createRoute($this->createRoute);
+            $table->deleteRoute($this->deleteRoute);
+            $table->editRoute($this->editRoute);
+            $table->showRoute($this->viewRoute);
+            $table->addColumns([
+                'station.name' => [
+                    'title' => 'Station',
+                    'sortable' => true,
+                    'searchable' => true,
+                ],
+                'created_by.name' => [
+                    'title' => 'Created By',
+                    'sortable' => true,
+                    'searchable' => true,
+                ],
+                'date' => [
+                    'title' => 'Date',
+                ],
+            ]);
+            $table->addFilters([
+                'station_id' => [
+                    'title' => 'Station',
+                    'type' => 'multiple_select',
+                    'data' => Station::all()->pluck('name', 'id')->all(),
+                ],
+                'created_by_id' => [
+                    'title' => 'Created By',
+                    'type' => 'multiple_select',
+                    'data' => User::all()->pluck('name', 'id')->all(),
+                ],
+                'createdBetween' => [
+                    'title' => 'Created Between',
+                    'type' => 'date_between',
+                ],
+            ]);
+        });
     }
 
     /**
@@ -345,6 +363,32 @@ class MaintenanceController extends Controller
             $request->session()->flash('result', $catName . ' Deleted Successfully');
             return back();
         }
+    }
+    
+    public function report()
+    {
+        $cat = Category::where('slug', $this->slug)->first();
+        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['hse'] = $cat->equipment;
+        $arr['title'] = $cat->name;
+        $arr['details'] = Detail::whereHas('process', function($q) {
+            $q->whereHas('maintenance', function($q) {
+                $q->whereHas('category', function($q) {
+                    $q->where('slug', $this->slug);
+                });
+            });
+        })->get()->loadMissing(
+            'procedure',
+            'spare_part',
+            'option',
+            'process',
+            'process.equipment',
+            'process.master_equipment',
+            'process.maintenance',
+            'process.maintenance.station',
+            'process.maintenance.created_by');
+
+        return view('hse-procedures-report')->with($arr);
     }
     
     public function getSlug(Request $request)

@@ -634,18 +634,27 @@
                                             <p>HSE</p>
                                         </a>
                                     </li> --}}
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a href="{{ route('hse-procedures-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>HSE</p>
                                         </a>
-                                    </li>
+                                    </li> -->
                                     <li class="nav-item">
                                         <a href="{{ route('hse-costs-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>HSE Costs</p>
                                         </a>
                                     </li>
+                                    
+                                @foreach (\App\Models\Category::all() as $item)
+                                    <li class="nav-item">
+                                        <a href="{{ route('maintenance.' . $item->slug . '.report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>{{$item->name}}</p>
+                                        </a>
+                                    </li>
+                                @endforeach
                                     
                         @endif
                     </ul>

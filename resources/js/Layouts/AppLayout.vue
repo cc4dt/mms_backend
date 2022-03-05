@@ -37,7 +37,7 @@
                 w-full
               "
             >
-              <!-- <a
+            <a
                 :href="route('home')"
                 class="
                   inline-flex
@@ -56,6 +56,7 @@
               >
                 Home
               </a>
+              <!--
               <jet-nav-link
                 :href="route('pm.index')"
                 :active="route().current('pm.index')"
@@ -543,9 +544,8 @@
                   </a> -->
 
                 <jet-responsive-nav-link
-                  :href="route('home')"
-                  :active="route().current('home')"
-                  as="url"
+                  :href="route('dashboard')"
+                  :active="route().current('dashboard')"
                 >
                   <svg
                     class="w-5 h-5"

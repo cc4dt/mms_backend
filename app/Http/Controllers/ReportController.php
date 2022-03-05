@@ -494,7 +494,6 @@ class ReportController extends Controller
                 $spares = [];
                 $spares_count = 1;
                 $sub_price = 0;
-
                 if($procedure->spare_part && $procedure->spare_part->sub_parts->count() > 0) {
                     foreach ($procedure->spare_part->sub_parts as $spare) {
                         

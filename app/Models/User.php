@@ -14,7 +14,7 @@ use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon;
+use Carbon\Carbon;
 
 class User extends \TCG\Voyager\Models\User
 {

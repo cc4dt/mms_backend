@@ -51,20 +51,25 @@
                                 @endforeach
                                 <th rowspan="3">Total</th>
                             </tr>
-                            <tr>
-                                @foreach ($columns->procedures as $item)
-                                    @if ($item->count > 1)
-                                        <th colspan="{{ $item->count }}">{{ $item->name }}</th>
-                                    @else
-                                        <th rowspan="2">{{ $item->name }}</th>
-                                    @endif
-                                @endforeach
-                            </tr>
-                            <tr>
-                                @foreach ($columns->spares as $item)
-                                    <th>{{ $item->name }}</th>
-                                @endforeach
-                            </tr>
+                            
+                            @if ($columns->procedures)
+                                <tr>
+                                    @foreach ($columns->procedures as $item)
+                                        @if ($item->count > 1)
+                                            <th colspan="{{ $item->count }}">{{ $item->name }}</th>
+                                        @else
+                                            <th rowspan="2">{{ $item->name }}</th>
+                                        @endif
+                                    @endforeach
+                                </tr>
+                            @endif
+                            @if ($columns->spares)
+                                <tr>
+                                    @foreach ($columns->spares as $item)
+                                        <th>{{ $item->name }}</th>
+                                    @endforeach
+                                </tr>
+                            @endif
                         </thead>
                         <tbody>
                             @foreach ($rows as $row)

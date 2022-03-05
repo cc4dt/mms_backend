@@ -222,17 +222,17 @@
         });
 
         function filterReport() {
-            console.log(fromDate);
-            console.log(toDate);
             example.rows().remove().draw(false);
             var startDate = fromDate ? moment(new Date(fromDate), 'YYYY-MM-DD') : null; 
             var endDate = toDate ? moment(new Date(toDate), 'YYYY-MM-DD') : moment();
             
+            console.log(startDate);
+            console.log(endDate);
             let result = tickets.filter((o) => {
                 var inDay = true;
                 if(startDate && endDate) {
                     var date = moment(new Date(o.openline.timestamp), 'YYYY-MM-DD');
-                    inDay = date.isBetween(startDate, endDate.add(1, 'd'));
+                    inDay = date.isBetween(startDate, endDate);
                 }
 
                 return inDay &&

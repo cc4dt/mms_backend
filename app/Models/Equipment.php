@@ -27,10 +27,10 @@ class Equipment extends Model
         return $this->hasMany(Breakdown::class);
     }
 
-    // public function equipment(): HasMany
-    // {
-    //     return $this->hasMany(MasterEquipment::class, 'equipment_id');
-    // }
+    public function equipment(): HasMany
+    {
+        return $this->hasMany(MasterEquipment::class, 'equipment_id');
+    }
 
     public function attributes(): BelongsToMany
     {

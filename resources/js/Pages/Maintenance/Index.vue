@@ -6,7 +6,7 @@
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <Link
+        <!-- <Link
           :href="route(createRoute)"
           class="
             mb-4
@@ -32,12 +32,13 @@
           "
         >
           Create New
-        </Link>
+        </Link> -->
         <div class="p-6 sm:px-6 bg-white border-b border-gray-200">
-          <div class="datatable">
+          <datatable :meta="datatableMeta" :data="paginationData"></datatable>
+          <!-- <div class="datatable">
             <table class="min-w-full border border-gray-200" id="dt-users">
             </table>
-          </div>
+          </div> -->
         </div>
       </div>
       <!-- </div> -->
@@ -49,13 +50,24 @@
 import { defineComponent } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Link } from "@inertiajs/inertia-vue3";
-import Datatable from "@/Shared/Table.vue";
+// import Datatable from "@/Shared/Table.vue";
+import Datatable from "@/Components/Datatable/Index";
 
 export default defineComponent({
   mixins: [Datatable],
   components: {
     AppLayout,
     Link,
+    Datatable,
+  },
+  props: {
+    paginationData: Object,
+    datatableMeta: {
+      options: Object,
+      buttons: Object,
+      filters: Object,
+      columns: Object,
+    },
   },
 });
 </script>

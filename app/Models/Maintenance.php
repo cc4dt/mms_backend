@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Carbon\Carbon;
 class Maintenance extends Model
 {
     use HasFactory;
@@ -40,5 +41,11 @@ class Maintenance extends Model
     public function processes()
     {
         return $this->hasMany(Process::class);
+    }
+
+    public function scopeCreatedBetween($query, $from, $to = null)
+    {
+        if(!$to) $to = Carbon::now()->toString();
+        return $query->where('date', '>=', Carbon::parse($from))->where('date', '<=', Carbon::parse($to));
     }
 }
