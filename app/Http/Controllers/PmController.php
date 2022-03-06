@@ -91,7 +91,7 @@ class PmController extends Controller
                             'pm_procedures.input_type',
                             'pm_procedures.spare_part.sub_parts',
                             'pm_procedures.options');
-        $stations = Station::all('id', 'name_ar', 'name_en')
+        $stations = Station::all('id', 'name')
                 ->loadMissing('equipment');
         return Inertia::render('Pm/Create', [
             'stations' => $stations,

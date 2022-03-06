@@ -84,7 +84,9 @@ class MaintenanceController extends Controller
         $category = Category::where('slug', '=', $this->slug)->first();
         $maintenances = $category->maintenances()->with('station', 'created_by');
 
-        return Inertia::render('Maintenance/Index')->table($maintenances, function ($table) {
+        return Inertia::render('Maintenance/Index', [
+            "category" => $category,
+        ])->table($maintenances, function ($table) {
             $table->transform(function($item) {
                 return $item;
             });
@@ -142,7 +144,7 @@ class MaintenanceController extends Controller
     {
         
 
-        $stations = Station::all('id', 'name_ar', 'name_en')
+        $stations = Station::all('id', 'name')
                 ->loadMissing('equipment');
 
         $category = Category::where('slug', '=', $this->slug)->first()->loadMissing(
@@ -254,7 +256,7 @@ class MaintenanceController extends Controller
                 'url' => 'ups, there was an error'
             ]);
 
-        $stations = Station::all('id', 'name_ar', 'name_en')
+        $stations = Station::all('id', 'name')
                 ->loadMissing('equipment');
 
         $category = Category::where('slug', '=', $this->slug)->first()->loadMissing(
@@ -368,7 +370,7 @@ class MaintenanceController extends Controller
     public function report()
     {
         $cat = Category::where('slug', $this->slug)->first();
-        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['stations'] = Station::all('id', 'name');
         $arr['hse'] = $cat->equipment;
         $arr['title'] = $cat->name;
         $arr['details'] = Detail::whereHas('process', function($q) {

@@ -112,9 +112,13 @@ export default {
 
   computed: {
     hasEnabledFilter() {
+      var filterkeys = this.filters.map((i) => i.key)
       return find(
         this.query.filter,
-        (filter, key) => filter
+        (filter, key) => {
+          console.log(filter, filter && filterkeys.includes(key))
+          return filter && (typeof filter !== 'object' || Object.keys(filter).length) && filterkeys.includes(key)
+        }
       )
         ? true
         : false;
@@ -122,9 +126,9 @@ export default {
   },
   methods: {
     onChangeBetween(key, value, side = 0) {
-      if (!this.query.filter[key]) this.query.filter[key] = [];
+      if (!this.query.filter[key]) this.query.filter[key] = {};
       this.query.filter[key][side] = value;
-      if(side==0 && !value) this.query.filter[key] = []
+      if(side==0 && !value) this.query.filter[key] = {}
     },
   },
 };

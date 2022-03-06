@@ -21,6 +21,17 @@ class DashboardController extends Controller
     public function __invoke()
     {
         return Inertia::render('Dashboard', [
+            "slaCounts" => [
+                [
+                    'key' => "IN SERVICE",
+                    'data' => Ticket::inSla()->count()
+                ],
+                [
+                    'key' => "OUT SERVICE",
+                    'data' => Ticket::outSla()->count()
+
+                ]
+            ],
             "stationBreakdownCounts" => Station::all()->transform(function ($item) {
                 return [
                     'key' => $item->name,
@@ -36,22 +47,38 @@ class DashboardController extends Controller
                         'data' => $item->tickets()->count()
                     ];
                 }),
-                "creatorCounts" => User::all()
-                    ->transform(function ($item) {
-                        return [
-                            'key' => $item->name,
-                            'data' => Ticket::where('created_by_id', $item->id)->count()
-                        ];
-                    }),
-                    "colserCounts" => User::all()
-                        ->transform(function ($item) {
-                            return [
-                                'key' => $item->name,
-                                'data' => Ticket::whereHas('closeline', function($q) use($item) {
-                                    $q->where('created_by_id', $item->id);
-                                })->count()
-                            ];
-                        }),
+            "creatorCounts" => User::all()
+                ->transform(function ($item) {
+                    return [
+                        'key' => $item->name,
+                        'data' => Ticket::where('created_by_id', $item->id)->count()
+                    ];
+                }),
+            "creatorAfter4pmCounts" => User::all()
+                ->transform(function ($item) {
+                    return [
+                        'key' => $item->name,
+                        'data' => Ticket::whereTime('created_at', '>=', '16:00:00')->where('created_by_id', $item->id)->count()
+                    ];
+                }),
+            "colserAfter4pmCounts" => User::all()
+                ->transform(function ($item) {
+                    return [
+                        'key' => $item->name,
+                        'data' => Ticket::whereHas('closeline', function($q) use($item) {
+                            $q->where('created_by_id', $item->id);
+                        })->whereTime('created_at', '>=', '16:00:00')->count()
+                    ];
+                }),
+            "colserCounts" => User::all()
+                ->transform(function ($item) {
+                    return [
+                        'key' => $item->name,
+                        'data' => Ticket::whereHas('closeline', function($q) use($item) {
+                            $q->where('created_by_id', $item->id);
+                        })->count()
+                    ];
+                }),
             "total" => [
                 "tickets" => Ticket::count(),
             ],

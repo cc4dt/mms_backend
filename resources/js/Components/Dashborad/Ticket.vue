@@ -18,10 +18,10 @@
         of {{ total }}
         </p>
     </div>
-    <div v-if="percent" class="relative w-28 h-2 bg-gray-200 rounded">
+    <div class="relative w-28 h-2 bg-gray-200 rounded">
         <div
         class="absolute top-0 h-2 left-0 rounded bg-green-500"
-        :style="'width: ' + percent + '%'"
+        :style="'width: ' + (percent ?? 0) + '%'"
         ></div>
     </div>
     </div>

@@ -404,6 +404,8 @@ export default {
         to: this.data?.to,
       };
 
+      if(this.pagination.pages > this.query.page) this.query.page = 1
+
       this.rows = this.data?.data;
     },
     onSort(key) {

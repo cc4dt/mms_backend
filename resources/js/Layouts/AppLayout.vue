@@ -1,14 +1,15 @@
 <template>
-  <div>
+  <div :class="isDark ? 'dark' : ''">
     <Head :title="title" />
 
     <jet-banner />
 
-    <div class="flex pt-16 w-screen h-screen bg-gray-100">
+    <div class="flex pt-16 w-screen h-screen bg-gray-100 dark:bg-gray-900 dark:text-slate-400">
       <nav
         class="
-          bg-white
+          bg-white dark:bg-gray-800 
           border-b border-gray-100
+          dark:shadow-gray-600
           fixed
           top-0
           inset-x-0
@@ -20,7 +21,7 @@
         <div class="flex h-16 w-full">
           <!-- Logo -->
           <div class="flex-shrink-0 flex items-center text-center sm:w-64 px-3">
-            <Link :href="route('home')" class="w-full">
+            <Link :href="route('dashboard')" class="w-full">
               <jet-application-mark class="block h-9 w-auto" />
             </Link>
           </div>
@@ -71,7 +72,8 @@
               </jet-nav-link> -->
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
+            <div class="hidden sm:flex sm:items-center sm:ml-6 space-x-2">
+              <DarkModeButton :toggleDarkMode="toggleDarkMode" :isDark="isDark"/>
               <div class="ml-3 relative">
                 <!-- Teams Dropdown -->
                 <jet-dropdown
@@ -496,10 +498,9 @@
             flex flex-col
             z-40
             w-64
-            shadow
-            min-h-full
-            bg-white
-            dark:bg-gray-800 dark:shadow-gray-600
+            bg-white dark:bg-gray-900
+            shadow dark:shadow-white
+            min-h-full 
             overflow-x-hidden overflow-y-auto
           "
         >
@@ -569,7 +570,7 @@
                   v-for="category in $page.props.menu.categories"
                   :key="category"
                   :href="route('maintenance.' + category.slug + '.index')"
-                  :active="route().current('maintenance.' + category.slug + '.index')"
+                  :active="route().current('maintenance.' + category.slug + '.*')"
                 >
                   {{category.name}}
                 </jet-responsive-nav-link>
@@ -729,8 +730,8 @@
       <!-- Page -->
       <div class="flex flex-col w-full max-h-full overflow-auto">
         <!-- Page Heading -->
-        <header class="bg-white shadow" v-if="$slots.header">
-          <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <header class="bg-white dark:bg-gray-800  dark:text-slate-400 shadow" v-if="$slots.header">
+          <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-slate-400 text-white">
             <slot name="header"></slot>
           </div>
         </header>
@@ -753,7 +754,8 @@ import JetDropdownLink from "@/Jetstream/DropdownLink.vue";
 import JetNavLink from "@/Jetstream/NavLink.vue";
 import JetResponsiveNavLink from "@/Jetstream/ResponsiveNavLink.vue";
 import { Head, Link } from "@inertiajs/inertia-vue3";
-import Sidenav from "@/Components/Sidenav.vue";
+import DarkModeButton from "@/Components/DarkModeButton.vue";
+
 
 export default defineComponent({
   props: {
@@ -769,16 +771,34 @@ export default defineComponent({
     JetNavLink,
     JetResponsiveNavLink,
     Link,
-    Sidenav,
+    DarkModeButton,
   },
 
   data() {
+    let isDark = localStorage.getItem("color-theme") == "true";
     return {
+      isDark,
       showingNavigationDropdown: false,
     };
   },
 
   methods: {
+    toggleDarkMode() {
+      this.isDark = !this.isDark;
+      console.log(this.isDark);
+      localStorage.setItem("color-theme", this.isDark);
+
+      // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+      if (
+        localStorage.getItem("color-theme") === "dark" ||
+        (!("color-theme" in localStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    },
     switchToTeam(team) {
       this.$inertia.put(
         route("current-team.update"),

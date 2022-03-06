@@ -83,12 +83,7 @@ class Ticket extends Model
     }
 
     static public function inSLA() {
-        return Ticket::whereHas('type',  function($q) {
-            $q->where("key", "breakdown");
-         })
-         ->whereHas('status',  function($q) {
-            $q->where("key", "closed");
-         })
+        return Ticket::onStatus('closed')
          ->where(function($qp) {
             $qp->where(function($q) {
                $q->whereHas('priority',  function($q) {
@@ -113,12 +108,7 @@ class Ticket extends Model
     }
 
     static public function outSLA() {
-        return Ticket::whereHas('type',  function($q) {
-            $q->where("key", "breakdown");
-         })
-         ->whereHas('status',  function($q) {
-            $q->where("key", "closed");
-         })
+        return Ticket::onStatus('closed')
          ->where(function($qp) {
             $qp->where(function($q) {
                $q->whereHas('priority',  function($q) {

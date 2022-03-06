@@ -40,7 +40,7 @@ class HomeController extends Controller
             ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
             ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
             ->select( 'tickets.*', 
-                'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+                'stations.name as station_en', 'stations.name as station_ar', 
                 'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
                 'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
                       ->orderBy( 'tickets.id','DESC')
@@ -53,7 +53,7 @@ class HomeController extends Controller
         ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
         ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
         ->select( 'tickets.*', 
-            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'stations.name as station_en', 'stations.name as station_ar', 
             'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
             'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
         ->where('tickets.status_id',1)

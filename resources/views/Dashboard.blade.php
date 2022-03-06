@@ -1185,7 +1185,7 @@
        
 @if(isset($equipmentdata))
  @foreach($equipmentdata as $data)
-'{{$data->name_en ?? ''}}',
+'{{$data->name ?? ''}}',
  @endforeach
  @endif
 

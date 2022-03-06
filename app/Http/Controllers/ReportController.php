@@ -46,7 +46,7 @@ class ReportController extends Controller
         ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
         ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
                ->select( 'tickets.*', 
-            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'stations.name as station_en', 'stations.name as station_ar', 
             'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
               ->orderBy( 'tickets.id','DESC')
         ->get();
@@ -140,7 +140,7 @@ class ReportController extends Controller
         ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
         ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
         ->select( 'tickets.*', 
-            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'stations.name as station_en', 'stations.name as station_ar', 
             'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
             'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
         ->where('tickets.created_by_id',Auth::user()->id)
@@ -153,7 +153,7 @@ class ReportController extends Controller
         ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
         ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
         ->select( 'tickets.*', 
-            'stations.name_en as station_en', 'stations.name_ar as station_ar', 
+            'stations.name as station_en', 'stations.name as station_ar', 
             'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
             'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
         ->where('tickets.id',$id)
@@ -277,7 +277,7 @@ class ReportController extends Controller
             "created_by",
             "type",
         );
-        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['stations'] = Station::all('id', 'name');
         $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
         $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
         $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
@@ -298,7 +298,7 @@ class ReportController extends Controller
             "created_by",
             "type",
         );
-        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['stations'] = Station::all('id', 'name');
         $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
         $arr['status'] = TicketStatus::all('id', 'name_ar', 'name_en');
         $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en', 'equipment_id');
@@ -421,7 +421,7 @@ class ReportController extends Controller
     
     public function hse()
     {
-        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['stations'] = Station::all('id', 'name');
         $arr['hse'] = Category::where('slug', 'hse')->get()->equipment;
 
         $arr['details'] = Detail::all()->loadMissing(
@@ -443,7 +443,7 @@ class ReportController extends Controller
 
     public function hse_procedures()
     {
-        $arr['stations'] = Station::all('id', 'name_ar', 'name_en');
+        $arr['stations'] = Station::all('id', 'name');
         $arr['hse'] = Category::where('slug', 'hse')->first()->equipment;
 
         $arr['details'] = Detail::all()->loadMissing(

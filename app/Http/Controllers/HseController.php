@@ -95,7 +95,7 @@ class HseController extends Controller
                             'procedures.input_type',
                             'procedures.spare_part.sub_parts',
                             'procedures.options');
-        $stations = Station::all('id', 'name_ar', 'name_en')
+        $stations = Station::all('id', 'name')
                 ->loadMissing('equipment');
         return Inertia::render('Hse/Create', [
             'stations' => $stations,
@@ -210,7 +210,7 @@ class HseController extends Controller
                             'procedures.spare_part.sub_parts',
                             'procedures.options');
 
-        $stations = Station::all('id', 'name_ar', 'name_en')
+        $stations = Station::all('id', 'name')
                 ->loadMissing('equipment');
                 
         $hse->loadMissing(
