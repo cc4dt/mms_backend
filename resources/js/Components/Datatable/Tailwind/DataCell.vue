@@ -22,7 +22,7 @@
           {{field ? new Date(field).toLocaleDateString("en-US"): ''}}
         </div>
         <div v-else-if="cell.type == 'datetime'">
-          {{field}}
+          {{field ? new Date(field).toLocaleString("en-US"): ''}}
         </div>
         <div v-else>
           {{field}}

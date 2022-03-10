@@ -10,16 +10,20 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BreakdownController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\TicketController;
+
 use App\Http\Controllers\ajax_data\FetchController;
 
 use Illuminate\Support\Collection;
 use App\Models\User;
-use App\Models\Ticket;
 use App\Models\Part;
 use App\Models\MaintenanceProcess;
 use App\Models\MasterEquipment;
 use App\Models\Category;
+use App\Models\TicketType;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -52,19 +56,31 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Route::resource('users', UserController::class);
     
     try {
+        $types = TicketType::all();
+        foreach ($types as $value) {
+            Route::get('ticket/' . $value->key . '/export', [
+                TicketController::class, 'export'
+            ])->name('ticket.' . $value->key . '.export.index');
+
+            Route::get('report/' . $value->key . '/ticket', [
+                TicketController::class, 'report',
+            ])->name('ticket.' . $value->key . '.report');
+
+            Route::resource('ticket/'.$value->key, TicketController::class, ["as" => "ticket"]);//->parameters([$value->slug => 'ticket']);
+        }
+    } catch (\Throwable $th) {
+    }
+    
+    try {
         $categories = Category::all();
         foreach ($categories as $value) {
             Route::get('maintenance/' . $value->slug . '/export', [
                 MaintenanceController::class, 'export'
             ])->name('maintenance.' . $value->slug . '.export.index');
+
             Route::get('maintenance/' . $value->slug . '/report-costs', [
                 MaintenanceController::class, 'report_costs',
             ])->name('maintenance.' . $value->slug . '.report.costs');
-
-            Route::get('maintenance/' . $value->slug . '/report-details', [
-                MaintenanceController::class, 'report_details',
-            ])->name('maintenance.' . $value->slug . '.report.details');
-
             
             Route::get('report/' . $value->slug . '/maintenance', [
                 MaintenanceController::class, 'report',
@@ -74,13 +90,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
                 MaintenanceController::class, 'datatables',
             ])->name('maintenance.' . $value->slug . '.datatables');
 
-            Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"])->parameters([$value->slug => 'maintenance']);
+            Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"]);//->parameters([$value->slug => 'maintenance']);
         }
     } catch (\Throwable $th) {
     }
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::resource('breakdown', BreakdownController::class);
-    Route::resource('/link', LinkController::class);
+    Route::resource('link', LinkController::class);
+    Route::resource('equipment', EquipmentController::class);
+    
     Route::resource('/Report', ReportController::class);
     
     Route::get('/report/breakdown', [ReportController::class, 'breakdown'])->name('breakdown-report');

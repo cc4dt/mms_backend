@@ -278,6 +278,12 @@ class DatatableBuilder
         return $this;
     }
     
+    public function actionButtons(bool $status): self
+    {
+        $this->options['action_buttons'] = $status;
+        return $this;
+    }
+    
     public function createRoute(String $var): self
     {
         $this->options['create_route'] = $var;

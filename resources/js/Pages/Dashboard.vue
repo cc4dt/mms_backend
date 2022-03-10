@@ -6,7 +6,7 @@
       </h2>
     </template>
 
-    <div class="p-4 sm:p-12 space-y-4 space-x-4 w-100">
+    <div class="p-4 sm:p-8 md:p-12 space-y-4 space-x-4 w-100">
       <div class="flex flex-wrap">
         <Ticket
           class="m-2"
@@ -28,7 +28,7 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"></div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div
           class="
             bg-white

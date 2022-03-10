@@ -18,4 +18,9 @@ class TicketType extends Model
     {
         $this->{'name_' . app()->getlocale()} = $value;
     }
+    
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'type_id');
+    }
 }

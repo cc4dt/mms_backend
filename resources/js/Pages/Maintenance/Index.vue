@@ -1,12 +1,12 @@
 <template>
-  <app-layout title="HSE">
+  <app-layout :title="category?.name ??''">
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{category?.name ??''}}</h2>
     </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="p-6 sm:px-6 bg-white border-b border-gray-200">
+        <div class="p-6 sm:px-6 bg-white dark:bg-gray-800 dark:text-slate-400 border-b border-gray-200">
           <datatable :meta="datatableMeta" :data="paginationData"></datatable>
         </div>
       </div>

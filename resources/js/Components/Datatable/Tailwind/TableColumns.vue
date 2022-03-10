@@ -23,7 +23,7 @@
             :key="index"
           >
             <p
-              class="text-sm font-medium text-gray-900"
+              class="text-sm font-medium"
               id="privacy-option-1-label"
             >{{ column.title }}</p>
 

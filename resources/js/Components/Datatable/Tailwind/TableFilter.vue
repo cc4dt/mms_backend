@@ -21,7 +21,7 @@
 
     <div role="menu" aria-orientation="vertical" aria-labelledby="sort-menu">
       <div v-for="filter in filters" :key="filter.key">
-        <h3 class="text-xs uppercase tracking-wide bg-gray-100 p-3">
+        <h3 class="text-xs uppercase tracking-wide bg-gray-100 dark:bg-gray-900 p-3">
           {{ filter.title }}
         </h3>
         <div class="p-2">
@@ -32,6 +32,8 @@
                 focus:ring-indigo-500 focus:border-indigo-500
                 w-full
                 shadow-sm
+                dark:shadow-gray-100
+                dark:bg-gray-700
                 sm:text-sm
                 border-gray-300
                 rounded-md
@@ -49,6 +51,8 @@
                 focus:ring-indigo-500 focus:border-indigo-500
                 w-full
                 shadow-sm
+                dark:shadow-gray-100
+                dark:bg-gray-700
                 sm:text-sm
                 border-gray-300
                 rounded-md
@@ -66,6 +70,8 @@
               focus:ring-indigo-500 focus:border-indigo-500
               w-full
               shadow-sm
+              dark:shadow-gray-100
+              dark:bg-gray-700
               sm:text-sm
               border-gray-300
               rounded-md

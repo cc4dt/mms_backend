@@ -1,37 +1,147 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Log;
-use App\Notifications\TicketAssigned;
-use App\Notifications\TicketOpened;
-use App\Models\Breakdown;
+
+use App\Models\TicketType;
+use App\Models\Ticket;
 use App\Models\Equipment;
 use App\Models\Station;
-use App\Models\Company;
-use App\Models\Ticket;
-use App\Models\State;
 use App\Models\User;
-use DB;
 
+use App\Exports\MaintenancesExport;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+
+use Redirect;
+use Exception;
 
 class TicketController extends Controller
 {
+    
+    private $slug;
+    /**
+     * Datatable Columns Array
+     *
+     * @var Array
+     */
+    private $datatableColumns;
+
+    private $createRoute;
+    private $viewRoute;
+    private $editRoute;
+    private $deleteRoute;
+
+    /**
+     * Controller constructor
+     *
+     * @return void
+     */
+    public function __construct(Request $request) {
+        $this->slug = $this->getSlug($request);
+
+        $this->createRoute = 'ticket.' . $this->slug . '.create';
+        $this->viewRoute = 'ticket.' . $this->slug . '.show';
+        $this->editRoute = 'ticket.' . $this->slug . '.edit';
+        $this->deleteRoute = 'ticket.' . $this->slug . '.destroy';
+
+        $this->datatableColumns = [
+            'number' => [
+                'title' => 'No.',
+            ],
+            'station.name' => [
+                'title' => 'Station',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            'equipment.name_ar' => [
+                'title' => 'Equipment',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            'breakdown.name_ar' => [
+                'title' => 'Breakdown',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            'openline.timestamp' => [
+                'title' => 'Date',
+                'type' => 'datetime',
+                'sortable' => false,
+                'searchable' => false,  
+            ],
+            // 'openline.created_by.name' => [
+            //     'title' => 'Created By',
+            //     'sortable' => false,
+            //     'searchable' => false,
+            // ],
+            // 'timeline.status.name' => [
+            //     'title' => 'Status',
+            //     'type' => 'badge',
+            //     'sortable' => false,
+            //     'searchable' => false,  
+            // ],
+        ];
+    }
+    
+    public function export() 
+    {
+        $type = TicketType::where('key', '=', $this->slug)->first();
+        return Excel::download(new MaintenancesExport($this->slug), $this->slug . '.xlsx');
+    }
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index(Request $request)
     {
-        $arr['ticket'] = Ticket::find($id);
-        return view('ticket')->with($arr);
+        $type = TicketType::where('key', '=', $this->slug)->first();
+        $tickets = $type->tickets()->with('station', 'equipment', 'breakdown', 'timeline.status', 'openline.created_by');
+
+        return Inertia::render('Ticket/Index', [
+            "type" => $type,
+        ])->table($tickets, function ($table) {
+            $table->transform(function($item) {
+                return $item;
+            });
+            
+            $table->queryBuilder
+            ->join('stations as station', 'station.id', 'tickets.station_id')
+            ->join('equipment', 'equipment.id', 'tickets.equipment_id')
+            ->join('breakdowns as breakdown', 'breakdown.id', 'tickets.breakdown_id')
+            ->select('tickets.*');
+
+            $table->defaultSort('number', 'desc');
+            $table->actionButtons(false);
+            
+            // $table->createRoute($this->createRoute);
+            $table->deleteRoute($this->deleteRoute);
+            $table->editRoute($this->editRoute);
+            $table->showRoute($this->viewRoute);
+            $table->addColumns($this->datatableColumns);
+            $table->addFilters([
+                'station_id' => [
+                    'title' => 'Station',
+                    'type' => 'multiple_select',
+                    'data' => Station::all()->pluck('name', 'id')->all(),
+                ],
+                // 'created_by_id' => [
+                //     'title' => 'Created By',
+                //     'type' => 'multiple_select',
+                //     'data' => User::all()->pluck('name', 'id')->all(),
+                // ],
+                'openBetween' => [
+                    'title' => 'Open Between',
+                    'type' => 'date_between',
+                ],
+            ]);
+        });
     }
 
     /**
@@ -39,9 +149,24 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        
+
+        $stations = Station::all('id', 'name')
+                ->loadMissing('equipment');
+
+        $type = TicketType::where('key', '=', $this->slug)->first()->loadMissing(
+            'forms',
+            'forms.equipment',
+            'forms.procedures',
+            'forms.procedures.input_type',
+            'forms.procedures.spare_part.sub_parts',
+            'forms.procedures.options');
+        return Inertia::render('Ticket/Create', [
+            'type' => $type,
+            'stations' => $stations,
+        ]);
     }
 
     /**
@@ -52,165 +177,239 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-       
+        
+        try {
+            DB::beginTransaction();
+            
+            $data =  $request->all();
+            
+            $data['created_by_id'] = Auth::id();
+            $data['updated_by_id'] = Auth::id();
 
-        $request->validate(
-            [
-            'state_id' => ['required', 'string'],
-            'station_id' => ['required', 'string'],
-            'equipment_id'=> ['required', 'string'],
-            'breakdown_id'=> ['required', 'string'],
-            'open_description'=> ['required', 'string'],
-            ]
-        );
-    Ticket::open([
-    'station_id'=>$request->station_id,
-    'breakdown_id'=>$request->breakdown_id,
-    'equipment_id'=>$request->equipment_id,
-    'state_id'=>$request->state_id,
-    'open_description'=>$request->open_description]
-     );
-    $request->session()->flash('result','Tickets Create Successfully');
-
-      return back();
+            $ticket = Ticket::create($data);
+            if($ticket) {
+                foreach ($data['processes'] as $item) {
+                    if (isset($item['equipment_id'])) {
+                        $process = $ticket->processes()->create($item);
+                        if($process) {
+                            foreach ($item['details'] as $detail) {
+                                if($detail) {
+                                    $process->details()->create($detail);
+                                } else {
+                                    throw new Exception("Error Processing Request", 3);
+                                } 
+                            }
+                        } else {
+                            throw new Exception("Error Processing Request", 3);
+                        }
+                    } else {
+                        throw new Exception("Error Processing Request", 2);
+                    }
+                }
+            } else {
+                throw new Exception("Error Processing Request", 1);
+            }
+            DB::commit();
+            return Redirect::route('ticket.' . $this->slug . '.index');
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+            return redirect()->back()->withErrors([
+               'create' => 'ups, there was an error'
+            ]);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, Ticket $ticket)
     {
-        //
+        
+
+        if($this->slug != $ticket->type->slug)
+            return redirect()->back()->withErrors([
+                'url' => 'ups, there was an error'
+            ]);
+
+        $ticket->loadMissing(
+            'station',
+            'created_by',
+            'processes',
+            'processes.equipment',
+            'processes.master_equipment',
+            'processes.details',
+            'processes.details.procedure',
+            'processes.details.spare_part',
+            'processes.details.option');
+        return Inertia::render('Ticket/View', [
+            'ticket' => $ticket,
+            'type' => $ticket->type,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, Ticket $ticket)
     {
-         if(Auth::user()->level_id==5)
-        {
-        $arr['showdata'] = DB::table( 'tickets' )
-        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
-        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
-        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
-        ->select( 'tickets.*', 
-            'stations.name as station_en', 'stations.name as station_ar', 
-            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
-            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
-        ->where('tickets.created_by_id',Auth::user()->id)
-        ->orderBy( 'tickets.id','DESC')
-        ->get();
-        $arr2['statedata'] = State::all();
-        $arr3['equipmentdata'] = Equipment::all();
-        $arr4['showupdate'] = DB::table( 'tickets' )
-        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
-        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
-        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
-        ->select( 'tickets.*', 
-            'stations.name as station_en', 'stations.name as station_ar', 
-            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
-            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
-        ->where('tickets.id',$id)
-        ->orderBy( 'tickets.id','DESC')
-        ->get();
-        $tickets = DB::table('tickets')->find($id);
-        $arr5['stationdata']=DB::table('stations')
-        ->select( 'stations.*')
-        ->where('state_id',$tickets->state_id)
-        ->get();
-        $arr6['breakdowndata']=DB::table('breakdowns')
-        ->select( 'breakdowns.*')
-        ->where('equipment_id',$tickets->equipment_id)
-        ->get();
-        $arr7['shownew'] = DB::table( 'tickets' )
-        ->join( 'stations', 'stations.id', '=', 'tickets.station_id' )
-        ->join( 'breakdowns', 'breakdowns.id', '=', 'tickets.breakdown_id' )
-        ->join( 'equipment', 'equipment.id', '=', 'tickets.equipment_id' )
-        ->select( 'tickets.*', 
-            'stations.name as station_en', 'stations.name as station_ar', 
-            'equipment.name_en as equipment_en', 'equipment.name_ar as equipment_ar',
-            'breakdowns.name_en as breakdown_en', 'breakdowns.name_ar as breakdown_ar')
-        ->where('tickets.status_id',1)
-        ->where('tickets.created_by_id',Auth::user()->id)
-        ->orderBy( 'tickets.id','DESC')
-        ->limit(10)
-        ->get();
-        return view('Client')->with($arr)->with($arr2)->with($arr3)->with($arr4)->with($arr5)->with($arr6)->with($arr7);
+        
+        if($this->slug != $ticket->type->slug)
+            return redirect()->back()->withErrors([
+                'url' => 'ups, there was an error'
+            ]);
+
+        $stations = Station::all('id', 'name')
+                ->loadMissing('equipment');
+
+        $type = TicketType::where('key', '=', $this->slug)->first()->loadMissing(
+            'forms',
+            'forms.equipment',
+            'forms.procedures',
+            'forms.procedures.input_type',
+            'forms.procedures.spare_part.sub_parts',
+            'forms.procedures.options');
+
+        $ticket->loadMissing(
+            'station',
+            'processes',
+            'processes.equipment',
+            'processes.master_equipment',
+            'processes.details',
+            'processes.details.procedure',
+            'processes.details.spare_part',
+            'processes.details.option');
+        return Inertia::render('Ticket/Edit', [
+            'type' => $type,
+            'stations' => $stations,
+            'ticket' => $ticket,
+        ]);
     }
-}
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Ticket $ticket)
     {
         
-        $request->validate(
-            [
-            'state_id' => ['required', 'string'],
-            'station_id' => ['required', 'string'],
-            'equipment_id'=> ['required', 'string'],
-            'breakdown_id'=> ['required', 'string'],
-            'open_description'=> ['required', 'string'],
-            ]
-        );
-
-        
-
-    
-
-        $Row = Ticket::find( $request->id );
-        $Row->id = $request->id;
-        $Row->number = $request->number;
-        $Row->station_id = $request->station_id;
-        $Row->breakdown_id = $request->breakdown_id;
-        $Row->open_description = $request->open_description;
-        $Row->status_id = $request->status_id;
-        $Row->updated_by_id = $request->updated_by_id;
-        $Row->updated_at = $request->updated_at;
-        $Row->equipment_id = $request->equipment_id;
-        $Row->state_id = $request->state_id;
-        if ( $Row->save() ) {
-            $request->session()->flash( 'result', 'Ticket Updated Successfully' );
-             return back();
-
-
+        if($this->slug != $ticket->type->slug)
+            return redirect()->back()->withErrors([
+                'url' => 'ups, there was an error'
+            ]);
+        try {
+            DB::beginTransaction();
+            $data =  $request->all();
+            
+            $currentProcesses = [];
+            $data['updated_by_id'] = Auth::id();
+            if($ticket->update($data)) {
+                foreach ($data['processes'] as $item) {
+                    if (isset($item['equipment_id'])) {
+                        if(isset($item['id']) && $process = Process::find($item['id']))
+                            $process->update($item);
+                        else
+                            $process = $ticket->processes()->create($item);
+                        
+                        $currentProcesses[] = $process->id;
+                        if($process) {
+                            foreach ($item['details'] as $value) {
+                                if($value) {
+                                    if(isset($value['id']) && $detail = Detail::find($value['id']))
+                                        $detail->update($value);
+                                    else
+                                        $detail = $process->details()->create($value);
+                                } else {
+                                    throw new Exception("Error Processing Request", 4);
+                                } 
+                            }
+                        } else {
+                            throw new Exception("Error Processing Request", 3);
+                        }
+                    } else {
+                        throw new Exception("Error Processing Request", 2);
+                    }
+                }
+                $ticket->processes()->whereNotIn('id', $currentProcesses)->delete();
+            } else {
+                throw new Exception("Error Processing Request", 1);
+            }
+            DB::commit();
+            return Redirect::route('ticket.' . $this->slug . '.show', [$ticket->id]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+            return redirect()->back()->withErrors([
+               'update' => 'ups, there was an error'
+            ]);
         }
-
-
-
-
-
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, Ticket $ticket)
     {
-
-
-       // print_r($request->id);
-         $user=Ticket::find($request->id);
         
-       if($user->delete()){
-           $request->session()->flash('result','Ticket Deleted Successfully');
+        // $ticket = Ticket::find($request->id);
+
+        if($this->slug != $ticket->type->slug)
+            return redirect()->back()->withErrors([
+                'url' => 'ups, there was an error'
+            ]);
+        $catName = $ticket->type->name;
+        if($ticket && $ticket->delete()){
+            $request->session()->flash('result', $catName . ' Deleted Successfully');
             return back();
         }
-     
+    }
+    
+    public function report()
+    {
+        $cat = TicketType::where('key', $this->slug)->first();
+        $arr['stations'] = Station::all('id', 'name');
+        $arr['hse'] = $cat->equipment;
+        $arr['title'] = $cat->name;
+        $arr['details'] = Detail::whereHas('process', function($q) {
+            $q->whereHas('ticket', function($q) {
+                $q->whereHas('type', function($q) {
+                    $q->where('key', $this->slug);
+                });
+            });
+        })->get()->loadMissing(
+            'procedure',
+            'spare_part',
+            'option',
+            'process',
+            'process.equipment',
+            'process.master_equipment',
+            'process.ticket',
+            'process.ticket.station',
+            'process.ticket.created_by');
+
+        return view('hse-procedures-report')->with($arr);
+    }
+    
+    public function getSlug(Request $request)
+    {
+        if (isset($this->slug)) {
+            $this->slug = $this->slug;
+        } else {
+            $this->slug = explode('.', $request->route()->getName())[1];
+        }
+
+        return $this->slug;
     }
 }

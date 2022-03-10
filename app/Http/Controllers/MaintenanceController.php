@@ -22,7 +22,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use Redirect;
 use Exception;
-use DataTables;
 
 class MaintenanceController extends Controller
 {
@@ -34,20 +33,6 @@ class MaintenanceController extends Controller
      * @var Array
      */
     private $datatableColumns;
-
-    /**
-     * Datatable Headers Array
-     *
-     * @var Array
-     */
-    private $datatableHeaders;
-
-    /**
-     * Datatables Data URL
-     *
-     * @var String
-     */
-    private $datatableUrl;
 
     private $createRoute;
     private $viewRoute;
@@ -66,6 +51,23 @@ class MaintenanceController extends Controller
         $this->viewRoute = 'maintenance.' . $this->slug . '.show';
         $this->editRoute = 'maintenance.' . $this->slug . '.edit';
         $this->deleteRoute = 'maintenance.' . $this->slug . '.destroy';
+
+        $this->datatableColumns = [
+            'station.name' => [
+                'title' => 'Station',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            'created_by.name' => [
+                'title' => 'Created By',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            'date' => [
+                'title' => 'Date',
+                'type' => 'date',
+            ],
+        ];
     }
     
     public function export() 
@@ -101,21 +103,7 @@ class MaintenanceController extends Controller
             $table->deleteRoute($this->deleteRoute);
             $table->editRoute($this->editRoute);
             $table->showRoute($this->viewRoute);
-            $table->addColumns([
-                'station.name' => [
-                    'title' => 'Station',
-                    'sortable' => true,
-                    'searchable' => true,
-                ],
-                'created_by.name' => [
-                    'title' => 'Created By',
-                    'sortable' => true,
-                    'searchable' => true,
-                ],
-                'date' => [
-                    'title' => 'Date',
-                ],
-            ]);
+            $table->addColumns($this->datatableColumns);
             $table->addFilters([
                 'station_id' => [
                     'title' => 'Station',

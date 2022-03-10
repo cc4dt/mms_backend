@@ -6,7 +6,7 @@
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="p-6 sm:px-6 bg-white border-b border-gray-200">
+        <div class="p-6 sm:px-6 bg-white dark:bg-gray-800 dark:text-slate-400 border-b border-gray-200">
             <table class="min-w-full divide-y divide-gray-200 bg-white divide-y divide-gray-200">
                 <tr class="bg-gray-50">
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Station</th>

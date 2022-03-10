@@ -1,13 +1,11 @@
 <template>
   <nav
     class="
-      bg-white
       px-4
       py-3
       flex
       items-center
       justify-between
-      border-t border-gray-200
       sm:px-6
     "
   >
@@ -107,7 +105,7 @@
       class="sm:flex-1 sm:flex sm:items-center sm:justify-between"
     >
       <div>
-        <p class="lg:block text-sm text-gray-700">
+        <p class="lg:block text-sm">
           <span class="font-medium">{{ meta.from }}</span>
           {{ translations.to }}
           <span class="font-medium">{{ meta.to }}</span>
@@ -133,35 +131,15 @@
               py-2
               rounded-l-md
               border border-gray-300
-              bg-white
+              bg-white dark:bg-gray-900
               text-sm
               font-medium
-              text-gray-500
+              text-gray-500 dark:text-gray-200
               hover:bg-gray-50
             "
           >
             <span class="fa fa-backward"></span>
           </component>
-          <!-- <component
-            :is="meta.current != 1 ? 'button' : 'div'"
-            type="button"
-            @click="meta.current != 1 ? onPageChange(meta.current - 1) : null"
-            class="
-              relative
-              inline-flex
-              items-center
-              px-2
-              py-2
-              border border-gray-300
-              bg-white
-              text-sm
-              font-medium
-              text-gray-500
-              hover:bg-gray-50
-            "
-          >
-            <span class="fa fa-backward"></span
-          ></component> -->
           <component
             v-for="page in pages"
             :key="page"
@@ -174,10 +152,10 @@
               px-4
               py-2
               border border-gray-300
-              bg-white
+              bg-white dark:bg-gray-900
               text-sm
               font-medium
-              text-gray-700
+              text-gray-700 dark:text-gray-100
               hover:bg-gray-50
             "
             :class="{
@@ -187,28 +165,6 @@
           >
             {{ page }}
           </component>
-          <!-- <component
-            :is="meta.current != meta.pages ? 'button' : 'div'"
-            type="button"
-            @click="
-              meta.current != meta.pages ? onPageChange(meta.current + 1) : null
-            "
-            class="
-              relative
-              inline-flex
-              items-center
-              px-2
-              py-2
-              border border-gray-300
-              bg-white
-              text-sm
-              font-medium
-              text-gray-500
-              hover:bg-gray-50
-            "
-          >
-            <span class="fa fa-forward"></span>
-          </component> -->
           <component
             :is="meta.current != meta.pages ? 'button' : 'div'"
             type="button"
@@ -223,10 +179,10 @@
               py-2
               rounded-r-md
               border border-gray-300
-              bg-white
+              bg-white dark:bg-gray-900
               text-sm
               font-medium
-              text-gray-500
+              text-gray-500 dark:text-gray-200
               hover:bg-gray-50
             "
           >

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text-gray-900 dark:text-white">
     <div class="block space-y-1 md:flex md:space-x-1 md:space-y-0">
       <div class="flex space-x-1">
         <slot
@@ -27,7 +27,8 @@
                 rounded-md
                 shadow-sm
                 focus:ring-indigo-500 focus:border-indigo-500
-                border-gray-300
+                border-gray-300 
+                dark:border-gray-500 dark:bg-gray-800
               "
             >
               <option value="15">15</option>
@@ -160,8 +161,8 @@
     <slot name="tableWrapper" :meta="meta">
       <TableWrapper :class="{ 'mt-2': !onlyData }">
         <slot name="table">
-          <table class="min-w-full divide-y divide-gray-200 bg-white">
-            <thead class="bg-gray-50">
+          <table class="min-w-full">
+            <thead class="bg-gray-50 dark:bg-gray-600">
               <slot name="head">
                 <tr>
                   <header-cell
@@ -177,9 +178,9 @@
               </slot>
             </thead>
 
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="">
               <slot name="body">
-                <tr v-for="row in rows" :key="row.id">
+                <tr v-for="row in rows" :key="row.id" class="odd:bg-gray-100 dark:odd:bg-gray-900">
                   <data-cell
                     v-for="column in columns"
                     :key="column.key"
@@ -189,6 +190,7 @@
                   <td v-if="options.actionButtons">
                     <action-buttons
                       :id="row['id']"
+                      v-if="options.actionButtons != false"
                       :showRoute="options.showRoute"
                       :editRoute="options.editRoute"
                       :deleteRoute="options.deleteRoute"
@@ -404,7 +406,7 @@ export default {
         to: this.data?.to,
       };
 
-      if(this.pagination.pages > this.query.page) this.query.page = 1
+      if(this.data?.last_page && this.data.last_page < this.query.page) this.query.page = 1
 
       this.rows = this.data?.data;
     },
@@ -506,7 +508,6 @@ table >>> th {
   padding-right: 1.5rem;
   text-align: left;
   --tw-text-opacity: 1;
-  color: rgba(107, 114, 128, var(--tw-text-opacity));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -519,12 +520,11 @@ table >>> td {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   --tw-text-opacity: 1;
-  color: rgba(107, 114, 128, var(--tw-text-opacity));
   white-space: nowrap;
 }
 
-table >>> tr:hover td {
+/* table >>> tr:hover td {
   --tw-bg-opacity: 1;
   background-color: rgba(249, 250, 251, var(--tw-bg-opacity));
-}
+} */
 </style>
