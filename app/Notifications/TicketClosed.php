@@ -99,11 +99,11 @@ class TicketClosed extends Notification
                 "type" => "ticket",
                 "action" => "closed",
                 "notification_title" => __("message.ticket_closed_title"),
-                "notification_body" => __("message.ticket_closed_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "username" => $this->ticket->teamleader->name]),
+                "notification_body" => __("message.ticket_closed_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "username" => $this->ticket->timeline->created_by->name]),
             ],
             "notification" => [
                 "title" => __("message.ticket_closed_title"),
-                "body" => __("message.ticket_closed_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "username" => $this->ticket->teamleader->name]),
+                "body" => __("message.ticket_closed_body", ["ticket_no" => $this->ticket->number, "station" => $this->ticket->station->name, "username" => $this->ticket->timeline->created_by->name]),
             ]
         ];
     }

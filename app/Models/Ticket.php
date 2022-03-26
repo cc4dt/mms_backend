@@ -423,15 +423,18 @@ class Ticket extends Model
             try {
                 $users = User::where("id", "!=", Auth::id())
                     ->where(function($q) {
-                        $q->orWhere(fn($q) => $q->supervisors())
+                        $q->where(fn($q) => $q->supervisors())
                         ->orWhere(fn($q) => $q->clients())
                         ->orWhere(fn($q) => $q->dealers());
                     })
                     ->get();
-                if(TicketStatus::find($input['status_id'])->key == "colsed")
+                
+                if((TicketStatus::find($input['status_id'])->key) == "closed") {
                     Notification::send($users, new TicketClosed($this));
-                elseif(TicketStatus::find($input['status_id'])->key == "waiting_for_client_approval")
+                }
+                elseif(TicketStatus::find($input['status_id'])->key == "waiting_for_client_approval") {
                     Notification::send($users, new TicketReceived($this));
+                }
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
@@ -442,9 +445,9 @@ class Ticket extends Model
     public function client_approval($input)
     {
         if(isset($input['is_reversed']) && $input['is_reversed'])
-            $input['status_id'] = TicketStatus::where("key", "pending")->first()->id;
+            $input['status_id'] = TicketStatus::where("key", "client_reversed")->first()->id;
         else
-            $input['status_id'] = TicketStatus::where("key", "waiting_for_approval")->first()->id;
+            $input['status_id'] = TicketStatus::where("key", "client_approved")->first()->id;
         $input['updated_by_id'] = Auth::id();
 
         if ($this->update($input)) {
