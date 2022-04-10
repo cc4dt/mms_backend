@@ -66,7 +66,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
                 TicketController::class, 'report',
             ])->name('ticket.' . $value->key . '.report');
 
-            Route::resource('ticket/'.$value->key, TicketController::class, ["as" => "ticket"]);//->parameters([$value->slug => 'ticket']);
+            Route::resource('ticket/'.$value->key, TicketController::class, ["as" => "ticket"])->parameters([$value->slug => 'ticket']);
         }
     } catch (\Throwable $th) {
     }
@@ -90,14 +90,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
                 MaintenanceController::class, 'datatables',
             ])->name('maintenance.' . $value->slug . '.datatables');
 
-            Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"]);//->parameters([$value->slug => 'maintenance']);
+            Route::resource('maintenance/'.$value->slug, MaintenanceController::class, ["as" => "maintenance"])->parameters([$value->slug => 'maintenance']);
         }
     } catch (\Throwable $th) {
     }
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::resource('breakdown', BreakdownController::class);
     Route::resource('link', LinkController::class);
-    Route::resource('equipment', EquipmentController::class);
+    Route::resource('master', EquipmentController::class);
+    
+            
+    Route::get('report/master/qrcode', [
+        EquipmentController::class, 'exportQrcode',
+    ])->name('qrcode.master.report');
     
     Route::resource('/Report', ReportController::class);
     

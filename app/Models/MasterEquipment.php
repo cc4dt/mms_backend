@@ -5,9 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MasterEquipment extends Model
 {
+    protected $appends = [
+        'qrcode',
+    ];
+
     public function equipment(): BelongsTo
     {
         return $this->belongsTo(Equipment::class);
@@ -26,5 +31,11 @@ class MasterEquipment extends Model
     public function details(): HasMany
     {
         return $this->hasMany(MasterDetail::class, 'equipment_id');
+    }
+
+    public function getQrcodeAttribute($value)
+    {
+        if($this->serial)
+            return QrCode::size(160)->generate($this->serial);
     }
 }

@@ -601,10 +601,10 @@
 
                 <hr class="my-6 border-gray-200 dark:border-gray-600" />
                 <jet-responsive-nav-link
-                  :href="route('equipment.index')"
-                  :active="route().current('equipment.index')"
+                  :href="route('master.index')"
+                  :active="route().current('master.index')"
                 >
-                  Equipment
+                  Master Data
                 </jet-responsive-nav-link>
               </div>
 
