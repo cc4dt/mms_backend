@@ -9,6 +9,12 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MasterEquipment extends Model
 {
+    protected $fillable = [
+        'equipment_id',
+        'station_id',
+        'serial',
+    ];
+
     protected $appends = [
         'qrcode',
     ];

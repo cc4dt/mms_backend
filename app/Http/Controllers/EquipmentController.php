@@ -67,8 +67,7 @@ class EquipmentController extends Controller
     
     public function export() 
     {
-        $type = MasterEquipmentType::where('key', '=', $this->slug)->first();
-        return Excel::download(new MaintenancesExport($this->slug), $this->slug . '.xlsx');
+        // return Excel::download(new MaintenancesExport($this->slug), $this->slug . '.xlsx');
     }
 
     public function exportQrcode()
@@ -88,7 +87,7 @@ class EquipmentController extends Controller
      */
     public function index(Request $request)
     {
-        return Inertia::render('Equipment/Index')
+        return Inertia::render('Master/Index')
         ->table(MasterEquipment::with('station', 'equipment'), function ($table) {
             $table->transform(function($item) {
                 return $item;
@@ -127,22 +126,17 @@ class EquipmentController extends Controller
      */
     public function create(Request $request)
     {
-        
+        $stations = Station::all('id', 'name')
+                ->loadMissing('equipment');
 
-        // $stations = Station::all('id', 'name')
-        //         ->loadMissing('equipment');
-
-        // $type = MasterEquipmentType::where('key', '=', $this->slug)->first()->loadMissing(
-        //     'forms',
-        //     'forms.equipment',
-        //     'forms.procedures',
-        //     'forms.procedures.input_type',
-        //     'forms.procedures.spare_part.sub_parts',
-        //     'forms.procedures.options');
-        // return Inertia::render('MasterEquipment/Create', [
-        //     'type' => $type,
-        //     'stations' => $stations,
-        // ]);
+        $equipment = Equipment::all()->loadMissing(
+            'attributes',
+            'attributes.options',
+        );
+        return Inertia::render('Master/Create', [
+            'equipment' => $equipment,
+            'stations' => $stations,
+        ]);
     }
 
     /**
@@ -154,46 +148,28 @@ class EquipmentController extends Controller
     public function store(Request $request)
     {
         
-        // try {
-        //     DB::beginTransaction();
+        try {
+            DB::beginTransaction();
             
-        //     $data =  $request->all();
-            
-        //     $data['created_by_id'] = Auth::id();
-        //     $data['updated_by_id'] = Auth::id();
+            $data =  $request->all();
 
-        //     $master = MasterEquipment::create($data);
-        //     if($master) {
-        //         foreach ($data['processes'] as $item) {
-        //             if (isset($item['equipment_id'])) {
-        //                 $process = $master->processes()->create($item);
-        //                 if($process) {
-        //                     foreach ($item['details'] as $detail) {
-        //                         if($detail) {
-        //                             $process->details()->create($detail);
-        //                         } else {
-        //                             throw new Exception("Error Processing Request", 3);
-        //                         } 
-        //                     }
-        //                 } else {
-        //                     throw new Exception("Error Processing Request", 3);
-        //                 }
-        //             } else {
-        //                 throw new Exception("Error Processing Request", 2);
-        //             }
-        //         }
-        //     } else {
-        //         throw new Exception("Error Processing Request", 1);
-        //     }
-        //     DB::commit();
-        //     return Redirect::route('masterEquipment.' . $this->slug . '.index');
-        // } catch (\Throwable $th) {
-        //     DB::rollback();
-        //     throw $th;
-        //     return redirect()->back()->withErrors([
-        //        'create' => 'ups, there was an error'
-        //     ]);
-        // }
+            $master = MasterEquipment::create($data);
+            if($master) {
+                foreach ($data['details'] as $item) {
+                    $detail = $master->details()->create($item);
+                }
+            } else {
+                throw new Exception("Error Processing Request", 1);
+            }
+            DB::commit();
+            return Redirect::route('master.index');
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+            return redirect()->back()->withErrors([
+               'create' => 'ups, there was an error'
+            ]);
+        }
     }
 
     /**
@@ -204,27 +180,14 @@ class EquipmentController extends Controller
      */
     public function show(Request $request, MasterEquipment $master)
     {
-        
-
-        // if($this->slug != $master->type->slug)
-        //     return redirect()->back()->withErrors([
-        //         'url' => 'ups, there was an error'
-        //     ]);
-
-        // $master->loadMissing(
-        //     'station',
-        //     'created_by',
-        //     'processes',
-        //     'processes.equipment',
-        //     'processes.master_equipment',
-        //     'processes.details',
-        //     'processes.details.procedure',
-        //     'processes.details.spare_part',
-        //     'processes.details.option');
-        // return Inertia::render('MasterEquipment/View', [
-        //     'masterEquipment' => $master,
-        //     'type' => $master->type,
-        // ]);
+        $master->loadMissing(
+            'station',
+            'equipment',
+            'details',
+            'details.attribute',);
+        return Inertia::render('Master/View', [
+            'master' => $master,
+        ]);
     }
 
     /**
@@ -235,37 +198,18 @@ class EquipmentController extends Controller
      */
     public function edit(Request $request, MasterEquipment $master)
     {
-        
-        // if($this->slug != $master->type->slug)
-        //     return redirect()->back()->withErrors([
-        //         'url' => 'ups, there was an error'
-        //     ]);
+        $stations = Station::all('id', 'name')
+                ->loadMissing('equipment');
 
-        // $stations = Station::all('id', 'name')
-        //         ->loadMissing('equipment');
-
-        // $type = MasterEquipmentType::where('key', '=', $this->slug)->first()->loadMissing(
-        //     'forms',
-        //     'forms.equipment',
-        //     'forms.procedures',
-        //     'forms.procedures.input_type',
-        //     'forms.procedures.spare_part.sub_parts',
-        //     'forms.procedures.options');
-
-        // $master->loadMissing(
-        //     'station',
-        //     'processes',
-        //     'processes.equipment',
-        //     'processes.master_equipment',
-        //     'processes.details',
-        //     'processes.details.procedure',
-        //     'processes.details.spare_part',
-        //     'processes.details.option');
-        // return Inertia::render('MasterEquipment/Edit', [
-        //     'type' => $type,
-        //     'stations' => $stations,
-        //     'masterEquipment' => $master,
-        // ]);
+        $equipment = Equipment::all()->loadMissing(
+            'attributes',
+            'attributes.options',
+        );
+        return Inertia::render('Master/Edit', [
+            'equipment' => $equipment,
+            'stations' => $stations,
+            'master' => $master->loadMissing('details'),
+        ]);
     }
 
     /**
@@ -277,57 +221,36 @@ class EquipmentController extends Controller
      */
     public function update(Request $request, MasterEquipment $master)
     {
-        
-        // if($this->slug != $master->type->slug)
-        //     return redirect()->back()->withErrors([
-        //         'url' => 'ups, there was an error'
-        //     ]);
-        // try {
-        //     DB::beginTransaction();
-        //     $data =  $request->all();
+        try {
+            DB::beginTransaction();
+            $data =  $request->all();
             
-        //     $currentProcesses = [];
-        //     $data['updated_by_id'] = Auth::id();
-        //     if($master->update($data)) {
-        //         foreach ($data['processes'] as $item) {
-        //             if (isset($item['equipment_id'])) {
-        //                 if(isset($item['id']) && $process = Process::find($item['id']))
-        //                     $process->update($item);
-        //                 else
-        //                     $process = $master->processes()->create($item);
-                        
-        //                 $currentProcesses[] = $process->id;
-        //                 if($process) {
-        //                     foreach ($item['details'] as $value) {
-        //                         if($value) {
-        //                             if(isset($value['id']) && $detail = Detail::find($value['id']))
-        //                                 $detail->update($value);
-        //                             else
-        //                                 $detail = $process->details()->create($value);
-        //                         } else {
-        //                             throw new Exception("Error Processing Request", 4);
-        //                         } 
-        //                     }
-        //                 } else {
-        //                     throw new Exception("Error Processing Request", 3);
-        //                 }
-        //             } else {
-        //                 throw new Exception("Error Processing Request", 2);
-        //             }
-        //         }
-        //         $master->processes()->whereNotIn('id', $currentProcesses)->delete();
-        //     } else {
-        //         throw new Exception("Error Processing Request", 1);
-        //     }
-        //     DB::commit();
-        //     return Redirect::route('masterEquipment.' . $this->slug . '.show', [$master->id]);
-        // } catch (\Throwable $th) {
-        //     DB::rollback();
-        //     throw $th;
-        //     return redirect()->back()->withErrors([
-        //        'update' => 'ups, there was an error'
-        //     ]);
-        // }
+            if($master->update($data)) {
+                $currentDetails = [];
+                foreach ($data['details'] as $item) {
+                    $currentDetails[] = $item['attribute_id'];
+                    if($item) {
+                        if($detail = $master->details()->where('attribute_id', $item['attribute_id'])->first())
+                            $detail->update($item);
+                        else
+                            $detail = $master->details()->create($item);
+                    } else {
+                        throw new Exception("Error Processing Request", 4);
+                    } 
+                }
+                $master->details()->whereNotIn('attribute_id', $currentDetails)->delete();
+            } else {
+                throw new Exception("Error Processing Request", 1);
+            }
+            DB::commit();
+            return Redirect::route('master.show', [$master->id]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+            return redirect()->back()->withErrors([
+               'update' => 'ups, there was an error'
+            ]);
+        }
     }
 
     /**
@@ -338,18 +261,14 @@ class EquipmentController extends Controller
      */
     public function destroy(Request $request, MasterEquipment $master)
     {
-        
-        // // $master = MasterEquipment::find($request->id);
+        dd($master);
+        if($request->id)
+            $master = MasterEquipment::find($request->id);
 
-        // if($this->slug != $master->type->slug)
-        //     return redirect()->back()->withErrors([
-        //         'url' => 'ups, there was an error'
-        //     ]);
-        // $catName = $master->type->name;
-        // if($master && $master->delete()){
-        //     $request->session()->flash('result', $catName . ' Deleted Successfully');
-        //     return back();
-        // }
+        if($master && $master->delete()){
+            $request->session()->flash('result', 'Equipment Deleted Successfully');
+            return back();
+        }
     }
     
     public function report()
@@ -376,16 +295,5 @@ class EquipmentController extends Controller
         //     'process.masterEquipment.created_by');
 
         // return view('hse-procedures-report')->with($arr);
-    }
-    
-    public function getSlug(Request $request)
-    {
-        if (isset($this->slug)) {
-            $this->slug = $this->slug;
-        } else {
-            $this->slug = explode('.', $request->route()->getName())[1];
-        }
-
-        return $this->slug;
     }
 }

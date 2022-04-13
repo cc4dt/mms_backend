@@ -8,14 +8,13 @@ class Attribute extends Model
 {
 
     protected $appends = [
-        'name',
         'type',
     ];
     
     public const TYPES = [
-        1 => 'int',
-        2 => 'string',
-        3 => 'bool',
+        1 => 'radio',
+        2 => 'dropdown',
+        3 => 'string',
     ];
 
     static public function constList($list)
@@ -35,14 +34,9 @@ class Attribute extends Model
         return Attribute::constList(Attribute::TYPES);
     }
 
-    public function getNameAttribute($value)
+    public function options()
     {
-        return $this->{'name_' . app()->getlocale()};
-    }
-
-    public function setNameAttribute($value)
-    {
-        $this->{'name_' . app()->getlocale()} = $value;
+        return $this->belongsToMany(Option::class, 'attribute_option', 'attribute_id', 'option_id');
     }
     
     public function getTypeAttribute()
