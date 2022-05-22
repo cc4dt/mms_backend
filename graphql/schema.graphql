@@ -8,11 +8,25 @@ scalar DateTimeUtc @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\D
 scalar JSON @scalar(class: "MLL\\GraphQLScalars\\JSON")
 
 type Query {
-    me: User @auth
+    
+    "Find a single user by an identifying attribute."
+    user(
+      "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
 
+      "Search by email address."
+      email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
+    ): User @find
+
+    "List multiple users."
+    users(
+      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [User!]! @paginate(defaultCount: 10)
+
+    me: User @auth
     allUsers(ids: [ID!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @all
     paginateusers(ids: [ID!] @in(key: "id"), level_id: USERLEVEL @eq): [User!]! @paginate(defaultCount: 10) # @all
-    user(id: ID! @eq): User @find
 
     userLevels: [ConstField!]! @field(resolver: "MasterQuery@userLevels")
     ticketStatus: [TicketStatus!]! @all
@@ -36,7 +50,7 @@ extend type Query @guard {
 
     ticket(id: ID @eq, number: String @eq): Ticket @find
 
-    tickets(hasStatus: TicketStatuses @scope(name: "hasStatus"), 
+    tickets(created_by_id: ID @eq, hasStatus: TicketStatuses @scope(name: "hasStatus"), 
         status: String @scope(name: "onStatus"),
         type: TicketTypes @scope(name: "onType")): [Ticket!]! 
      @paginate(defaultCount: 10)
@@ -113,6 +127,8 @@ type User {
     name: String!
     email: String!
     level: ConstField!
+    can_open_ticket: Boolean!
+    can_open_client_ticket: Boolean!
     notifications: [Notification!]!  @morphMany(type: PAGINATOR)
     created_at: DateTimeUtc
     updated_at: DateTimeUtc
@@ -192,6 +208,12 @@ type Ticket {
     by_client: Boolean!
     created_by: User!
     updated_by: User!
+    client_side: Boolean
+    can_assign: Boolean
+    can_receive: Boolean
+    can_feedback: Boolean
+    can_approval: Boolean
+    can_cancel: Boolean
 }
 
 type MaintenanceProcess {
@@ -328,6 +350,8 @@ type Mutation {
         @field(resolver: "TicketMutator@approval")
         
     deleteTicket(id: ID!): Ticket @delete
+    
+    updateUser(id: ID!, name: String): User @update  @can(ability: "update", query: true)
 }
 
 input LoginInput {
@@ -344,6 +368,7 @@ input OpenTicketInput {
     equipment_id: ID!
     breakdown_id: ID!
     description: String
+    client_side: Boolean = false
     date: DateTimeUtc
 }
 

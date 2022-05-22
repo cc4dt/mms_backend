@@ -9,16 +9,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Log;
 use App\Notifications\TicketAssigned;
 use App\Notifications\TicketOpened;
 use App\Notifications\TicketClosed;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Gate;
+use Log;
 
 class Ticket extends Model
 {
+    const BROWSE = 'browse_ticket';
+    const CREATE = 'create_ticket';
+    const CREATE_CLIENT_SIDE = 'create_client_side_ticket';
+    const READ = 'read_ticket';
+    const UPDATE = 'update_ticket';
+    const DELETE = 'delete_ticket';
+    const ASSIGN = 'assgin_ticket';
+    const CLIENT_ASSIGN = 'client_assgin_ticket';
+    const RECEIVE = 'receive_ticket';
+    const CLIENT_RECEIVE = 'receive_ticket';
+    const CANCEL = 'cancel_ticket';
+    const CLIENT_CANCEL = 'cancel_ticket';
+    const APPROVAL = 'approval_ticket';
+    const CLIENT_APPROVAL = 'approval_ticket';
+    const CLIENT_FEEDBACK = 'client_feedback_ticket';
 
     protected $fillable = [
         'number',
@@ -33,6 +49,7 @@ class Ticket extends Model
         'priority_id',
         'work_description',
         'status_id',
+        'client_side',
         'created_by_id',
         'updated_by_id',
     ];
@@ -43,8 +60,45 @@ class Ticket extends Model
         'sla',
         'in_sla',
         'actions',
-        'by_client'
+        'by_client',
+        'can_assign',
+        'can_receive',
+        'can_approval',
+        'can_feedback',
+        'can_cancel'
     ];
+
+    protected $casts = [
+        'client_side' => 'boolean',
+    ];
+    
+    
+    public function getCanAssignAttribute($value)
+    {
+        return Gate::allows('assgin', $this);
+    }
+    
+    
+    public function getCanReceiveAttribute($value)
+    {
+        return Gate::allows('receive', $this);
+    }
+    
+    
+    public function getCanApprovalAttribute($value)
+    {
+        return Gate::allows('approval', $this);
+    }
+    
+    public function getCanFeedbackAttribute($value)
+    {
+        return Gate::allows('client-feedback', $this);
+    }
+    
+    public function getCanCancelAttribute($value)
+    {
+        return Gate::allows('cancel', $this);
+    }
 
     static public function statusReported()
     {
@@ -308,31 +362,26 @@ class Ticket extends Model
     
     public function scopeHasStatus($query, $status)
     {
-        if(!$status)
-            return $query;
-        return $query->whereHas('timelines', function ($query) use($status) {
-            $query->whereHas('status', function ($query) use($status) {
-                $query->where('key', $status);
+        if($status)
+            return $query->whereHas('timelines', function ($query) use($status) {
+                $query->hasStatus($status);
             });
-        });
     }
     
     public function scopeOnStatus($query, $status)
     {
-        if(!$status)
-            return $query;
-        return $query->whereHas('timelines', function ($query) use($status) {
-            $query
-                ->whereHas('status', function ($query) use($status) {
-                    $query->where('key', $status);
-                })
-                ->whereIn('id', function ($query) {
-                    $query
-                        ->selectRaw('max(id)')
-                        ->from('ticket_timelines')
-                        ->whereColumn('ticket_id', 'tickets.id');
-                });
-        });
+        if($status)
+            return $query->whereHas('timelines', function ($query) use($status) {
+                $query->onStatus($status);
+            });
+    }
+    
+    public function isOnStatus($status) {
+        return $this->timeline()->onStatus($status)->count() > 1;
+    }
+    
+    public function isHasStatus($status) {
+        return $this->timelines()->hasStatus($status)->count() > 1;
     }
     
     public function jobs($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -347,6 +396,7 @@ class Ticket extends Model
         } else {
             $input['timestamp'] = Carbon::now();
         }
+
         $input['number'] = Carbon::now()->timestamp;
         $input['status_id'] = TicketStatus::where("key", "opened")->first()->id;
         $input['created_by_id'] = Auth::id();

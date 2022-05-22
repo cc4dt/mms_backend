@@ -14,6 +14,7 @@ use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use Carbon\Carbon;
 
 class User extends \TCG\Voyager\Models\User
@@ -24,6 +25,26 @@ class User extends \TCG\Voyager\Models\User
     use HasTeams;
     use Notifiable;
     use TwoFactorAuthenticatable;
+
+    
+    // user roles
+    const ADMIN = 'admin';
+    const SUPERVISORE = 'supervisor';
+    const TEAMLEADER = 'teamleader';
+    const DEALER = 'dealer';
+    const SUPERCLIENT = 'super_client';
+    const CLIENT = 'client';
+
+    // user actions
+    const CREATE = 'create_user';
+    const READ = 'read_user';
+    const UPDATE = 'update_user';
+    const DELETE = 'delete_user';
+    const VERFIY = 'verify_user';
+    const ACTIVEUSER = 'active_user';
+    const INACTIVEUSER = 'inactive_user';
+    const CHANGE_EMAIL = 'change_email';
+    const CHANGE_PASSWORD = 'change_password';
 
     /**
      * The attributes that are mass assignable.
@@ -50,6 +71,8 @@ class User extends \TCG\Voyager\Models\User
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        'can_open_ticket',
+        'can_open_client_ticket',
     ];
 
     /**
@@ -96,7 +119,64 @@ class User extends \TCG\Voyager\Models\User
     {
         return User::constList(User::LEVELS);
     }
+    
+    public function getCanOpenTicketAttribute($value)
+    {
+        return $this->can('create', Ticket::class);
+    }
+    
+    public function getCanOpenClientTicketAttribute($value)
+    {
+        return $this->can('create', [Ticket::class, true]);
+    }
 
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class)->withTimestamps();
+    }
+
+    public function abilities()
+    {
+        return $this->roles->map->abilities->flatten()->pluck('name')->unique();
+    }
+
+    public function hasAbility($ability)
+    {
+        return $this->abilities()->contains($ability);
+    }
+
+    public function assignRole($role)
+    {
+        // if the role passed as text, then get its model
+        if (is_string($role)) {
+            $role = Role::whereName($role)->firstOrFail();
+        }
+        $this->roles()->sync($role, false);
+    }
+
+    public function unassignRole($role)
+    {
+        // if the role passed as text, then get its model
+        if (is_string($role)) {
+            $role = Role::whereName($role)->firstOrFail();
+        }
+        $this->roles()->detach($role);
+    }
+
+    public function isAdmin()
+    {
+        if ($this->roles()->pluck('name')->contains(self::ADMIN)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getIsAdminAttribute()
+    {
+        return $this->isAdmin();
+    }
 
     public function scopeCreatedBetween(Builder $query, $from, $to = null): Builder
     {
@@ -164,14 +244,6 @@ class User extends \TCG\Voyager\Models\User
     public function fcmTokens(): HasMany
     {
         return $this->hasMany(FcmToken::class);
-    }
-    
-    public function isAdmin()
-    {
-        if($this->level->key == "admin")
-            return true;
-        else
-            return false;
     }
     
     public function isSupervisor()

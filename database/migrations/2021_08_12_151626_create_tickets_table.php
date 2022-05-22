@@ -16,6 +16,8 @@ class CreateTicketsTable extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->string('number');
+            $table->boolean('client_side');
+            
             //Fill By Client
             $table->foreignId('state_id')->constrained()->onDelete('cascade');
             $table->foreignId('station_id')->constrained()->onDelete('cascade');
