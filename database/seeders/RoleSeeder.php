@@ -18,27 +18,27 @@ class RoleSeeder extends Seeder
         $roles = [
             [
                 "name" => User::ADMIN,
-                "display_name" => "Admin",
+                "label" => "Admin",
             ],
             [
                 "name" => User::SUPERVISORE,
-                "display_name" => "Supervisor",
+                "label" => "Supervisor",
             ],
             [
                 "name" => User::TEAMLEADER,
-                "display_name" => "Teamleader",
+                "label" => "Teamleader",
             ],
             [
                 "name" => User::DEALER,
-                "display_name" => "Dealer",
+                "label" => "Dealer",
             ],
             [
                 "name" => User::SUPERCLIENT,
-                "display_name" => "Super client",
+                "label" => "Super client",
             ],
             [
                 "name" => User::CLIENT,
-                "display_name" => "Client",
+                "label" => "Client",
             ],
         ];
 

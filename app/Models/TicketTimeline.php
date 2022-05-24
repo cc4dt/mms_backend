@@ -46,27 +46,4 @@ class TicketTimeline extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
-    public function scopeHasStatus($query, $status)
-    {
-        if($status)
-            return $query->whereHas('status', function ($query) use($status) {
-                $query->where('key', is_array($status) ? 'in' : '=', $status);
-            });
-    }
-    
-    public function scopeOnStatus($query, $status)
-    {
-        if($status)
-            return $query
-                ->whereHas('status', function ($query) use($status) {
-                    $query->where('key', is_array($status) ? 'in' : '=' , $status);
-                });
-                // ->whereIn('id', function ($query) {
-                //     $query
-                //         ->selectRaw('max(id)')
-                //         ->from('ticket_timelines')
-                //         ->whereColumn('ticket_id', 'tickets.id');
-                // });
-    }
 }

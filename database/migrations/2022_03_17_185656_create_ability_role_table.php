@@ -22,7 +22,7 @@ class CreateAbilityRoleTable extends Migration
 
             $table->foreign('role_id')
             ->references('id')
-            ->on('roles')
+            ->on('master_roles')
             ->onDelete('cascade');
 
             $table->foreign('ability_id')

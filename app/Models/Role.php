@@ -18,6 +18,8 @@ class Role extends Model
     const UNASSIGN = 'unassign_role';
 
     const ROLE_ADMIN = 1;
+    
+    protected $table = 'master_roles';
 
     protected $hidden = ['pivot'];
 
@@ -30,6 +32,7 @@ class Role extends Model
         'name',
         'label',
     ];
+    
     public function abilities()
     {
         return $this->belongsToMany(Ability::class)->withTimestamps();

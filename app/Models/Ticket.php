@@ -363,21 +363,28 @@ class Ticket extends Model
     public function scopeHasStatus($query, $status)
     {
         if($status)
-            return $query->whereHas('timelines', function ($query) use($status) {
-                $query->hasStatus($status);
+            return $query->whereHas('timelines', function ($q) use($status) {
+                $q->whereHas('status', function ($q) use($status) {
+                    $q->where('key', $status);
+                });
             });
     }
     
     public function scopeOnStatus($query, $status)
     {
         if($status)
-            return $query->whereHas('timelines', function ($query) use($status) {
-                $query->onStatus($status);
+            return $query->whereHas('timeline', function ($q) use($status) {
+                $q->whereHas('status', function ($q) use($status) {
+                    $q->where('key', $status);
+                });
             });
     }
     
     public function isOnStatus($status) {
-        return $this->timeline()->onStatus($status)->count() > 1;
+        $key = $this->timeline->status->key;
+        if(is_array($status))
+            return in_array($key, $status);
+        return $key = $status;
     }
     
     public function isHasStatus($status) {

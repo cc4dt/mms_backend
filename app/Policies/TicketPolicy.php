@@ -15,7 +15,7 @@ class TicketPolicy
 
     public function assgin(User $user, Ticket $ticket)
     {
-        if(!$ticket->isOnStatus(TicketStatus::OPENED))
+        if(!$ticket->isOnStatus([TicketStatus::OPENED]))
             return false;
             
         if($ticket->client_side)
@@ -31,14 +31,14 @@ class TicketPolicy
         return false;
     }
 
-    public function recive(User $user, Ticket $ticket)
+    public function receive(User $user, Ticket $ticket)
     {
         if(!$ticket->isOnStatus([TicketStatus::ASSGIND, TicketStatus::WAIT_SPARE]))
             return false;
-            
+
         if($ticket->client_side)
         {
-            if($user->hasAbility(Ticket::RECEIVE_ASSIGN))
+            if($user->hasAbility(Ticket::CLIENT_RECEIVE))
                 return true;
         }
         else if($user->hasAbility(Ticket::RECEIVE))
@@ -64,7 +64,7 @@ class TicketPolicy
         return false;
     }
 
-    public function client_feedback(User $user, Ticket $ticket)
+    public function clientFeedback(User $user, Ticket $ticket)
     {
         if(!$ticket->isOnStatus([TicketStatus::CLOSED, TicketStatus::WAIT_CLIENT_APPROVAL]))
             return false;
