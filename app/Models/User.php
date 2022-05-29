@@ -14,8 +14,9 @@ use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Auth;
 use Carbon\Carbon;
+use Log;
 
 class User extends \TCG\Voyager\Models\User
 {
@@ -131,19 +132,39 @@ class User extends \TCG\Voyager\Models\User
     }
 
 
-    public function roles()
+    public function master_roles()
     {
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
     public function abilities()
     {
-        return $this->roles->map->abilities->flatten()->pluck('name')->unique();
+        return $this->master_roles->map->abilities->flatten()->pluck('name')->unique();
     }
 
     public function hasAbility($ability)
     {
         return $this->abilities()->contains($ability);
+    }
+
+    public function scopeHasRoles($q, $role)
+    {
+        return $q->whereHas('master_roles', function($q) use($role) {
+            if(is_array($role))
+                $q->whereIn("name", $role);
+            else
+                $q->where("name", $role);
+        });
+    }
+
+    public function hasRole($role)
+    {
+        return $this->master_roles()->where(function($q) use($role) {
+            if(is_array($role))
+                $q->whereIn("name", $role);
+            else
+                $q->where("name", $role);
+        })->count() > 0;
     }
 
     public function assignRole($role)
@@ -192,8 +213,11 @@ class User extends \TCG\Voyager\Models\User
     
     public function scopeTeamleaders($query)
     {
-        $levelID = array_search('teamleader', self::LEVELS);
-        return $query->where('level_id', $levelID);
+        if(Auth::user()->hasRole([User::SUPERVISORE, User::ADMIN]))
+            $query->hasRoles(User::TEAMLEADER);
+        else if(Auth::user()->hasRole([User::DEALER, User::CLIENT]))
+            $query->hasRoles(User::DEALER);
+        return $query;
     }
 
     public function scopeSupervisors($query)

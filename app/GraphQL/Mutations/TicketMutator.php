@@ -39,7 +39,7 @@ class TicketMutator
     public function assign($_, array $args)
     {
         $ticket = Ticket::find($args['id']);
-        if(Gate::denies('assign', $ticket))
+        if(!$ticket->can_assign)
             throw new CustomException(__("You are not authorized to do this"), __("forbidden"));
         
         return $ticket->assign($args['input']);

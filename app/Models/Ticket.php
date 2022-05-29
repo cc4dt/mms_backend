@@ -373,9 +373,16 @@ class Ticket extends Model
     public function scopeOnStatus($query, $status)
     {
         if($status)
-            return $query->whereHas('timeline', function ($q) use($status) {
-                $q->whereHas('status', function ($q) use($status) {
-                    $q->where('key', $status);
+            return $query->whereHas('timelines', function ($query) use($status) {
+                $query
+                    ->whereHas('status', function ($query) use($status) {
+                        $query->where('key', $status);
+                    })
+                    ->whereIn('id', function ($query) {
+                        $query
+                            ->selectRaw('max(id)')
+                            ->from('ticket_timelines')
+                            ->whereColumn('ticket_id', 'tickets.id');
                 });
             });
     }
@@ -433,7 +440,7 @@ class Ticket extends Model
         if ($this->update($input)) {
             $input['created_by_id'] = Auth::id();
             $this->timelines()->create($input);
-
+            
             try {
                 $this->teamleader->notify(new TicketAssigned($this));
             } catch (Exception $e) {
