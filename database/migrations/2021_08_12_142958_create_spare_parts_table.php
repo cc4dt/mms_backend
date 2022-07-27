@@ -17,6 +17,7 @@ class CreateSparePartsTable extends Migration
             $table->id();
             $table->string('name_en');
             $table->string('name_ar');
+            $table->float('price');
             $table->timestamps();
         });
     }

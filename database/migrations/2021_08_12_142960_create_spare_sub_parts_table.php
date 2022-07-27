@@ -17,6 +17,7 @@ class CreateSpareSubPartsTable extends Migration
             $table->id();
             $table->string('name_en');
             $table->string('name_ar');
+            $table->float('price');
             $table->foreignId('spare_part_id')->constrained('spare_parts')->onDelete('cascade');
             $table->timestamps();
         });

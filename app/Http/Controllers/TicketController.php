@@ -19,10 +19,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use Redirect;
 use Exception;
+use Log;
 
 class TicketController extends Controller
 {
-    
+
     private $slug;
     /**
      * Datatable Columns Array
@@ -72,7 +73,7 @@ class TicketController extends Controller
                 'title' => 'Date',
                 'type' => 'datetime',
                 'sortable' => false,
-                'searchable' => false,  
+                'searchable' => false,
             ],
             // 'openline.created_by.name' => [
             //     'title' => 'Created By',
@@ -83,17 +84,17 @@ class TicketController extends Controller
             //     'title' => 'Status',
             //     'type' => 'badge',
             //     'sortable' => false,
-            //     'searchable' => false,  
+            //     'searchable' => false,
             // ],
         ];
     }
-    
-    public function export() 
+
+    public function export()
     {
         $type = TicketType::where('key', '=', $this->slug)->first();
         return Excel::download(new MaintenancesExport($this->slug), $this->slug . '.xlsx');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -103,14 +104,13 @@ class TicketController extends Controller
     {
         $type = TicketType::where('key', '=', $this->slug)->first();
         $tickets = $type->tickets()->with('station', 'equipment', 'breakdown', 'timeline.status', 'openline.created_by');
-
         return Inertia::render('Ticket/Index', [
             "type" => $type,
         ])->table($tickets, function ($table) {
             $table->transform(function($item) {
                 return $item;
             });
-            
+
             $table->queryBuilder
             ->join('stations as station', 'station.id', 'tickets.station_id')
             ->join('equipment', 'equipment.id', 'tickets.equipment_id')
@@ -119,7 +119,7 @@ class TicketController extends Controller
 
             $table->defaultSort('number', 'desc');
             $table->actionButtons(false);
-            
+
             // $table->createRoute($this->createRoute);
             $table->deleteRoute($this->deleteRoute);
             $table->editRoute($this->editRoute);
@@ -151,7 +151,7 @@ class TicketController extends Controller
      */
     public function create(Request $request)
     {
-        
+
 
         $stations = Station::all('id', 'name')
                 ->loadMissing('equipment');
@@ -177,12 +177,12 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         try {
             DB::beginTransaction();
-            
+
             $data =  $request->all();
-            
+
             $data['created_by_id'] = Auth::id();
             $data['updated_by_id'] = Auth::id();
 
@@ -197,7 +197,7 @@ class TicketController extends Controller
                                     $process->details()->create($detail);
                                 } else {
                                     throw new Exception("Error Processing Request", 3);
-                                } 
+                                }
                             }
                         } else {
                             throw new Exception("Error Processing Request", 3);
@@ -228,7 +228,7 @@ class TicketController extends Controller
      */
     public function show(Request $request, Ticket $ticket)
     {
-        
+
 
         if($this->slug != $ticket->type->slug)
             return redirect()->back()->withErrors([
@@ -259,7 +259,7 @@ class TicketController extends Controller
      */
     public function edit(Request $request, Ticket $ticket)
     {
-        
+
         if($this->slug != $ticket->type->slug)
             return redirect()->back()->withErrors([
                 'url' => 'ups, there was an error'
@@ -301,7 +301,7 @@ class TicketController extends Controller
      */
     public function update(Request $request, Ticket $ticket)
     {
-        
+
         if($this->slug != $ticket->type->slug)
             return redirect()->back()->withErrors([
                 'url' => 'ups, there was an error'
@@ -309,7 +309,7 @@ class TicketController extends Controller
         try {
             DB::beginTransaction();
             $data =  $request->all();
-            
+
             $currentProcesses = [];
             $data['updated_by_id'] = Auth::id();
             if($ticket->update($data)) {
@@ -319,7 +319,7 @@ class TicketController extends Controller
                             $process->update($item);
                         else
                             $process = $ticket->processes()->create($item);
-                        
+
                         $currentProcesses[] = $process->id;
                         if($process) {
                             foreach ($item['details'] as $value) {
@@ -330,7 +330,7 @@ class TicketController extends Controller
                                         $detail = $process->details()->create($value);
                                 } else {
                                     throw new Exception("Error Processing Request", 4);
-                                } 
+                                }
                             }
                         } else {
                             throw new Exception("Error Processing Request", 3);
@@ -362,7 +362,7 @@ class TicketController extends Controller
      */
     public function destroy(Request $request, Ticket $ticket)
     {
-        
+
         // $ticket = Ticket::find($request->id);
 
         if($this->slug != $ticket->type->slug)
@@ -375,7 +375,7 @@ class TicketController extends Controller
             return back();
         }
     }
-    
+
     public function report()
     {
         $cat = TicketType::where('key', $this->slug)->first();
@@ -401,7 +401,7 @@ class TicketController extends Controller
 
         return view('hse-procedures-report')->with($arr);
     }
-    
+
     public function getSlug(Request $request)
     {
         if (isset($this->slug)) {

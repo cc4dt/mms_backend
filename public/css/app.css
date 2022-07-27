@@ -11706,9 +11706,6 @@ input {
 .col-span-1 {
 	grid-column: span 1 / span 1;
 }
-.col-span-2 {
-	grid-column: span 2 / span 2;
-}
 .float-right {
 	float: right;
 }
@@ -11838,11 +11835,11 @@ input {
 .mr-auto {
 	margin-right: auto;
 }
-.mr-1 {
-	margin-right: 0.25rem;
-}
 .-mt-px {
 	margin-top: -1px;
+}
+.mr-1 {
+	margin-right: 0.25rem;
 }
 .mt-auto {
 	margin-top: auto;
@@ -11964,6 +11961,9 @@ input {
 .w-10 {
 	width: 2.5rem;
 }
+.w-1\/2 {
+	width: 50%;
+}
 .w-20 {
 	width: 5rem;
 }
@@ -11990,9 +11990,6 @@ input {
 }
 .w-11 {
 	width: 2.75rem;
-}
-.w-1\/2 {
-	width: 50%;
 }
 .min-w-0 {
 	min-width: 0px;
@@ -12183,9 +12180,6 @@ input {
 .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
 	--tw-divide-opacity: 1;
 	border-color: rgba(229, 231, 235, var(--tw-divide-opacity));
-}
-.self-center {
-	align-self: center;
 }
 .overflow-auto {
 	overflow: auto;
@@ -13246,10 +13240,6 @@ input {
 		grid-column: span 3 / span 3;
 	}
 
-	.sm\:col-span-1 {
-		grid-column: span 1 / span 1;
-	}
-
 	.sm\:m-10 {
 		margin: 2.5rem;
 	}
@@ -13577,10 +13567,6 @@ input {
 
 	.lg\:block {
 		display: block;
-	}
-
-	.lg\:grid-cols-4 {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 
 	.lg\:p-12 {

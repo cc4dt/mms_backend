@@ -36,6 +36,12 @@ class Ticket extends Model
     const CLIENT_APPROVAL = 'approval_ticket';
     const CLIENT_FEEDBACK = 'client_feedback_ticket';
 
+    // hours of
+    const NORMAL = 72;
+    const URGENT = 24;
+    const EMERGENCY = 5;
+
+
     protected $fillable = [
         'number',
         'state_id',
@@ -71,30 +77,30 @@ class Ticket extends Model
     protected $casts = [
         'client_side' => 'boolean',
     ];
-    
-    
+
+
     public function getCanAssignAttribute($value)
     {
         return Gate::allows('assgin', $this);
     }
-    
-    
+
+
     public function getCanReceiveAttribute($value)
     {
         return Gate::allows('receive', $this);
     }
-    
-    
+
+
     public function getCanApprovalAttribute($value)
     {
         return Gate::allows('approval', $this);
     }
-    
+
     public function getCanFeedbackAttribute($value)
     {
         return Gate::allows('client-feedback', $this);
     }
-    
+
     public function getCanCancelAttribute($value)
     {
         return Gate::allows('cancel', $this);
@@ -116,76 +122,103 @@ class Ticket extends Model
         }
         return $items;
     }
-    
+
     static public function daily()
     {
         return Ticket::whereDate('created_at', Carbon::today())
         ->orderBy('created_at', 'desc')->get();
     }
-        
+
     static public function monthly()
     {
         return Ticket::whereYear('created_at', Carbon::now()->year)
-        ->whereMonth('created_at', Carbon::now()->month)  
+        ->whereMonth('created_at', Carbon::now()->month)
         ->whereHas('status',  function($q) {
             $q->where("key", "!=", "closed");
-         })  
+         })
          ->whereHas('status',  function($q) {
              $q->where("key", "!=", "cancelled");
           })
         ->orderBy('created_at', 'desc')->get();
     }
 
-    static public function inSLA() {
-        return Ticket::onStatus('closed')
-         ->where(function($qp) {
+    static public function scopeInSLA() {
+        return Ticket::where(function($qp) {
             $qp->where(function($q) {
-               $q->whereHas('priority',  function($q) {
-                  $q->where("key", "normal");
-               });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [72]);
+                $q->whereHas('priority',  function($q) {
+                    $q->where("key", "normal");
+                });
+                $q->whereHas('closeline', function($q) {
+                    $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, created_at) <= ?', [Ticket::NORMAL]);
+                });
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "urgent");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [24]);
+               $q->whereHas('closeline', function($q) {
+                    $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, created_at) <= ?', [Ticket::URGENT]);
+                });
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "emergency");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) <= ?', [5]);
+               $q->whereHas('closeline', function($q) {
+                    $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, created_at) <= ?', [Ticket::EMERGENCY]);
+                });
             });
-         })
-         ->get();
+         });
     }
 
-    static public function outSLA() {
-        return Ticket::onStatus('closed')
-         ->where(function($qp) {
+    static public function scopeOutSLA() {
+        return Ticket::notOnStatus(TicketStatus::CANCELLED)->where(function($qp) {
             $qp->where(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "normal");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [72]);
+               $q->where(function($q) {
+                    $q->whereHas('closeline', function($q) {
+                        $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, created_at) > ?', [Ticket::NORMAL]);
+                    })
+                    ->orWhere(function($q) {
+                        $q->doesntHave('closeline');
+                        $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, now()) > ?', [Ticket::NORMAL]);
+                    });
+               });
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "urgent");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [24]);
+               $q->where(function($q) {
+                    $q->whereHas('closeline', function($q) {
+                        $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, created_at) > ?', [Ticket::URGENT]);
+                    })
+                    ->orWhere(function($q) {
+                        $q->doesntHave('closeline');
+                        $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, now()) > ?', [Ticket::URGENT]);
+                    });
+               });
             })
             ->orWhere(function($q) {
                $q->whereHas('priority',  function($q) {
                   $q->where("key", "emergency");
                });
-               $q->whereRaw('TIMESTAMPDIFF(HOUR, created_at, updated_at) > ?', [5]);
+
+               $q->where(function($q) {
+                    $q->whereHas('closeline', function($q) {
+                        $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, created_at) > ?', [Ticket::EMERGENCY]);
+                    })
+                    ->orWhere(function($q) {
+                        $q->doesntHave('closeline');
+                        $q->whereRaw('TIMESTAMPDIFF(HOUR, tickets.created_at, now()) > ?', [Ticket::EMERGENCY]);
+                    });
+                });
             });
-         })
-         ->get();
+         });
     }
-    
+
     public function teamleader(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -269,7 +302,7 @@ class Ticket extends Model
     {
         return $this->belongsTo(TicketStatus::class);
     }
-    
+
     public function getLedTimeAttribute($value)
     {
         foreach ($this->timelines as $value) {
@@ -283,7 +316,7 @@ class Ticket extends Model
             }
         }
     }
-    
+
     public function getDeadlineAttribute($value)
     {
         if($this->sla) {
@@ -297,37 +330,38 @@ class Ticket extends Model
     {
         if($this->priority) {
             if($this->priority->key == "normal") {
-                return 72;
+                return Ticket::NORMAL;
             }
             elseif ($this->priority->key == "urgent") {
-                return 24;
+                return Ticket::URGENT;
             }
             elseif ($this->priority->key == "emergency") {
-                return 5;
+                return Ticket::EMERGENCY;
             }
         }
         return 0;
     }
-    
+
     public function getInSlaAttribute($value)
     {
-        foreach ($this->timelines as $value) {
-            if($value->status->key == 'waiting_for_client_approval' && $value->created_at) {
-                $hours = $this->created_at->diffInHours($value->created_at);
-                if ($this->sla && $hours <= $this->sla) {
-                    return true;
-                }
-            }
-            else if($value->status->key == 'closed' && $value->created_at) {
-                $hours = $this->created_at->diffInHours($value->created_at);
-                if ($this->sla && $hours <= $this->sla) {
-                    return true;
-                }
-            }
-        }
+        return Ticket::inSla()->where('id', $this->id)->count() > 0;
+        // foreach ($this->timelines as $value) {
+        //     if($value->status->key == 'waiting_for_client_approval' && $value->created_at) {
+        //         $hours = $this->created_at->diffInHours($value->created_at);
+        //         if ($this->sla && $hours <= $this->sla) {
+        //             return true;
+        //         }
+        //     }
+        //     else if($value->status->key == 'closed' && $value->created_at) {
+        //         $hours = $this->created_at->diffInHours($value->created_at);
+        //         if ($this->sla && $hours <= $this->sla) {
+        //             return true;
+        //         }
+        //     }
+        // }
         return false;
     }
-    
+
     public function getActionsAttribute($value)
     {
         $actions = [];
@@ -343,7 +377,7 @@ class Ticket extends Model
         }
         return $actions;
     }
-    
+
     public function getByClientAttribute($value)
     {
         if(in_array($this->created_by->level->key, ['dealer', 'client']))
@@ -359,7 +393,7 @@ class Ticket extends Model
             $query->where('key', $type);
         })->orDoesntHave('type');
     }
-    
+
     public function scopeHasStatus($query, $status)
     {
         if($status)
@@ -369,7 +403,7 @@ class Ticket extends Model
                 });
             });
     }
-    
+
     public function scopeOnStatus($query, $status)
     {
         if($status)
@@ -386,18 +420,35 @@ class Ticket extends Model
                 });
             });
     }
-    
+
+    public function scopeNotOnStatus($query, $status)
+    {
+        if($status)
+            return $query->whereHas('timelines', function ($query) use($status) {
+                $query
+                    ->whereHas('status', function ($query) use($status) {
+                        $query->where('key', '!=', $status);
+                    })
+                    ->whereIn('id', function ($query) {
+                        $query
+                            ->selectRaw('max(id)')
+                            ->from('ticket_timelines')
+                            ->whereColumn('ticket_id', 'tickets.id');
+                });
+            });
+    }
+
     public function isOnStatus($status) {
         $key = $this->timeline->status->key;
         if(is_array($status))
             return in_array($key, $status);
         return $key = $status;
     }
-    
+
     public function isHasStatus($status) {
         return $this->timelines()->hasStatus($status)->count() > 1;
     }
-    
+
     public function jobs($root, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         return Ticket::hasStatus('transfer_to_job');
@@ -440,7 +491,7 @@ class Ticket extends Model
         if ($this->update($input)) {
             $input['created_by_id'] = Auth::id();
             $this->timelines()->create($input);
-            
+
             try {
                 $this->teamleader->notify(new TicketAssigned($this));
             } catch (Exception $e) {
@@ -492,7 +543,7 @@ class Ticket extends Model
                         ->orWhere(fn($q) => $q->dealers());
                     })
                     ->get();
-                
+
                 if((TicketStatus::find($input['status_id'])->key) == "closed") {
                     Notification::send($users, new TicketClosed($this));
                 }
@@ -505,7 +556,7 @@ class Ticket extends Model
             return $this;
         }
     }
-    
+
     public function client_approval($input)
     {
         if(isset($input['is_reversed']) && $input['is_reversed'])
@@ -532,7 +583,7 @@ class Ticket extends Model
             return $this;
         }
     }
-    
+
     public function approval($input)
     {
         $input['updated_by_id'] = Auth::id();
