@@ -50,27 +50,21 @@ Route::get('/test', function () {
     return Inertia::render('Test');
 })->name('test');
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    
+
     Route::get('/', DashboardController::class)->name('dashboard');
 
     // Route::resource('users', UserController::class);
-    
-    try {
-        $types = TicketType::all();
-        foreach ($types as $value) {
-            Route::get('ticket/' . $value->key . '/export', [
-                TicketController::class, 'export'
-            ])->name('ticket.' . $value->key . '.export.index');
 
-            Route::get('report/' . $value->key . '/ticket', [
-                TicketController::class, 'report',
-            ])->name('ticket.' . $value->key . '.report');
+    Route::get('ticket/export', [
+        TicketController::class, 'export'
+    ])->name('ticket.export.index');
 
-            Route::resource('ticket/'.$value->key, TicketController::class, ["as" => "ticket"])->parameters([$value->slug => 'ticket']);
-        }
-    } catch (\Throwable $th) {
-    }
-    
+    Route::get('report/ticket', [
+        TicketController::class, 'report',
+    ])->name('ticket.report');
+
+    Route::resource('ticket', TicketController::class);
+
     try {
         $categories = Category::all();
         foreach ($categories as $value) {
@@ -81,7 +75,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::get('maintenance/' . $value->slug . '/report-costs', [
                 MaintenanceController::class, 'report_costs',
             ])->name('maintenance.' . $value->slug . '.report.costs');
-            
+
             Route::get('report/' . $value->slug . '/maintenance', [
                 MaintenanceController::class, 'report',
             ])->name('maintenance.' . $value->slug . '.report');
@@ -98,14 +92,14 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('breakdown', BreakdownController::class);
     Route::resource('link', LinkController::class);
     Route::resource('master', EquipmentController::class);
-    
-            
+
+
     Route::get('report/master/qrcode', [
         EquipmentController::class, 'exportQrcode',
     ])->name('qrcode.master.report');
-    
+
     Route::resource('/Report', ReportController::class);
-    
+
     Route::get('/report/breakdown', [ReportController::class, 'breakdown'])->name('breakdown-report');
     Route::get('/report/corrective', [ReportController::class, 'corrective'])->name('corrective-report');
     Route::get('/report/maintenance', [ReportController::class, 'maintenance'])->name('maintenance-report');
@@ -128,7 +122,7 @@ Route::get('/app/download/android', function () {
         $path  = Storage::disk(config('voyager.storage.disk'))->path($file);
         return response()->download($path, 'MMS.apk');
     } else {
-        return abort(404); 
+        return abort(404);
     }
 })->name('app.download.android');
 

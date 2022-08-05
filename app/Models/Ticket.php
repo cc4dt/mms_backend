@@ -123,23 +123,35 @@ class Ticket extends Model
         return $items;
     }
 
+    public function scopeToDay($query)
+    {
+        return $query->whereHas("openline", function($q) {
+            $q->whereDate('timestamp', Carbon::today())
+              ->orderBy('timestamp', 'desc');
+        });
+    }
+
+    public function scopeToMonth($query)
+    {
+        return $query->whereHas("openline", function($q) {
+            $q->whereYear('timestamp', Carbon::now()->year)
+              ->whereMonth('timestamp', Carbon::now()->month)
+              ->orderBy('timestamp', 'desc');
+        });
+    }
+
     static public function daily()
     {
-        return Ticket::whereDate('created_at', Carbon::today())
-        ->orderBy('created_at', 'desc')->get();
+        return Ticket::toDay()
+            ->get();
     }
 
     static public function monthly()
     {
-        return Ticket::whereYear('created_at', Carbon::now()->year)
-        ->whereMonth('created_at', Carbon::now()->month)
-        ->whereHas('status',  function($q) {
-            $q->where("key", "!=", "closed");
-         })
-         ->whereHas('status',  function($q) {
-             $q->where("key", "!=", "cancelled");
-          })
-        ->orderBy('created_at', 'desc')->get();
+        return Ticket::toMonth()
+            ->notOnStatus(TicketStatus::CANCELLED)
+            ->notOnStatus(TicketStatus::CLOSED)
+            ->get();
     }
 
     static public function scopeInSLA() {
@@ -395,6 +407,16 @@ class Ticket extends Model
     }
 
     public function scopeHasStatus($query, $status)
+    {
+        if($status)
+            return $query->whereHas('timelines', function ($q) use($status) {
+                $q->whereHas('status', function ($q) use($status) {
+                    $q->where('key', $status);
+                });
+            });
+    }
+
+    public function scopeNotHasStatus($query, $status)
     {
         if($status)
             return $query->whereHas('timelines', function ($q) use($status) {

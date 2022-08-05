@@ -12,7 +12,7 @@ use App\Models\TicketStatus;
 use App\Models\User;
 
 class DashboardController extends Controller
-{   
+{
     /**
      * Provision a new web server.
      *
@@ -21,6 +21,8 @@ class DashboardController extends Controller
     public function __invoke()
     {
         return Inertia::render('Dashboard', [
+            "openedToDay" => Ticket::daily()->loadMissing('station', 'type', 'timeline.status', 'openline.created_by', 'breakdown'),
+            "openedToMonth" => Ticket::monthly()->loadMissing('station','type', 'timeline.status', 'openline.created_by', 'breakdown'),
             "slaCounts" => [
                 [
                     'key' => "IN SERVICE",

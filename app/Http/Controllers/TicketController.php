@@ -45,10 +45,10 @@ class TicketController extends Controller
     public function __construct(Request $request) {
         $this->slug = $this->getSlug($request);
 
-        $this->createRoute = 'ticket.' . $this->slug . '.create';
-        $this->viewRoute = 'ticket.' . $this->slug . '.show';
-        $this->editRoute = 'ticket.' . $this->slug . '.edit';
-        $this->deleteRoute = 'ticket.' . $this->slug . '.destroy';
+        $this->createRoute = 'ticket.create';
+        $this->viewRoute = 'ticket.show';
+        $this->editRoute = 'ticket.edit';
+        $this->deleteRoute = 'ticket.destroy';
 
         $this->datatableColumns = [
             'number' => [
@@ -66,6 +66,11 @@ class TicketController extends Controller
             ],
             'breakdown.name_ar' => [
                 'title' => 'Breakdown',
+                'sortable' => true,
+                'searchable' => true,
+            ],
+            'type.name_ar' => [
+                'title' => 'Type',
                 'sortable' => true,
                 'searchable' => true,
             ],
@@ -102,10 +107,10 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        $type = TicketType::where('key', '=', $this->slug)->first();
-        $tickets = $type->tickets()->with('station', 'equipment', 'breakdown', 'timeline.status', 'openline.created_by');
+        // $type = TicketType::where('key', '=', $this->slug)->first();
+        $tickets = Ticket::with('station', 'equipment', 'breakdown', 'type', 'timeline.status', 'openline.created_by');
         return Inertia::render('Ticket/Index', [
-            "type" => $type,
+            "type" => [],
         ])->table($tickets, function ($table) {
             $table->transform(function($item) {
                 return $item;
@@ -114,6 +119,7 @@ class TicketController extends Controller
             $table->queryBuilder
             ->join('stations as station', 'station.id', 'tickets.station_id')
             ->join('equipment', 'equipment.id', 'tickets.equipment_id')
+            ->join('ticket_types as type', 'type.id', 'tickets.type_id')
             ->join('breakdowns as breakdown', 'breakdown.id', 'tickets.breakdown_id')
             ->select('tickets.*');
 
@@ -130,6 +136,11 @@ class TicketController extends Controller
                     'title' => 'Station',
                     'type' => 'multiple_select',
                     'data' => Station::all()->pluck('name', 'id')->all(),
+                ],
+                'type_id' => [
+                    'title' => 'Type',
+                    'type' => 'multiple_select',
+                    'data' => TicketType::all()->pluck('name', 'id')->all(),
                 ],
                 // 'created_by_id' => [
                 //     'title' => 'Created By',
@@ -228,13 +239,6 @@ class TicketController extends Controller
      */
     public function show(Request $request, Ticket $ticket)
     {
-
-
-        if($this->slug != $ticket->type->slug)
-            return redirect()->back()->withErrors([
-                'url' => 'ups, there was an error'
-            ]);
-
         $ticket->loadMissing(
             'station',
             'created_by',

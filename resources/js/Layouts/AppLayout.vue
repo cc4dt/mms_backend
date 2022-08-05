@@ -579,12 +579,10 @@
 
                 <hr class="my-6 border-gray-200 dark:border-gray-600" />
                 <jet-responsive-nav-link
-                  v-for="type in $page.props.menu.ticketTypes"
-                  :key="type"
-                  :href="route('ticket.' + type.key + '.index')"
-                  :active="route().current('ticket.' + type.key + '.*')"
+                  :href="route('ticket.index')"
+                  :active="route().current('ticket.*')"
                 >
-                  {{ type.name }}
+                  Breakdown
                 </jet-responsive-nav-link>
 
                 <hr class="my-6 border-gray-200 dark:border-gray-600" />
@@ -715,7 +713,7 @@
                 </div>
               </div>
             </nav>
-            <!-- 
+            <!--
               <div class="flex items-center py-4 px-4 mt-auto">
                 <img
                   class="object-cover mx-2 rounded-full h-9 w-9"

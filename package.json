@@ -42,6 +42,7 @@
         "datatables.net-buttons-bs4": "^2.2.2",
         "datatables.net-datetime": "^1.1.2",
         "datatables.net-dt": "^1.11.4",
+        "javascript-time-ago": "^2.5.7",
         "jquery": "^3.6.0",
         "jszip": "^3.7.1",
         "moment": "^2.29.1",
