@@ -574,7 +574,7 @@
                                         </a>
                                     </li>
                                 @endforeach
-{{-- 
+{{--
                                 <li class="nav-item">
                                     <a href="{{ route('pm.index') }}" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
@@ -584,7 +584,7 @@
                             </ul>
                         </li>
 
-                        @if (Gate::allows('view-reports'))
+                        {{-- @if (Gate::allows('view-reports')) --}}
 
                             <li class="nav-item has-treeview">
                                 <a href="#" class="nav-link">
@@ -609,7 +609,7 @@
                                             <p>Corrective Tickets</p>
                                         </a>
                                     </li>
-                                    
+
                                     <li class="nav-item">
                                         <a href="{{ route('maintenance-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
@@ -634,19 +634,19 @@
                                             <p>HSE</p>
                                         </a>
                                     </li> --}}
-                                    <!-- <li class="nav-item">
+                                    {{-- <li class="nav-item">
                                         <a href="{{ route('hse-procedures-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>HSE</p>
                                         </a>
-                                    </li> -->
+                                    </li> --}}
                                     <li class="nav-item">
                                         <a href="{{ route('hse-costs-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>HSE Costs</p>
                                         </a>
                                     </li>
-                                    
+
                                 @foreach (\App\Models\Category::all() as $item)
                                     <li class="nav-item">
                                         <a href="{{ route('maintenance.' . $item->slug . '.report') }}" class="nav-link">
@@ -655,8 +655,8 @@
                                         </a>
                                     </li>
                                 @endforeach
-                                    
-                        @endif
+
+                        {{-- @endif --}}
                     </ul>
                     </li>
 
