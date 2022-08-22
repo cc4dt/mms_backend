@@ -380,6 +380,117 @@ class MaintenanceController extends Controller
 
         return view('hse-procedures-report')->with($arr);
     }
+
+    
+    public function maintenance_needs()
+    {
+        $columns = (object) [
+            'maintenances' => [],
+            'procedures' => [],
+            'spares' => [],
+        ];
+        $rows = [];
+        $sumRow = [];
+        $totalRow = [];
+        $priceRow = [];
+        
+        foreach (Station::all() as $station) {
+            $rows[] = (object) [
+                'id' => $station->id,
+                'name' => $station->name,
+                'items' => [],
+                'total' => 0,
+            ];
+        }
+
+        $replacedHse = Detail::whereHas('option',  function ($query) {
+            $query->replaces();
+        });
+
+        // $replacedHse = Detail::where('id', '<>', '0');
+        
+        // dump($replacedHse->count());
+        // dd(Category::where('slug', 'hse')->get());
+        foreach (Category::where('slug', $this->slug)->first()->forms as $form) {
+            $procedures = [];
+            $procedure_count = 0;
+            if($form->procedures()->replaces()->count()) {
+                foreach ($form->procedures()->replaces()->get() as $procedure) {
+                    $spares = [];
+                    $spares_count = 1;
+                    $sub_price = 0;
+                    if($procedure->spare_part && $procedure->spare_part->sub_parts->count() > 0) {
+                        foreach ($procedure->spare_part->sub_parts as $spare) {
+                            
+                            $total_items = (clone $replacedHse)->where('spare_part_id', $spare->id)->get();
+                            
+                            // dump([
+                            //     "spare" => $spare->name,
+                            //     "count" => $total_items->count(),
+                            //     "query" => $total_items->toSql(),
+                            // ]);
+                            $subSum = 0;
+                            foreach ($rows as $key => $row) {
+                                $items = $total_items->filter(function($item) use($row) {
+                                    return $item->process->maintenance->station_id == $row->id;
+                                })->count();
+                                $rows[$key]->total += $spare->price * $items;
+                                $rows[$key]->items[] = $items;
+                                $subSum += $items;
+                            }
+
+                            $spares_count = $procedure->spare_part->sub_parts->count();
+                            $columns->spares[] = (object) [
+                                'name' => $spare->name
+                            ];
+                            $sumRow[] = $subSum;
+                            $priceRow[] = $spare->price;
+                            $totalRow[] = $subSum * $spare->price;
+                        }
+                    } else {
+                        $total_items = ((clone $replacedHse))->where('procedure_id', $procedure->id)->get();
+                        $subSum = 0;
+                        foreach ($rows as $key => $row) {
+                            $items = $total_items->filter(function($item) use($row) {
+                                return $item->process->maintenance->station_id == $row->id;
+                            })->count();
+                            $rows[$key]->items[] = $items;
+                            $rows[$key]->total += $procedure->price * $items;
+                            $subSum += $items;
+                        }
+                        $sumRow[] = $subSum;
+                        $priceRow[] = $procedure->price;
+                        $totalRow[] = $subSum * $procedure->price;
+                        
+                    }
+                    
+                    $procedure_count += $spares_count;
+                
+                    $columns->procedures[] = (object) [
+                        'name' => $procedure->name,
+                        'count' => $spares_count
+                    ];
+                }
+                
+                $columns->maintenances[] = (object) [
+                    'name' => $form->equipment->name,
+                    'count' => $procedure_count
+                ];
+            }
+        }
+
+        foreach ($rows as $key => $row) {
+            $rows[$key]->total = number_format($rows[$key]->total);
+        }
+        $arr = [
+            'columns' => (object) $columns,
+            'rows' => $rows,
+            'sumRow' => $sumRow,
+            'priceRow' => $priceRow,
+            'totalRow' => $totalRow,
+        ];
+        return view('maintenance-needs-report')->with($arr);
+    }
     
     public function getSlug(Request $request)
     {

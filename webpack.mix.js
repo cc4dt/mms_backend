@@ -25,5 +25,5 @@ if (mix.inProduction()) {
 
 mix.browserSync({
     open: false,
-    proxy: 'nginx'
+    proxy: 'mms.test'
 })

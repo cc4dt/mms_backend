@@ -1,12 +1,10 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\BreakdownController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LinkController;
@@ -16,13 +14,7 @@ use App\Http\Controllers\TicketController;
 
 use App\Http\Controllers\ajax_data\FetchController;
 
-use Illuminate\Support\Collection;
-use App\Models\User;
-use App\Models\Part;
-use App\Models\MaintenanceProcess;
-use App\Models\MasterEquipment;
 use App\Models\Category;
-use App\Models\TicketType;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +41,7 @@ use App\Models\TicketType;
 Route::get('/test', function () {
     return Inertia::render('Test');
 })->name('test');
+
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/', DashboardController::class)->name('dashboard');
@@ -75,6 +68,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
             Route::get('maintenance/' . $value->slug . '/report-costs', [
                 MaintenanceController::class, 'report_costs',
             ])->name('maintenance.' . $value->slug . '.report.costs');
+            
+            Route::get('report/' . $value->slug . '/needs', [
+                MaintenanceController::class, 'maintenance_needs',
+            ])->name('needs.' . $value->slug . '.report');
 
             Route::get('report/' . $value->slug . '/maintenance', [
                 MaintenanceController::class, 'report',
@@ -106,7 +103,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/report/pm', [ReportController::class, 'pm'])->name('pm-report');
     Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->name('pm-fireexting-report');
     Route::get('/report/hse', [ReportController::class, 'hse'])->name('hse-report');
-    Route::get('/report/hse-costs', [ReportController::class, 'hse_costs'])->name('hse-costs-report');
     Route::get('/report/hse-procedures', [ReportController::class, 'hse_procedures'])->name('hse-procedures-report');
     Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
     Route::get('/app', function () {

@@ -10,7 +10,7 @@
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                            <li class="breadcrumb-item active">HSE</li>
+                            <li class="breadcrumb-item active">Maintenance</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -19,7 +19,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">HSE Costs</h3>
+                <h3 class="card-title">Needs</h3>
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -46,8 +46,8 @@
                         <thead>
                             <tr>
                                 <th rowspan="3">Station</th>
-                                @foreach ($columns->hses as $hse)
-                                    <th colspan="{{ $hse->count }}">{{ $hse->name }}</th>
+                                @foreach ($columns->maintenances as $maintenance)
+                                    <th colspan="{{ $maintenance->count }}">{{ $maintenance->name }}</th>
                                 @endforeach
                                 <th rowspan="3">Total</th>
                             </tr>
@@ -84,18 +84,18 @@
                         </tbody>
                         <tfoot>
                             <tr>
+                                <th>Price</th>
+                                @foreach ($priceRow as $item)
+                                    <th>{{ number_format($item) }}</th>
+                                @endforeach
+                                <th></th>
+                            </tr>
+                            <tr>
                                 <th>SUM</th>
                                 @foreach ($sumRow as $item)
                                     <th>{{ $item }}</th>
                                 @endforeach
                                 <th>{{ array_sum($sumRow) }}</th>
-                            </tr>
-                            <tr>
-                                <th>Price</th>
-                                @foreach ($priceRow as $item)
-                                    <th>{{ number_format($item) }}</th>
-                                @endforeach
-                                <th>{{ number_format(array_sum($priceRow)) }}</th>
                             </tr>
                             <tr>
                                 <th>Total</th>
@@ -125,7 +125,7 @@
                     charset: 'UTF-8',
                     orientation: 'landscape',
                     pageSize: 'LEGAL',
-                    title: "HSE Costs",
+                    title: "Needs",
                     footer: true,
                     exportOptions: {
                         columns: ':visible'
