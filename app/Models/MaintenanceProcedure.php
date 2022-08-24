@@ -110,6 +110,11 @@ class MaintenanceProcedure extends Model
             return null;
         }
     }
+    
+    public function forms()
+    {
+        return $this->belongsToMany(MaintenanceForm::class, 'form_procedure', 'procedure_id', 'form_id');
+    }
 
     public function setTypeAttribute($value)
     {

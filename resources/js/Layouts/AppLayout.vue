@@ -585,6 +585,13 @@
                   Breakdown
                 </jet-responsive-nav-link>
 
+                <jet-responsive-nav-link
+                  :href="route('station.index')"
+                  :active="route().current('station.*')"
+                >
+                  Station
+                </jet-responsive-nav-link>
+
                 <hr class="my-6 border-gray-200 dark:border-gray-600" />
                 <jet-responsive-nav-link
                   v-for="category in $page.props.menu.categories"

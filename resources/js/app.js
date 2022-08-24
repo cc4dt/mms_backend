@@ -5,6 +5,18 @@ import { createInertiaApp } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
 import { Link, Head } from "@inertiajs/inertia-vue3";
 
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core'
+
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+/* import specific icons */
+import { faLocationDot, faClipboardList, faMoneyCheckDollar } from '@fortawesome/free-solid-svg-icons'
+
+/* add icons to the library */
+library.add(faLocationDot, faClipboardList,faMoneyCheckDollar)
+
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 createInertiaApp({
@@ -16,6 +28,7 @@ createInertiaApp({
             .mixin({ methods: { route } })
             .mixin({ components: { InertiaLink: Link } })
             .mixin({ components: { InertiaHead: Head } })
+            .mixin({ components: { fai: FontAwesomeIcon } })
             .mount(el);
     },
 });

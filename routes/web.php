@@ -6,6 +6,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BreakdownController;
+use App\Http\Controllers\StationController;
+
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\EquipmentController;
@@ -57,6 +59,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     ])->name('ticket.report');
 
     Route::resource('ticket', TicketController::class);
+    
+    Route::resource('station', StationController::class);
 
     try {
         $categories = Category::all();

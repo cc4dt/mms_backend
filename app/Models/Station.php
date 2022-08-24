@@ -13,8 +13,6 @@ class Station extends Model
         'topCount',
     ];
 
-    
-
     public function getTopCountAttribute()
     {
         return $this->tickets()->count();
@@ -38,5 +36,10 @@ class Station extends Model
     public function hses(): HasMany
     {
         return $this->hasMany(MasterHse::class);
+    }
+
+    public function maintenances()
+    {
+        return $this->hasMany(Maintenance::class);
     }
 }
