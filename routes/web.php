@@ -61,6 +61,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::resource('ticket', TicketController::class);
     
     Route::resource('station', StationController::class);
+    Route::get('report/station/statement/{station}', [StationController::class, 'statementExport'])->name('station.report.statement');
 
     try {
         $categories = Category::all();

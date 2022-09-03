@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+
 use App\Models\TicketType;
 use App\Models\Equipment;
 use App\Models\Station;
 use App\Models\User;
 
-use App\Exports\MaintenancesExport;
 use App\Models\Breakdown;
 use App\Models\Category;
 use App\Models\Detail;
@@ -16,12 +20,10 @@ use App\Models\MaintenanceProcedure;
 use App\Models\State;
 use App\Models\Ticket;
 use App\Models\TicketStatus;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
+use App\Exports\StationStatement;
+use App\Models\Process;
 use Inertia\Inertia;
-use Maatwebsite\Excel\Facades\Excel;
 
 use Redirect;
 use Exception;
@@ -75,12 +77,12 @@ class StationController extends Controller
         ];
     }
 
-    public function export()
+    public function statementExport(Request $request, $station) 
     {
-        $type = TicketType::where('key', '=', $this->slug)->first();
-        return Excel::download(new MaintenancesExport($this->slug), $this->slug . '.xlsx');
+        $data =  $request->all();
+        $station = Station::find($station);
+        return Excel::download(new StationStatement($station, $data['from'], $data['to']), $station->name . '.xlsx');
     }
-
     /**
      * Display a listing of the resource.
      *

@@ -8,7 +8,7 @@
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="grid grid-cols-6 gap-6">
           <div class="col-span-6 sm:col-span-4 space-y-6">
-            <div class='overflow-x-auto relative shadow-md sm:rounded-lg'>
+            <!-- <div class='overflow-x-auto relative shadow-md sm:rounded-lg'>
               <table
                 class="w-full text-sm text-center text-gray-500 dark:text-gray-400 border-collapse border border-slate-500">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -71,7 +71,7 @@
                   </tr>
                 </tfoot>
               </table>
-            </div>
+            </div> -->
 
             <card>
               <template #header>
@@ -92,8 +92,48 @@
                   class="h-x2" :chartData="breakdownData" :options="stationOptions" />
               </div>
             </card>
+
+            <card>
+              <template #header>
+                <div class="
+              h-12
+              border-b border-gray-200
+              dark:border-gray-500
+              px-2
+              flex
+              justify-between
+              items-center
+            ">
+                  <h2>Breakdown status</h2>
+                </div>
+              </template>
+              <div class="p-2">
+                <DoughnutChart :chartData="ticketStatusData" />
+              </div>
+            </card>
           </div>
           <div class="col-span-6 sm:col-span-2 space-y-6">
+            <card>
+              <form class="p-4" :action="route('station.report.statement', station.id)">
+
+                <div class="mb-6">
+                  <label for="from" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">From</label>
+                  <input type="datetime-local" id="from" name="from"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="From" required>
+                </div>
+                <div class="mb-6">
+                  <label for="to" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">To</label>
+                  <input type="datetime-local" id="to" name="to" :value="currentTime()"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="To" required>
+                </div>
+                <button type="submit"
+                  class="py-2.5 px-5 w-full text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Station
+                  Statement</button>
+              </form>
+            </card>
+
             <card>
               <ul class="space-y-2 p-4">
                 <li>
@@ -127,7 +167,7 @@
 
               <div class="p-2 space-y-2 overflow-x-hidden overflow-y-auto" style="max-height: 250px">
                 <div v-for="t in tickets" :key="t.id">
-                  <inertia-link :href="route('ticket.show', t.id)">
+                  <!-- <inertia-link :href="route('ticket.show', t.id)"> -->
                     <div class="bg-gray-200 dark:bg-gray-900 rounded-md px-2 py-2">
                       <div class="flex justify-between">
                         <div>{{ t.station.name }}</div>
@@ -145,7 +185,7 @@
                         </div>
                       </div>
                     </div>
-                  </inertia-link>
+                  <!-- </inertia-link> -->
                 </div>
               </div>
             </card>
@@ -191,25 +231,6 @@
                 </div>
               </div>
             </div>
-
-            <card>
-              <template #header>
-                <div class="
-              h-12
-              border-b border-gray-200
-              dark:border-gray-500
-              px-2
-              flex
-              justify-between
-              items-center
-            ">
-                  <h2>Breakdown status</h2>
-                </div>
-              </template>
-              <div class="p-2">
-                <DoughnutChart :chartData="ticketStatusData" />
-              </div>
-            </card>
           </div>
         </div>
       </div>
@@ -298,6 +319,25 @@ export default defineComponent({
     }
   },
   methods: {
+    currentTime: () => {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = now.getMonth() + 1;
+      var day = now.getDate();
+      var hour = now.getHours();
+      var minute = now.getMinutes();
+      var localDatetime =
+        year +
+        '-' +
+        (month < 10 ? '0' + month.toString() : month) +
+        '-' +
+        (day < 10 ? '0' + day.toString() : day) +
+        'T' +
+        (hour < 10 ? '0' + hour.toString() : hour) +
+        ':' +
+        (minute < 10 ? '0' + minute.toString() : minute);
+        return localDatetime;
+    },
     timeAgo: (date) => {
       const timeAgo = new TimeAgo("ar");
       return timeAgo.format(new Date(date));
