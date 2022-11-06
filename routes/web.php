@@ -17,6 +17,8 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ajax_data\FetchController;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
+use TCG\Voyager\Facades\Voyager;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,6 +110,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/report/pm', [ReportController::class, 'pm'])->name('pm-report');
     Route::get('/report/pm-fireexting', [ReportController::class, 'pm_fireexting'])->name('pm-fireexting-report');
     Route::get('/report/hse', [ReportController::class, 'hse'])->name('hse-report');
+    Route::get('/report/off-working-hours', [ReportController::class, 'off_working_hours'])->name('off-working-hours-report');
     Route::get('/report/hse-procedures', [ReportController::class, 'hse_procedures'])->name('hse-procedures-report');
     Route::get('ajax_fetch_data/{table}/{id}', [FetchController::class, 'getdata']);
     Route::get('/app', function () {

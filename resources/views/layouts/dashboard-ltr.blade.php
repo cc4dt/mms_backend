@@ -628,6 +628,12 @@
                                             <p>Fireexting</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('off-working-hours-report') }}" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Off working hours</p>
+                                        </a>
+                                    </li>
                                     {{-- <li class="nav-item">
                                         <a href="{{ route('hse-report') }}" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>

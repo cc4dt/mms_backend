@@ -566,4 +566,23 @@ class ReportController extends Controller
 
         return view('hse-costs-report')->with($arr);
     }
+
+    function off_working_hours() {
+        
+        $arr['tickets'] = Ticket::whereHas('closeline')->get()
+            ->loadMissing(
+                "equipment",
+                "breakdown",
+                "station",
+                "openline",
+                "closeline",
+                "type",
+            );
+        
+        $arr['stations'] = Station::all();
+        $arr['equipment'] = Equipment::all('id', 'name_ar', 'name_en');
+        $arr['types'] = TicketType::all('id', 'name_ar', 'name_en');
+        $arr['breakdowns'] = Breakdown::all('id', 'name_ar', 'name_en');
+        return view('off-working-hours-report')->with($arr);
+    }
 }
