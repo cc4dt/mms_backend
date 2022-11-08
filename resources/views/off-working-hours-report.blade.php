@@ -151,10 +151,10 @@
                 e.station.name,
                 e.equipment.name,
                 e.breakdown.name,
-                e.type.name,
+                e.type?.name ?? '',
                 new Date(e.openline.timestamp).toLocaleString(),
                 new Date(e.closeline.timestamp).toLocaleString(),
-                Math.floor(e.timeout / 3600) + ":" + Math.floor((e.timeout % 3600) / 60),
+                Math.floor(e.timeout / 3600) + " hours, " + Math.floor((e.timeout % 3600) / 60) + " minutes",
             ]);
         });
 
@@ -200,7 +200,7 @@
                 title: "Breakdown"
             },
             {
-                title: "Timeout"
+                title: "Total Off working hours"
             },
         ];
         var breakdownsTimeout = getBreakdownsTimeout(tickets);
@@ -209,7 +209,7 @@
         Object.values(breakdownsTimeout).forEach(e => {
             qtyDataSet.push([
                 e['name'],
-                moment.duration(e['timeout'] * 1000).humanize(),
+                Math.floor(e['timeout'] / 3600) + " hours, " + Math.floor((e['timeout'] % 3600) / 60) + " minutes",
             ]);
         });
         
@@ -261,7 +261,7 @@
                 var inDay = true;
                 
                 if(startDate && endDate) {
-                    var date = moment(new Date(o.process.ticket.openline.timestamp), 'YYYY-MM-DD');
+                    var date = moment(new Date(o.openline.timestamp), 'YYYY-MM-DD');
                     inDay = date.isBetween(startDate, endDate);
                 }
                 
@@ -277,7 +277,7 @@
             Object.values(breakdownsTimeout).forEach(e => {
                 qtyDateTable.row.add([
                     e['name'],
-                    moment.duration(e['timeout'] * 1000).humanize(),
+                    Math.floor(e['timeout'] / 3600) + " hours, " + Math.floor((e['timeout'] % 3600) / 60) + " minutes",
                 ]).draw(false);
             });
 
@@ -287,10 +287,10 @@
                     e.station.name,
                     e.equipment.name,
                     e.breakdown.name,
-                    e.type.name,
+                    e.type?.name ?? '',
                     new Date(e.openline.timestamp).toLocaleString(),
                     new Date(e.closeline.timestamp).toLocaleString(),
-                    Math.floor(e.timeout / 3600) + ":" + Math.floor((e.timeout % 3600) / 60),
+                    Math.floor(e.timeout / 3600) + " hours, " + Math.floor((e.timeout % 3600) / 60) + " minutes",
                 ]).draw(false);
             });
         }
@@ -311,7 +311,6 @@
                 }
             });
             
-            console.log(breakdowns)
             return breakdowns;
         }
 

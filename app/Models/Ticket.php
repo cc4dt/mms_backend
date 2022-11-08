@@ -320,12 +320,7 @@ class Ticket extends Model
 
     public function getTimeoutAttribute($value)
     {
-        foreach ($this->timelines as $value) {
-            if ($value->status->key == 'waiting_for_client_approval' && $value->created_at)
-                return $this->created_at->diffInSeconds($value->created_at);
-            else if ($value->status->key == 'closed' && $value->created_at)
-                return $this->created_at->diffInSeconds($value->created_at);
-        }
+        return $this->openline->timestamp->diffInSeconds($this->closeline->timestamp);
     }
 
     public function getLedTimeAttribute($value)

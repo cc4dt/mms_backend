@@ -17,6 +17,10 @@ class TicketTimeline extends Model
         "updated_by_id",
     ];
 
+    protected $casts = [
+        'timestamp' => 'datetime',
+    ];
+
     public function getTimestampAttribute($value) : Carbon
     {
         return new Carbon($value);
