@@ -188,7 +188,7 @@
     <a href="index3.html" class="brand-link">
       <img src="{{asset('dist/img/AdminLTELogo.png')}}"
            alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">HAM</span>
+      <span class="brand-text font-weight-light">{{ config('app.name') }}</span>
     </a>
 
     <!-- Sidebar -->
@@ -1065,7 +1065,7 @@
     <div class="float-right d-none d-sm-block">
       <b></b>
     </div>
-    <strong>Copyright &copy; <?php echo date('Y'); ?> <a href="https://ham.sd">HAM</a>.</strong> All rights reserved.
+    <strong>Copyright &copy; <?php echo date('Y'); ?> <a href="{{ config('app.url') }}">{{ config('app.name') }}</a>.</strong> All rights reserved.
   </footer>
 
   <!-- Control Sidebar -->

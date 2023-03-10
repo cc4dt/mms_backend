@@ -203,11 +203,11 @@
             var frameDoc = (frame1.contentWindow) ? frame1.contentWindow : (frame1.contentDocument.document) ? frame1
                 .contentDocument.document : frame1.contentDocument;
             frameDoc.document.open();
-            frameDoc.document.write('<html><head><title>HAM Copy</title>');
+            frameDoc.document.write('<html><head><title> ' . config('app.name') . ' Copy</title>');
             frameDoc.document.write('</head><body>');
             frameDoc.document.write(contents);
             frameDoc.document.write(
-                '</body><footer style=" position: fixed;  bottom: 0; "><table border="0" width="100%"><tr><td align="center"><font face="arial" size="2"><strong> HAM Copy </strong></font></td></tr></table></footer></html>'
+                '</body><footer style=" position: fixed;  bottom: 0; "><table border="0" width="100%"><tr><td align="center"><font face="arial" size="2"><strong> ' . config('app.name') . ' Copy </strong></font></td></tr></table></footer></html>'
             );
             frameDoc.document.close();
             setTimeout(function() {

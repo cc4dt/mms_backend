@@ -53,6 +53,19 @@
                         </select>
                     </div>
 
+
+                    <div class="p-3 col-md-3">
+                        <select id="type_id" name="type_id"
+                            class="select2bs4 form-control @error('type_id') is-invalid @enderror" data-vldtr="required">
+                            <option value="">-Select Type-</option>
+                            @if (isset($types))
+                                @foreach ($types as $data)
+                                    <option value="{{ $data->id ?? '' }}">{{ $data->name ?? '' }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
                     <div class="p-3 col-md-3">
                         <select id="equipment_id" name="equipment_id"
                             class="select2bs4 form-control @error('equipment_id') is-invalid @enderror"
@@ -65,26 +78,14 @@
                             @endif
                         </select>
                     </div>
-
+                        
                     <div class="p-3 col-md-3">
-                        <select id="ebreakdown_id" name="breakdown_id"
-                            class="select2bs4 form-control @error('breakdown_id') is-invalid @enderror"
-                            data-vldtr="required">
-                            <option value="">-Select Breackdown-</option>
+                        <select id="breakdown_id" name="breakdown_id"
+                            class="select2bs4 select selectpicker form-control @error('breakdown_id') is-invalid @enderror"
+                            data-vldtr="required" multiple data-live-search="true">
+                            {{-- <option value="">-Select Breackdown-</option> --}}
                             @if (isset($breakdowns))
                                 @foreach ($breakdowns as $data)
-                                    <option value="{{ $data->id ?? '' }}">{{ $data->name ?? '' }}</option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-
-                    <div class="p-3 col-md-3">
-                        <select id="type_id" name="type_id"
-                            class="select2bs4 form-control @error('type_id') is-invalid @enderror" data-vldtr="required">
-                            <option value="">-Select Type-</option>
-                            @if (isset($types))
-                                @foreach ($types as $data)
                                     <option value="{{ $data->id ?? '' }}">{{ $data->name ?? '' }}</option>
                                 @endforeach
                             @endif
@@ -113,7 +114,8 @@
     </div>
 
     <script>
-        var station = "", equipment = "", type = "", breakdown = "", fromDate = "", toDate = "";
+        jQuery(document).ready(function($) {
+        var station = "", equipment = "", type = "", breakdown = "", breakdowns = [], fromDate = "", toDate = "";
 
         var tickets = @json($tickets);
 
@@ -213,7 +215,7 @@
             ]);
         });
         
-        var qtyDateTable = jQuery('#qty').DataTable({
+        var qtyDateTable = $('#qty').DataTable({
             data: qtyDataSet,
             columns: qtyColumns,
             dom: 'Bfrtip',
@@ -248,9 +250,18 @@
                 },
                 'colvis',
                 'pageLength'
-            ]
+            ],
+            // footerCallback: function (row, data, start, end, display) {
+            //     var api = this.api();
+            //     console.log(api.columns())
+            //     // Update footer
+            //     $(api.column(0).footer()).html('total ' + 3000);
+            // },
         });
+        var totalCell = document.getElementById('qty').createTFoot().insertRow(0)
+        updateTotal(tickets)
 
+        // jQuery(qtyDateTable.column(1).footer()).html('total ' + 3000)
         function filterReport() {
             example.rows().remove().draw(false);
             qtyDateTable.rows().remove().draw(false);
@@ -267,19 +278,21 @@
                 
                 return inDay &&
                     (o.station_id == station || !station) &&
-                    (o.breakdown_id == breakdown || !breakdown) &&
+                    (o.breakdown_id.toString() in breakdowns || !breakdowns) &&
                     (o.type_id == type || !type) &&
                     (o.equipment_id == equipment || !equipment);
                 });
 
             var breakdownsTimeout = getBreakdownsTimeout(result);
-
+            
             Object.values(breakdownsTimeout).forEach(e => {
                 qtyDateTable.row.add([
                     e['name'],
                     Math.floor(e['timeout'] / 3600) + " hours, " + Math.floor((e['timeout'] % 3600) / 60) + " minutes",
                 ]).draw(false);
             });
+            
+            updateTotal(result)
 
             result.forEach(e => {
                 example.row.add([
@@ -293,6 +306,21 @@
                     Math.floor(e.timeout / 3600) + " hours, " + Math.floor((e.timeout % 3600) / 60) + " minutes",
                 ]).draw(false);
             });
+        }
+
+        function updateTotal(tickets) {
+            var total = getTotal(tickets)
+            totalCell.innerHTML = "<td></td><th>Total " + Math.floor(total / 3600) + " hours, " + Math.floor((total % 3600) / 60) + " minutes" + "</th>";
+
+        }
+
+        function getTotal(tickets) {
+            var total = 0;
+            tickets.forEach(e => {
+                total += e.timeout
+            });
+            
+            return total;
         }
 
         function getBreakdownsTimeout(tickets) {
@@ -337,7 +365,7 @@
 
         jQuery(document).ready(function() {
             jQuery('select[name="breakdown_id"]').on('change', function() {
-                breakdown = jQuery(this).val();
+                breakdowns = jQuery(this).val();
                 filterReport();
             });
         });
@@ -354,6 +382,9 @@
                 filterReport();
             });
         });
-
+    })
     </script>
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 @endsection

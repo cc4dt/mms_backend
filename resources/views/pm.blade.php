@@ -1187,7 +1187,7 @@ $sum3=$sum3+($data2->qty * $data2->price )-(($data2->qty * $data2->price )*($dat
                             <table width="100%" align="center" border="0" style="border-collapse: collapse;">
                                 <tr align="center">
                                     <td width="33%">
-                                        <font face="arial" size="3"> HAM</font>
+                                        <font face="arial" size="3"> {{ config('app.name') }} </font>
                                         </th>
                                     <td width="33%">
                                         </th>

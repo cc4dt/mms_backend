@@ -86,7 +86,7 @@ class DashboardController extends Controller
             ],
             "over4pm" => [
                 "count" => Ticket::whereTime('created_at', '>=', '16:00:00')->count(),
-                "percent" => Ticket::whereTime('created_at', '>=', '16:00:00')->count() / Ticket::count() * 100
+                "percent" => Ticket::whereTime('created_at', '>=', '16:00:00')->count() ? Ticket::whereTime('created_at', '>=', '16:00:00')->count() / Ticket::count() * 100 : 0
             ],
             "ticketStatusCounts" => TicketStatus::all()
                 ->transform(function ($item) {
@@ -94,7 +94,7 @@ class DashboardController extends Controller
                     return [
                         'key' => $item->name,
                         'data' => $count,
-                        'percent' => $count / Ticket::count() * 100,
+                        'percent' => $count ?  $count / Ticket::count() * 100 : 0,
                     ];
                 })
         ]);

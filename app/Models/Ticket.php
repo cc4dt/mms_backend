@@ -320,7 +320,10 @@ class Ticket extends Model
 
     public function getTimeoutAttribute($value)
     {
-        return $this->openline->timestamp->diffInSeconds($this->closeline->timestamp);
+        if($this->openline && $this->closeline)
+            return $this->openline->timestamp->diffInSeconds($this->closeline->timestamp);
+        else
+            return 0;
     }
 
     public function getLedTimeAttribute($value)

@@ -38,7 +38,8 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'menu.categories' => fn () => \App\Models\Category::all(),
-            'menu.ticketTypes' => fn () => \App\Models\TicketType::all()
+            'menu.ticketTypes' => fn () => \App\Models\TicketType::all(),
+            'app.name' => fn () => config('app.name'),
         ]);
     }
 }

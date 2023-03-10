@@ -240,7 +240,7 @@ class StationController extends Controller
                     return [
                         'key' => $item->name,
                         'data' => $count,
-                        'percent' => $count / $station->tickets()->count() * 100,
+                        'percent' => $count ? $count / $station->tickets()->count() * 100 : 0,
                     ];
                 }),
                 

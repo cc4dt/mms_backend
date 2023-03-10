@@ -42,7 +42,7 @@
             class="mr-2 w-7 h-7"
           />
           <span class="hidden sm:inline"
-            >HAM <span class="text-blue-400">MMS</span></span
+            >{{ $page.props.app.name }} <span class="text-blue-400">MMS</span></span
           ></a
         >
         
