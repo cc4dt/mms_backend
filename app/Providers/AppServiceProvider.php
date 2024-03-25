@@ -36,5 +36,9 @@ class AppServiceProvider extends ServiceProvider
 
             return $tableBuilder->applyTo($this);
         });
+        
+        if($this->app->environment('production')) {
+            \URL::forceScheme('https');
+        }
     }
 }
